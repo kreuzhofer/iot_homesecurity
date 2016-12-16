@@ -93,7 +93,18 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <Content Include="Web\js\bootstrap.js" />
+    <Content Include="Web\js\bootstrap.min.js" />
+    <Content Include="Web\js\npm.js" />
     <None Include="project.json" />
+    <Content Include="Web\css\bootstrap-theme.css.map" />
+    <Content Include="Web\css\bootstrap-theme.min.css.map" />
+    <Content Include="Web\css\bootstrap.css.map" />
+    <Content Include="Web\css\bootstrap.min.css.map" />
+    <Content Include="Web\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Web\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Web\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Web\fonts\glyphicons-halflings-regular.woff2" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="StartupTask.cs" />
@@ -103,6 +114,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="Scripts\main.lua" />
     <None Include="W10Home.WebApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -128,7 +140,26 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png">
       <InProject>false</InProject>
     </Content>
+    <Content Include="Web\css\bootstrap-theme.css" />
+    <Content Include="Web\css\bootstrap-theme.min.css" />
+    <Content Include="Web\css\bootstrap.css" />
+    <Content Include="Web\css\bootstrap.min.css" />
+    <Content Include="Web\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Web\index.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
+      <Project>{48f2bfd9-0f10-4609-9b33-f8d99e7c5f6d}</Project>
+      <Name>W10Home.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.AzureIoTHub\W10Home.Plugin.AzureIoTHub.csproj">
+      <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
+      <Name>W10Home.Plugin.AzureIoTHub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.ETATouch\W10Home.Plugin.ETATouch.csproj">
+      <Project>{7F92BD3F-114B-431A-9B00-48AA60D22EAD}</Project>
+      <Name>W10Home.Plugin.ETATouch</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
