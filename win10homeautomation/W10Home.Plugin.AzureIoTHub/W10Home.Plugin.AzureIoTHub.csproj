@@ -111,6 +111,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\W10Home.Plugin.AzureIoTHub.rd.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
+      <Project>{48F2BFD9-0F10-4609-9B33-F8D99E7C5F6D}</Project>
+      <Name>W10Home.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

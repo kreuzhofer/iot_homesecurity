@@ -5,12 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using W10Home.Core.Interfaces;
 using Windows.Data.Xml.Dom;
 using Windows.Web.Http;
 
 namespace W10Home.Plugin.ETATouch
 {
-    public class ETATouchPlugin
+    public class ETATouchPlugin : IDevice
     {
         private string _etatouchip;
 
@@ -57,7 +58,7 @@ namespace W10Home.Plugin.ETATouch
 				AdvTextOffset = int.Parse((string)valueNode.Attributes.Single(a => a.NodeName == "advTextOffset").NodeValue),
 				ScaleFactor = int.Parse((string)valueNode.Attributes.Single(a => a.NodeName == "scaleFactor").NodeValue),
 				DecPlaces = int.Parse((string)valueNode.Attributes.Single(a => a.NodeName == "decPlaces").NodeValue),
-				Unit = (string)valueNode.Attributes.Single(a => a.NodeName == "decPlaces").NodeValue,
+				Unit = (string)valueNode.Attributes.Single(a => a.NodeName == "unit").NodeValue,
 				StrValue = (string)valueNode.Attributes.Single(a => a.NodeName == "strValue").NodeValue,
 				Value = int.Parse((string)valueNode.InnerText)
 			};

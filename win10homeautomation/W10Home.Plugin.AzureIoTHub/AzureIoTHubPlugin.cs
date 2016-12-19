@@ -5,10 +5,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using W10Home.Core.Interfaces;
 
 namespace W10Home.Plugin.AzureIoTHub
 {
-    public class AzureIoTHubPlugin
+    public class AzureIoTHubPlugin : IDevice
     {
         private DeviceClient deviceClient;
         public AzureIoTHubPlugin(string IoTHubConnectionString)
