@@ -84,5 +84,15 @@ namespace W10Home.Plugin.AzureIoTHub
                 //TODO Log
             }
         }
-    }
+
+		public Task InitializeAsync()
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<IEnumerable<IChannel>> GetChannelsAsync()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

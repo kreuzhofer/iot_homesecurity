@@ -8,5 +8,7 @@ namespace W10Home.Core.Interfaces
 {
 	public interface IDevice
 	{
+		Task InitializeAsync();
+		Task<IEnumerable<IChannel>> GetChannelsAsync();
 	}
 }

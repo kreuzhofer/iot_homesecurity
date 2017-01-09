@@ -1,9 +1,7 @@
 ﻿{
   "dependencies": {
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
-    "Microsoft.TypeScript.Compiler": "2.1.4",
-    "MoonSharp": "2.0.0",
-    "Restup": "1.0.2"
+    "Twilio": "5.0.0-rca2"
   },
   "frameworks": {
     "uap10.0": {}

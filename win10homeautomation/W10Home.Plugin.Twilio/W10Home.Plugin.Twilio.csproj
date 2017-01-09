@@ -4,15 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{48F2BFD9-0F10-4609-9B33-F8D99E7C5F6D}</ProjectGuid>
+    <ProjectGuid>{106B0C81-2FD4-45EC-A72C-2E5E6679A576}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>W10Home.Core</RootNamespace>
-    <AssemblyName>W10Home.Core</AssemblyName>
+    <RootNamespace>W10Home.Plugin.Twilio</RootNamespace>
+    <AssemblyName>W10Home.Plugin.Twilio</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -107,13 +107,17 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\IChannel.cs" />
-    <Compile Include="Interfaces\IDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Properties\W10Home.Core.rd.xml" />
+    <Compile Include="TwilioDevice.cs" />
+    <Compile Include="TwilioSmsChannel.cs" />
+    <Compile Include="TwilioSmsChannelConfiguration.cs" />
+    <EmbeddedResource Include="Properties\W10Home.Plugin.Twilio.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Enums\" />
+    <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
+      <Project>{48f2bfd9-0f10-4609-9b33-f8d99e7c5f6d}</Project>
+      <Name>W10Home.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

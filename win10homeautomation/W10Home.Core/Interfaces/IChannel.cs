@@ -9,5 +9,9 @@ namespace W10Home.Core.Interfaces
 	public interface IChannel
 	{
 		string Name { get; }
+		bool IsRead { get; }
+		bool IsWrite { get; }
+
+		Task<bool> SendMessageAsync(string messageBody);
 	}
 }

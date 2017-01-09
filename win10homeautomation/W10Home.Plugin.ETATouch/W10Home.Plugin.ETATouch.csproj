@@ -107,7 +107,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ETATouchPlugin.cs" />
+    <Compile Include="ETATouchDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\W10Home.Plugin.ETATouch.rd.xml" />
   </ItemGroup>

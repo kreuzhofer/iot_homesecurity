@@ -11,14 +11,38 @@ using Windows.Web.Http;
 
 namespace W10Home.Plugin.ETATouch
 {
-    public class ETATouchPlugin : IDevice
+    public class ETATouchDevice : IDevice
     {
         private string _etatouchip;
+		private List<TreeItem> _menustructure;
+		private List<IChannel> _channels;
 
-		public ETATouchPlugin(string ETATouchIp)
+		public ETATouchDevice(string ETATouchIp)
         {
             _etatouchip = ETATouchIp;
         }
+
+		public async Task InitializeAsync()
+		{
+			_menustructure = await GetMenuStructureFromEtaAsync();
+			_channels = new List<IChannel>();
+
+		}
+
+		private void ParseChannelList(List<TreeItem> treeItems, List<IChannel> channels)
+		{
+			foreach (var item in treeItems)
+			{
+				if(item.SubItems == null)
+				{
+					ParseChannelList(item.SubItems, channels);
+				}
+				else
+				{
+					channels.Add(new EtaChannel(item.Name));
+				}
+			}
+		}
 
         public async Task<List<TreeItem>> GetMenuStructureFromEtaAsync()
         {
@@ -85,7 +109,12 @@ namespace W10Home.Plugin.ETATouch
 				}
 			}
 		}
-    }
+
+		public async Task<IEnumerable<IChannel>> GetChannelsAsync()
+		{
+			return _channels;
+		}
+	}
 
     public class TreeItem
     {
@@ -119,4 +148,25 @@ namespace W10Home.Plugin.ETATouch
             return Encoding.UTF8.GetString(utf8Bytes, 0, utf8Bytes.Length);
         }
     }
+
+	public class EtaChannel : IChannel
+	{
+		private string _name;
+
+		public EtaChannel(string name)
+		{
+			_name = name;
+		}
+
+		public bool IsRead => true;
+
+		public bool IsWrite => false;
+
+		public string Name => _name;
+
+		public Task<bool> SendMessageAsync(string messageBody)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

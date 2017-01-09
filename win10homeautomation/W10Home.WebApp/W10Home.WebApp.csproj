@@ -95,6 +95,7 @@
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <Content Include="Web\js\bootstrap.js" />
     <Content Include="Web\js\bootstrap.min.js" />
+    <Content Include="Web\js\main.js" />
     <Content Include="Web\js\npm.js" />
     <None Include="project.json" />
     <Content Include="Web\css\bootstrap-theme.css.map" />
@@ -107,6 +108,7 @@
     <Content Include="Web\fonts\glyphicons-halflings-regular.woff2" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auth\FixedCredentialsValidator.cs" />
     <Compile Include="StartupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -160,9 +162,19 @@
       <Project>{7F92BD3F-114B-431A-9B00-48AA60D22EAD}</Project>
       <Name>W10Home.Plugin.ETATouch</Name>
     </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.Twilio\W10Home.Plugin.Twilio.csproj">
+      <Project>{106B0C81-2FD4-45EC-A72C-2E5E6679A576}</Project>
+      <Name>W10Home.Plugin.Twilio</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Web\js\main.ts" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
