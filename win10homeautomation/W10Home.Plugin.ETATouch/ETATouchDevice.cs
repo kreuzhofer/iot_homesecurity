@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using W10Home.Core.Interfaces;
@@ -11,7 +10,7 @@ using Windows.Web.Http;
 
 namespace W10Home.Plugin.ETATouch
 {
-    public class ETATouchDevice : IDevice
+	public class ETATouchDevice : IDevice
     {
         private string _etatouchip;
 		private List<TreeItem> _menustructure;
@@ -113,60 +112,6 @@ namespace W10Home.Plugin.ETATouch
 		public async Task<IEnumerable<IChannel>> GetChannelsAsync()
 		{
 			return _channels;
-		}
-	}
-
-    public class TreeItem
-    {
-        public string Name { get; set; }
-        public string Uri { get; set; }
-        public List<TreeItem> SubItems { get; set; }
-    }
-
-	public class EtaValue
-	{
-		public int AdvTextOffset { get; set; }
-		public int ScaleFactor { get; set; }
-		public int DecPlaces { get; set; }
-		public string Unit { get; set; }
-		public string StrValue { get; set; }
-		public int Value { get; set; }
-	}
-
-    public static class StringExtensions
-    {
-        public static string DecodeFromUtf8(this string utf8String)
-        {
-            // copy the string as UTF-8 bytes.
-            byte[] utf8Bytes = new byte[utf8String.Length];
-            for (int i = 0; i < utf8String.Length; ++i)
-            {
-                //Debug.Assert( 0 <= utf8String[i] && utf8String[i] <= 255, "the char must be in byte's range");
-                utf8Bytes[i] = (byte)utf8String[i];
-            }
-
-            return Encoding.UTF8.GetString(utf8Bytes, 0, utf8Bytes.Length);
-        }
-    }
-
-	public class EtaChannel : IChannel
-	{
-		private string _name;
-
-		public EtaChannel(string name)
-		{
-			_name = name;
-		}
-
-		public bool IsRead => true;
-
-		public bool IsWrite => false;
-
-		public string Name => _name;
-
-		public Task<bool> SendMessageAsync(string messageBody)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }
