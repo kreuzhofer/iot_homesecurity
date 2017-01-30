@@ -56,12 +56,16 @@ namespace W10Home.IoTCoreApp
 					Type = "AzureIoTHubPlugin",
 					Properties = new Dictionary<string, string>()
 					{
-						{"ConnectionString" ,"HostName=dkreuzhiothub01.azure-devices.net;DeviceId=homecontroller;SharedAccessKey=aVJzBv3boD79ZnE1GCmVCSFJRkC/1DvmWgqzbaogX7U="}
+						{"ConnectionString" ,Config.AZURE_IOT_HUB_CONNECTION}
 					}
 				},
 				new DeviceConfiguration
 				{
-					Type = "EtaTouchDevice"
+					Type = "EtaTouchDevice",
+					Properties = new Dictionary<string, string>()
+					{
+						{"ConnectionString", Config.ETA_TOUCH_URL}
+					}
 				}
 			});
 
