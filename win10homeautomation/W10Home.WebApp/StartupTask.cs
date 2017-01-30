@@ -72,7 +72,7 @@ namespace W10Home.WebApp
 
 			// define cron timers
 			_everySecondTimer = new Timer(everySecondTimerCallback, null, 1000, 1000);
-			_everyMinuteTimer = new Timer(everyMinuteTimerCallback, null, 0, 60 * 1000);
+			_everyMinuteTimer = new Timer(everyMinuteTimerCallback, null, 60 * 1000, 60 * 1000);
 
 			// start local webserver
 
