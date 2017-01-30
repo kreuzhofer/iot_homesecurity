@@ -32,7 +32,7 @@ namespace W10Home.Plugin.Twilio
 
 		public override string Name => "SMS";
 
-		public override async Task<bool> SendMessageAsync(string messageBody)
+		public override async Task<bool> NotifyAsync(string messageBody)
 		{
 			TwilioClient.Init(_accountSid, _authToken);
 

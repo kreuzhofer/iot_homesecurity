@@ -21,6 +21,7 @@ using W10Home.WebApp.Controllers;
 using W10Home.Core.Queing;
 using System.Threading;
 using System.Diagnostics;
+using W10Home.Core.Configuration;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
@@ -44,6 +45,26 @@ namespace W10Home.WebApp
             // should be removed. Which results in the application being closed.
             _deferral = taskInstance.GetDeferral();
 
+
+			// Build configuration object to configure all devices
+			var configurationObject = new RootConfiguration();
+
+			configurationObject.DeviceConfigurations = new List<DeviceConfiguration>(new[]
+			{
+				new DeviceConfiguration
+				{
+					Type = "AzureIoTHubPlugin",
+					Properties = new Dictionary<string, string>()
+					{
+						{"ConnectionString" ,"HostName=dkreuzhiothub01.azure-devices.net;DeviceId=homecontroller;SharedAccessKey=aVJzBv3boD79ZnE1GCmVCSFJRkC/1DvmWgqzbaogX7U="}
+					}
+				},
+				new DeviceConfiguration
+				{
+					Type = "EtaTouchDevice"
+				}
+			});
+
             // init IoC
             var container = new UnityContainer();
             container.RegisterInstance<IMessageQueue>(new MessageQueue());
@@ -56,6 +77,7 @@ namespace W10Home.WebApp
             var eta = new ETATouchDevice(Config.ETA_TOUCH_URL);
             container.RegisterInstance(eta);
 
+			// configure Twilio
 			List<TwilioSmsChannelConfiguration> channelConfigurations = new List<TwilioSmsChannelConfiguration>();
 			channelConfigurations.Add(new TwilioSmsChannelConfiguration(Config.TWILIO_OUTGOING_PHONE, Config.TWILIO_RECEIVER_PHONE));
 			var twilio = new TwilioDevice(Config.TWILIO_ACCOUNT_SID, Config.TWILIO_ACCOUNT_TOKEN, channelConfigurations);

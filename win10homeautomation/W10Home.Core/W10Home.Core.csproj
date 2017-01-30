@@ -109,6 +109,8 @@
   <ItemGroup>
     <Compile Include="Channels\ChannelType.cs" />
     <Compile Include="Channels\UnitType.cs" />
+    <Compile Include="Configuration\DeviceConfiguration.cs" />
+    <Compile Include="Configuration\RootConfiguration.cs" />
     <Compile Include="Interfaces\IChannel.cs" />
     <Compile Include="Interfaces\IDevice.cs" />
     <Compile Include="Channels\NotificationChannel.cs" />

@@ -13,6 +13,6 @@ namespace W10Home.Core.Channels
 		public abstract bool IsRead { get; }
 		public abstract bool IsWrite { get; }
 		public abstract string Name { get; }
-		public abstract Task<bool> SendMessageAsync(string messageBody);
+		public abstract Task<bool> NotifyAsync(string messageBody);
 	}
 }
