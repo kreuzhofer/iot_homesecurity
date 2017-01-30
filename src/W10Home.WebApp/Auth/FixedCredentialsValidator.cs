@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 
-namespace W10Home.WebApp.Auth
+namespace W10Home.IoTCoreApp.Auth
 {
 	internal class FixedCredentialsValidator : ICredentialValidator
 	{

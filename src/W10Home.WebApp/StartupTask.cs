@@ -12,12 +12,12 @@ using W10Home.Plugin.ETATouch;
 using MoonSharp.Interpreter;
 using Windows.Web.Http;
 using Restup.WebServer.Http;
-using W10Home.WebApp.Auth;
+using W10Home.IoTCoreApp.Auth;
 using W10Home.Plugin.Twilio;
 using Windows.Devices.Gpio;
 using Microsoft.Practices.ServiceLocation;
 using Microsoft.Practices.Unity;
-using W10Home.WebApp.Controllers;
+using W10Home.IoTCoreApp.Controllers;
 using W10Home.Core.Queing;
 using System.Threading;
 using System.Diagnostics;
@@ -25,7 +25,7 @@ using W10Home.Core.Configuration;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
-namespace W10Home.WebApp
+namespace W10Home.IoTCoreApp
 {
     public sealed class StartupTask : IBackgroundTask
     {

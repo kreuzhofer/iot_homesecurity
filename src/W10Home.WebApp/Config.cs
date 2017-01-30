@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace W10Home.WebApp
+namespace W10Home.IoTCoreApp
 {
-	public static class Config
+	internal static class Config
 	{
 		public const string AZURE_IOT_HUB_CONNECTION = "";
 		public const string ETA_TOUCH_URL = "";

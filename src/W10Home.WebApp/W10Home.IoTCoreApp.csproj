@@ -7,8 +7,8 @@
     <ProjectGuid>{88D70CF5-DA46-4568-8055-2DC337144B33}</ProjectGuid>
     <OutputType>winmdobj</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>W10Home.WebApp</RootNamespace>
-    <AssemblyName>W10Home.WebApp</AssemblyName>
+    <RootNamespace>W10Home.IoTCoreApp</RootNamespace>
+    <AssemblyName>W10Home.IoTCoreApp</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>

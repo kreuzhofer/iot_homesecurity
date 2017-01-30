@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using W10Home.Core.Queing;
 
-namespace W10Home.WebApp.Controllers
+namespace W10Home.IoTCoreApp.Controllers
 {
 	[Authorize]
     [RestController(InstanceCreationType.Singleton)]
