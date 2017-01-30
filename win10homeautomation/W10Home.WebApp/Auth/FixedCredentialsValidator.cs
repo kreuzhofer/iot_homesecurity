@@ -5,14 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 
 namespace W10Home.WebApp.Auth
 {
 	internal class FixedCredentialsValidator : ICredentialValidator
 	{
-		public bool Authenticate(string username, string password)
+		public IAsyncOperation<bool> AuthenticateAsync(string username, string password)
 		{
-			return username == "user" && password == "pass";
+			return Task.FromResult(username == "user" && password == "pass").AsAsyncOperation();
 		}
 	}
 }

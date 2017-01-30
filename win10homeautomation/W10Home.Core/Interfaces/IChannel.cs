@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using W10Home.Core.Channels;
 
 namespace W10Home.Core.Interfaces
 {
@@ -11,7 +12,6 @@ namespace W10Home.Core.Interfaces
 		string Name { get; }
 		bool IsRead { get; }
 		bool IsWrite { get; }
-
-		Task<bool> SendMessageAsync(string messageBody);
+		ChannelType ChannelType { get; }
 	}
 }

@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
+using W10Home.Core.Channels;
 using W10Home.Core.Interfaces;
 
 namespace W10Home.Plugin.Twilio
 {
-	public class TwilioSmsChannel : IChannel
+	public class TwilioSmsChannel : NotificationChannel
 	{
 		private string _accountSid;
 		private string _authToken;
@@ -25,13 +26,13 @@ namespace W10Home.Plugin.Twilio
 			_receiverPhoneNumber = channelConfiguration.ReceiverPhoneNumber;
 		}
 
-		public bool IsRead => false;
+		public override bool IsRead => false;
 
-		public bool IsWrite => false;
+		public override bool IsWrite => false;
 
-		public string Name => "SMS";
+		public override string Name => "SMS";
 
-		public async Task<bool> SendMessageAsync(string messageBody)
+		public override async Task<bool> SendMessageAsync(string messageBody)
 		{
 			TwilioClient.Init(_accountSid, _authToken);
 

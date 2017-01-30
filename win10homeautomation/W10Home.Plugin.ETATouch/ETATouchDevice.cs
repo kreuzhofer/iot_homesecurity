@@ -2,51 +2,60 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml;
+using W10Home.Core.Channels;
 using W10Home.Core.Interfaces;
 using Windows.Data.Xml.Dom;
-using Windows.Web.Http;
 
 namespace W10Home.Plugin.ETATouch
 {
 	public class ETATouchDevice : IDevice
     {
-        private string _etatouchip;
+        private string _etatouchUrl;
 		private List<TreeItem> _menustructure;
 		private List<IChannel> _channels;
 
-		public ETATouchDevice(string ETATouchIp)
+		public ETATouchDevice(string ETATouchUrl)
         {
-            _etatouchip = ETATouchIp;
+            _etatouchUrl = ETATouchUrl;
         }
 
 		public async Task InitializeAsync()
 		{
 			_menustructure = await GetMenuStructureFromEtaAsync();
 			_channels = new List<IChannel>();
-
+			await ParseChannelListAsync(_menustructure, _channels);
 		}
 
-		private void ParseChannelList(List<TreeItem> treeItems, List<IChannel> channels)
+		private async Task ParseChannelListAsync(List<TreeItem> treeItems, List<IChannel> channels)
 		{
 			foreach (var item in treeItems)
 			{
-				if(item.SubItems == null)
+				if (item.SubItems == null)
 				{
-					ParseChannelList(item.SubItems, channels);
+					await ParseChannelListAsync(item.SubItems, channels);
 				}
 				else
 				{
-					channels.Add(new EtaChannel(item.Name));
+					var value = await GetValueFromEtaUriAsync(item.Uri);
+
+                    ChannelType channelType = ChannelType.None;
+                    UnitType unitType = UnitType.DegreesCelsius;
+					if(value.Unit == "°C")
+					{
+                        channelType = ChannelType.Temperature;
+                    }
+					channels.Add(new EtaChannel(item.Name, channelType, unitType));
 				}
 			}
 		}
 
-        public async Task<List<TreeItem>> GetMenuStructureFromEtaAsync()
+		public async Task<List<TreeItem>> GetMenuStructureFromEtaAsync()
         {
             HttpClient client = new HttpClient();
-            var content = (await client.GetStringAsync(new Uri($"http://{_etatouchip}:8080/user/menu"))).DecodeFromUtf8();
+            var content = (await client.GetStringAsync(new Uri($"{_etatouchUrl}/user/menu")));
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(content, new XmlLoadSettings() { ElementContentWhiteSpace = false });
 
@@ -72,7 +81,7 @@ namespace W10Home.Plugin.ETATouch
 		public async Task<EtaValue> GetValueFromEtaUriAsync(string uri)
 		{
 			HttpClient client = new HttpClient();
-			var content = (await client.GetStringAsync(new Uri($"http://{_etatouchip}:8080/user/var{uri}"))).DecodeFromUtf8();
+			var content = (await client.GetStringAsync(new Uri($"{_etatouchUrl}/user/var{uri}")));
 			XmlDocument doc = new XmlDocument();
 			doc.LoadXml(content, new XmlLoadSettings() { ElementContentWhiteSpace = false });
 			var valueNode = doc.DocumentElement.ChildNodes.Single(d => d.NodeName == "value");
@@ -109,9 +118,9 @@ namespace W10Home.Plugin.ETATouch
 			}
 		}
 
-		public async Task<IEnumerable<IChannel>> GetChannelsAsync()
+		public Task<IEnumerable<IChannel>> GetChannelsAsync()
 		{
-			return _channels;
+			return Task.FromResult(_channels.AsEnumerable());
 		}
 	}
 }

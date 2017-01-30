@@ -71,12 +71,13 @@ namespace W10Home.Plugin.AzureIoTHub
                     value +
                     ", \"channelKey\": \""+ key + 
                     "\", \"localTimestamp\": \"" +
-                    DateTime.Now.ToLocalTime().ToString() +
+                    DateTime.Now.ToLocalTime().ToString("s") +
                     "\"}";
 
                 var msg = new Message(Encoding.UTF8.GetBytes(payload));
 
                 await deviceClient.SendEventAsync(msg);
+				Debug.WriteLine(payload);
             }
             catch (Exception ex)
             {

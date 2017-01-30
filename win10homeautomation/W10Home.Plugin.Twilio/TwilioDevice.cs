@@ -24,9 +24,9 @@ namespace W10Home.Plugin.Twilio
 			}
 		}
 
-		public async Task<IEnumerable<IChannel>> GetChannelsAsync()
+		public Task<IEnumerable<IChannel>> GetChannelsAsync()
 		{
-			return _channels;
+			return Task.FromResult(_channels.AsEnumerable());
 		}
 
 		public Task InitializeAsync()

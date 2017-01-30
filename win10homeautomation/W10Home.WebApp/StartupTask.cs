@@ -14,6 +14,13 @@ using Windows.Web.Http;
 using Restup.WebServer.Http;
 using W10Home.WebApp.Auth;
 using W10Home.Plugin.Twilio;
+using Windows.Devices.Gpio;
+using Microsoft.Practices.ServiceLocation;
+using Microsoft.Practices.Unity;
+using W10Home.WebApp.Controllers;
+using W10Home.Core.Queing;
+using System.Threading;
+using System.Diagnostics;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
@@ -24,9 +31,9 @@ namespace W10Home.WebApp
         private HttpServer _httpServer;
 
         private BackgroundTaskDeferral _deferral;
-        private AzureIoTHubPlugin _iotHub;
-        private ETATouchDevice _eta;
-		private TwilioDevice _twilio;
+		private const int LED_PIN = 6;
+		private Timer _everySecondTimer;
+		private Timer _everyMinuteTimer;
 
 #pragma warning disable IDE1006 // Naming Styles
 		public async void Run(IBackgroundTaskInstance taskInstance)
@@ -37,33 +44,41 @@ namespace W10Home.WebApp
             // should be removed. Which results in the application being closed.
             _deferral = taskInstance.GetDeferral();
 
+            // init IoC
+            var container = new UnityContainer();
+            container.RegisterInstance<IMessageQueue>(new MessageQueue());
+
             // configure IoT Hub plugin
-            _iotHub = new AzureIoTHubPlugin("iothubconnectionstring");
+            var iotHub = new AzureIoTHubPlugin(Config.AZURE_IOT_HUB_CONNECTION);
+            container.RegisterInstance(iotHub);
 
             // get data from ETA
-            _eta = new ETATouchDevice("etatouchipadress");
+            var eta = new ETATouchDevice(Config.ETA_TOUCH_URL);
+            container.RegisterInstance(eta);
 
 			List<TwilioSmsChannelConfiguration> channelConfigurations = new List<TwilioSmsChannelConfiguration>();
-			channelConfigurations.Add(new TwilioSmsChannelConfiguration("fromnumber", "tonumber"));
-			_twilio = new TwilioDevice("accountsid", "authtoken", channelConfigurations);
+			channelConfigurations.Add(new TwilioSmsChannelConfiguration(Config.TWILIO_OUTGOING_PHONE, Config.TWILIO_RECEIVER_PHONE));
+			var twilio = new TwilioDevice(Config.TWILIO_ACCOUNT_SID, Config.TWILIO_ACCOUNT_TOKEN, channelConfigurations);
+            container.RegisterInstance(twilio);
 
-			//await (await _twilio.GetChannelsAsync()).Single(c => c.Name == "SMS").SendMessageAsync("Homeautomation starting...");
+            // finalize service locator
+            var locator = new UnityServiceLocator(container);
+            ServiceLocator.SetLocatorProvider(() => locator);
 
-			// start background worker that collects and forwards data
-			BackgroundWorker(_eta, _iotHub);
+            //await (await _twilio.GetChannelsAsync()).Single(c => c.Name == "SMS").SendMessageAsync("Homeautomation starting...");
+
+            // start background worker that collects and forwards data
+            MessageLoopWorker();
+
+			// define cron timers
+			_everySecondTimer = new Timer(everySecondTimerCallback, null, 1000, 1000);
+			_everyMinuteTimer = new Timer(everyMinuteTimerCallback, null, 0, 60 * 1000);
+
+			// start local webserver
 
 			var authProvider = new BasicAuthorizationProvider("Login", new FixedCredentialsValidator());
-
 			var restRouteHandler = new RestRouteHandler(authProvider);
-
-            //restRouteHandler.RegisterController<AsyncControllerSample>();
-            //restRouteHandler.RegisterController<FromContentControllerSample>();
-            //restRouteHandler.RegisterController<PerCallControllerSample>();
-            //restRouteHandler.RegisterController<SimpleParameterControllerSample>();
-            //restRouteHandler.RegisterController<SingletonControllerSample>();
-            //restRouteHandler.RegisterController<ThrowExceptionControllerSample>();
-            //restRouteHandler.RegisterController<WithResponseContentControllerSample>();
-
+            restRouteHandler.RegisterController<QueueController>();
             var configuration = new HttpServerConfiguration()
                 .ListenOnPort(80)
                 .RegisterRoute("api", restRouteHandler)
@@ -79,15 +94,40 @@ namespace W10Home.WebApp
             // Dont release deferral, otherwise app will stop
         }
 
-		private async void BackgroundWorker(ETATouchDevice eta, AzureIoTHubPlugin iotHub)
+		private async void everyMinuteTimerCallback(object state)
 		{
-			do
+			var iotHub = ServiceLocator.Current.GetInstance<AzureIoTHubPlugin>();
+			var eta = ServiceLocator.Current.GetInstance<ETATouchDevice>();
+			try
 			{
-				var menu = await _eta.GetMenuStructureFromEtaAsync();
+				var menu = await eta.GetMenuStructureFromEtaAsync();
 				var value = await eta.GetValueFromEtaValuePathAsync(menu, "/Sys/Eingänge/Außentemperatur");
 				double degrees = (double)value.Value / (double)value.ScaleFactor;
 				await iotHub.SendMessageToIoTHubAsync("homecontroller", "home", "outdoortemp", degrees);
-				await Task.Delay(60*1000);
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+			}
+		}
+
+		private void everySecondTimerCallback(object state)
+		{
+		}
+
+		private async void MessageLoopWorker()
+		{
+			var iotHub = ServiceLocator.Current.GetInstance<AzureIoTHubPlugin>();
+			do
+			{
+				var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+				QueueMessage message;
+				if(queue.TryDeque("windsensor", out message))
+				{
+					await iotHub.SendMessageToIoTHubAsync("homecontroller", "home", message.Key, Double.Parse(message.Value));
+				}
+
+				await Task.Delay(250);
 			} while (true);
 		}
 
@@ -99,5 +139,18 @@ namespace W10Home.WebApp
 			//}
 			//while (true);
 		}
+
+
+		private async Task FlashLed()
+        {
+            var gpio = GpioController.GetDefault();
+            var ledPin = gpio.OpenPin(LED_PIN);
+            // Initialize LED to the OFF state by first writing a HIGH value
+            // We write HIGH because the LED is wired in a active LOW configuration
+            ledPin.SetDriveMode(GpioPinDriveMode.Output);
+            ledPin.Write(GpioPinValue.Low);
+            await Task.Delay(200);
+            ledPin.Write(GpioPinValue.High);
+        }
     }
 }

@@ -107,9 +107,15 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Channels\ChannelType.cs" />
+    <Compile Include="Channels\UnitType.cs" />
     <Compile Include="Interfaces\IChannel.cs" />
     <Compile Include="Interfaces\IDevice.cs" />
+    <Compile Include="Channels\NotificationChannel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queing\IMessageQueue.cs" />
+    <Compile Include="Queing\MessageQueue.cs" />
+    <Compile Include="Queing\QueueMessage.cs" />
     <EmbeddedResource Include="Properties\W10Home.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
