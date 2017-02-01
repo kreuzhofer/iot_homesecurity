@@ -5,29 +5,15 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using W10Home.Core.Configuration;
 using W10Home.Core.Interfaces;
 
 namespace W10Home.Plugin.AzureIoTHub
 {
-    public class AzureIoTHubPlugin : IDevice
+    public class AzureIoTHubDevice : IDevice
     {
         private DeviceClient deviceClient;
-        public AzureIoTHubPlugin(string IoTHubConnectionString)
-        {
-            try
-            {
-                // Instantiate the Azure IoT Hub device client
-                deviceClient = DeviceClient.CreateFromConnectionString(IoTHubConnectionString);
-                
-                MessageReceiverLoop(); // launch message loop in the background
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                //TODO Log
-            }
-        }
-
+ 
         private async void MessageReceiverLoop()
         {
 			do
@@ -86,9 +72,21 @@ namespace W10Home.Plugin.AzureIoTHub
             }
         }
 
-		public Task InitializeAsync()
+		public async Task InitializeAsync(DeviceConfiguration configuration)
 		{
-			throw new NotImplementedException();
+			try
+			{
+				// Instantiate the Azure IoT Hub device client
+				deviceClient = DeviceClient.CreateFromConnectionString(configuration.Properties["ConnectionString"]);
+
+				MessageReceiverLoop(); // launch message loop in the background
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+				//TODO Log
+			}
+
 		}
 
 		public Task<IEnumerable<IChannel>> GetChannelsAsync()

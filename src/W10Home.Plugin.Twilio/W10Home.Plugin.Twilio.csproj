@@ -110,7 +110,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TwilioDevice.cs" />
     <Compile Include="TwilioSmsChannel.cs" />
-    <Compile Include="TwilioSmsChannelConfiguration.cs" />
     <EmbeddedResource Include="Properties\W10Home.Plugin.Twilio.rd.xml" />
   </ItemGroup>
   <ItemGroup>

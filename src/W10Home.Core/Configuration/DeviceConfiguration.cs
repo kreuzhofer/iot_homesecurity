@@ -8,7 +8,7 @@ namespace W10Home.Core.Configuration
 {
 	public class DeviceConfiguration
 	{
-		public string Type { get; set; }
+		public string Name { get; set; }
 		public Dictionary<string,string> Properties { get; set; }
 	}
 }

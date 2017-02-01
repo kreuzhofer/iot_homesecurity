@@ -18,12 +18,12 @@ namespace W10Home.Plugin.Twilio
 		private string _outgoingPhoneNumber;
 		private string _receiverPhoneNumber;
 
-		internal TwilioSmsChannel(string accountSid, string authToken, TwilioSmsChannelConfiguration channelConfiguration)
+		internal TwilioSmsChannel(string accountSid, string authToken, string outgoingPhoneNumber, string receiverPhoneNumber)
 		{
 			_accountSid = accountSid;
 			_authToken = authToken;
-			_outgoingPhoneNumber = channelConfiguration.OutgoingPhoneNumber;
-			_receiverPhoneNumber = channelConfiguration.ReceiverPhoneNumber;
+			_outgoingPhoneNumber = outgoingPhoneNumber;
+			_receiverPhoneNumber = receiverPhoneNumber;
 		}
 
 		public override bool IsRead => false;

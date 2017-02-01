@@ -107,7 +107,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AzureIoTHubPlugin.cs" />
+    <Compile Include="AzureIoTHubDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\W10Home.Plugin.AzureIoTHub.rd.xml" />
   </ItemGroup>
