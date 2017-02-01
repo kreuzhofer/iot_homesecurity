@@ -4,17 +4,18 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using W10Home.Core.Interfaces;
+using W10Home.Interfaces;
 
 namespace W10Home.Core.Configuration
 {
-	public class DeviceRegistry
+	internal class DeviceRegistry : IDeviceRegistry
 	{
+		private Dictionary<string, Type> _deviceTypes = new Dictionary<string, Type>();
 		private Dictionary<string, IDevice> _deviceList = new Dictionary<string, IDevice>();
 
-		public void RegisterDevice(string name, IDevice device)
+		public void RegisterDeviceType<T>() where T : class, IDevice
 		{
-			_deviceList.Add(name, device);
+			_deviceTypes.Add(typeof(T).Name, typeof(T));
 		}
 
 		public async Task InitializeDevicesAsync(RootConfiguration configurationObject)
@@ -23,8 +24,9 @@ namespace W10Home.Core.Configuration
 			{
 				try
 				{
-					var device = _deviceList[configuration.Name];
-					await device.InitializeAsync(configuration);
+					var deviceInstance = (IDevice)Activator.CreateInstance(_deviceTypes[configuration.Type]);
+					_deviceList.Add(configuration.Name, deviceInstance);
+					await deviceInstance.InitializeAsync(configuration);
 				}
 				catch (Exception ex)
 				{
@@ -42,6 +44,11 @@ namespace W10Home.Core.Configuration
 		public T GetDevice<T>() where T : class, IDevice
 		{
 			return _deviceList.Select(d => d.Value).Where(d => (d as T) != null).Select(d => d as T).Single();
+		}
+
+		public T GetDevice<T>(string name) where T : class, IDevice
+		{
+			return (T)_deviceList[name];
 		}
 	}
 }

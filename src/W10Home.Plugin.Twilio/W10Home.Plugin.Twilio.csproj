@@ -117,6 +117,10 @@
       <Project>{48f2bfd9-0f10-4609-9b33-f8d99e7c5f6d}</Project>
       <Name>W10Home.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\W10Home.Interfaces\W10Home.Interfaces.csproj">
+      <Project>{B5026C36-9A23-46C9-8140-1E26BA08845D}</Project>
+      <Name>W10Home.Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

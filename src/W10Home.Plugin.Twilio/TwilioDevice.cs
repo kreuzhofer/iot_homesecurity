@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using W10Home.Core.Configuration;
-using W10Home.Core.Interfaces;
+using W10Home.Interfaces;
 
 namespace W10Home.Plugin.Twilio
 {
@@ -19,7 +19,7 @@ namespace W10Home.Plugin.Twilio
 			return Task.FromResult(_channels.AsEnumerable());
 		}
 
-		public async Task InitializeAsync(DeviceConfiguration configuration)
+		public async Task InitializeAsync(IDeviceConfiguration configuration)
 		{
 			_accountSid = configuration.Properties["AccountSid"];
 			_authToken = configuration.Properties["AuthToken"];

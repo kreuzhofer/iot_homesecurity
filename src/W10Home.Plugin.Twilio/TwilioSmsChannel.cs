@@ -7,7 +7,6 @@ using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
 using W10Home.Core.Channels;
-using W10Home.Core.Interfaces;
 
 namespace W10Home.Plugin.Twilio
 {

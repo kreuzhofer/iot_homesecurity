@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using W10Home.Core.Channels;
 
-namespace W10Home.Core.Interfaces
+namespace W10Home.Interfaces
 {
 	public interface IChannel
 	{

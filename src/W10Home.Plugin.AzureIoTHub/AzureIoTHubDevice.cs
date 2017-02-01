@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using W10Home.Core.Configuration;
-using W10Home.Core.Interfaces;
+using W10Home.Interfaces;
 
 namespace W10Home.Plugin.AzureIoTHub
 {
@@ -72,7 +72,7 @@ namespace W10Home.Plugin.AzureIoTHub
             }
         }
 
-		public async Task InitializeAsync(DeviceConfiguration configuration)
+		public async Task InitializeAsync(IDeviceConfiguration configuration)
 		{
 			try
 			{

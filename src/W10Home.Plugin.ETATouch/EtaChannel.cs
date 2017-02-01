@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using W10Home.Core.Channels;
-using W10Home.Core.Interfaces;
+using W10Home.Interfaces;
 
 namespace W10Home.Plugin.ETATouch
 {
-
 	public class EtaChannel : IChannel
 	{
 		private ChannelType _channelType;

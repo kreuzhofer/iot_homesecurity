@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using W10Home.Core.Channels;
 using W10Home.Core.Configuration;
-using W10Home.Core.Interfaces;
+using W10Home.Interfaces;
 using Windows.Data.Xml.Dom;
 
 namespace W10Home.Plugin.ETATouch
@@ -18,7 +18,7 @@ namespace W10Home.Plugin.ETATouch
 		private List<TreeItem> _menustructure;
 		private List<IChannel> _channels;
 
-		public async Task InitializeAsync(DeviceConfiguration configuration)
+		public async Task InitializeAsync(IDeviceConfiguration configuration)
 		{
 			_etatouchUrl = configuration.Properties["ConnectionString"];
 			_menustructure = await GetMenuStructureFromEtaAsync();

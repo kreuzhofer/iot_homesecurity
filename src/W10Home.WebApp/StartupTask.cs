@@ -22,6 +22,7 @@ using System.Threading;
 using System.Diagnostics;
 using W10Home.Core.Configuration;
 using W10Home.Plugin.AzureIoTHub;
+using W10Home.Interfaces;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
@@ -49,11 +50,12 @@ namespace W10Home.IoTCoreApp
 			// Build configuration object to configure all devices
 			var configurationObject = new RootConfiguration();
 
-			configurationObject.DeviceConfigurations = new List<DeviceConfiguration>(new[]
+			configurationObject.DeviceConfigurations = new List<IDeviceConfiguration>(new[]
 			{
 				new DeviceConfiguration
 				{
 					Name = "iothub",
+					Type = "AzureIoTHubDevice",
 					Properties = new Dictionary<string, string>()
 					{
 						{"ConnectionString" ,Config.AZURE_IOT_HUB_CONNECTION}
@@ -62,6 +64,7 @@ namespace W10Home.IoTCoreApp
 				new DeviceConfiguration
 				{
 					Name = "eta",
+					Type = "ETATouchDevice",
 					Properties = new Dictionary<string, string>()
 					{
 						{"ConnectionString", Config.ETA_TOUCH_URL}
@@ -70,6 +73,7 @@ namespace W10Home.IoTCoreApp
 				new DeviceConfiguration
 				{
 					Name = "twilio",
+					Type = "TwilioDevice",
 					Properties = new Dictionary<string, string>()
 					{
 						{"AccountSid", Config.TWILIO_ACCOUNT_SID},
@@ -82,21 +86,17 @@ namespace W10Home.IoTCoreApp
 
 			// init device registry and add devices
 			var deviceRegistry = new DeviceRegistry();
-			deviceRegistry.RegisterDevice("iothub", new AzureIoTHubDevice());
-			deviceRegistry.RegisterDevice("eta", new ETATouchDevice());
-			deviceRegistry.RegisterDevice("twilio", new TwilioDevice());
+			deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
+			deviceRegistry.RegisterDeviceType<ETATouchDevice>();
+			deviceRegistry.RegisterDeviceType<TwilioDevice>();
+			await deviceRegistry.InitializeDevicesAsync(configurationObject);
 
 			// init IoC
 			var container = new UnityContainer();
             container.RegisterInstance<IMessageQueue>(new MessageQueue());
-			container.RegisterInstance<DeviceRegistry>(deviceRegistry);
-
-            // finalize service locator
+			container.RegisterInstance<IDeviceRegistry>(deviceRegistry);
             var locator = new UnityServiceLocator(container);
             ServiceLocator.SetLocatorProvider(() => locator);
-
-			// init devices
-			await deviceRegistry.InitializeDevicesAsync(configurationObject);
 
             //await (await _twilio.GetChannelsAsync()).Single(c => c.Name == "SMS").SendMessageAsync("Homeautomation starting...");
 
@@ -129,8 +129,8 @@ namespace W10Home.IoTCoreApp
 
 		private async void everyMinuteTimerCallback(object state)
 		{
-			var iotHub = ServiceLocator.Current.GetInstance<DeviceRegistry>().GetDevice<AzureIoTHubDevice>();
-			var eta = ServiceLocator.Current.GetInstance<DeviceRegistry>().GetDevice<ETATouchDevice>();
+			var iotHub = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>();
+			var eta = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<ETATouchDevice>();
 			try
 			{
 				var menu = await eta.GetMenuStructureFromEtaAsync();
@@ -150,7 +150,7 @@ namespace W10Home.IoTCoreApp
 
 		private async void MessageLoopWorker()
 		{
-			var iotHub = ServiceLocator.Current.GetInstance<DeviceRegistry>().GetDevice<AzureIoTHubDevice>();
+			var iotHub = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>();
 			do
 			{
 				var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();

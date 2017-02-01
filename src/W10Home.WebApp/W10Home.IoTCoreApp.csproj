@@ -110,6 +110,7 @@
   <ItemGroup>
     <Compile Include="Auth\FixedCredentialsValidator.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Configuration\DeviceRegistry.cs" />
     <Compile Include="Controllers\QueueController.cs" />
     <Compile Include="StartupTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -155,6 +156,10 @@
     <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
       <Project>{48f2bfd9-0f10-4609-9b33-f8d99e7c5f6d}</Project>
       <Name>W10Home.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\W10Home.Interfaces\W10Home.Interfaces.csproj">
+      <Project>{B5026C36-9A23-46C9-8140-1E26BA08845D}</Project>
+      <Name>W10Home.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\W10Home.Plugin.AzureIoTHub\W10Home.Plugin.AzureIoTHub.csproj">
       <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
