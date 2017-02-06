@@ -23,6 +23,7 @@ using System.Diagnostics;
 using W10Home.Core.Configuration;
 using W10Home.Plugin.AzureIoTHub;
 using W10Home.Interfaces;
+using Newtonsoft.Json;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
@@ -37,9 +38,7 @@ namespace W10Home.IoTCoreApp
 		private Timer _everySecondTimer;
 		private Timer _everyMinuteTimer;
 
-#pragma warning disable IDE1006 // Naming Styles
 		public async void Run(IBackgroundTaskInstance taskInstance)
-#pragma warning restore IDE1006 // Naming Styles
         {
             // This deferral should have an instance reference, if it doesn't... the GC will
             // come some day, see that this method is not active anymore and the local variable
@@ -84,6 +83,8 @@ namespace W10Home.IoTCoreApp
 				}
 			});
 
+			var configString = JsonConvert.SerializeObject(configurationObject, Formatting.Indented);
+
 			// init device registry and add devices
 			var deviceRegistry = new DeviceRegistry();
 			deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
@@ -97,8 +98,6 @@ namespace W10Home.IoTCoreApp
 			container.RegisterInstance<IDeviceRegistry>(deviceRegistry);
             var locator = new UnityServiceLocator(container);
             ServiceLocator.SetLocatorProvider(() => locator);
-
-            //await (await _twilio.GetChannelsAsync()).Single(c => c.Name == "SMS").SendMessageAsync("Homeautomation starting...");
 
             // start background worker that collects and forwards data
             MessageLoopWorker();
@@ -173,17 +172,5 @@ namespace W10Home.IoTCoreApp
 			//while (true);
 		}
 
-
-		private async Task FlashLed()
-        {
-            var gpio = GpioController.GetDefault();
-            var ledPin = gpio.OpenPin(LED_PIN);
-            // Initialize LED to the OFF state by first writing a HIGH value
-            // We write HIGH because the LED is wired in a active LOW configuration
-            ledPin.SetDriveMode(GpioPinDriveMode.Output);
-            ledPin.Write(GpioPinValue.Low);
-            await Task.Delay(200);
-            ledPin.Write(GpioPinValue.High);
-        }
     }
 }
