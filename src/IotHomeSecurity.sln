@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26127.0
+VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.IoTCoreApp", "W10Home.WebApp\W10Home.IoTCoreApp.csproj", "{88D70CF5-DA46-4568-8055-2DC337144B33}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.Plugin.Twilio", "W10Home.Plugin.Twilio\W10Home.Plugin.Twilio.csproj", "{106B0C81-2FD4-45EC-A72C-2E5E6679A576}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.Interfaces", "W10Home.Interfaces\W10Home.Interfaces.csproj", "{B5026C36-9A23-46C9-8140-1E26BA08845D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.DevicePortal", "W10Home.DevicePortal\W10Home.DevicePortal.csproj", "{1AB7E673-F9F2-48D4-9B30-884567782729}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -127,6 +129,22 @@ Global
 		{B5026C36-9A23-46C9-8140-1E26BA08845D}.Release|x64.Build.0 = Release|Any CPU
 		{B5026C36-9A23-46C9-8140-1E26BA08845D}.Release|x86.ActiveCfg = Release|Any CPU
 		{B5026C36-9A23-46C9-8140-1E26BA08845D}.Release|x86.Build.0 = Release|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Debug|ARM.Build.0 = Debug|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Debug|x64.Build.0 = Debug|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Debug|x86.Build.0 = Debug|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Release|ARM.ActiveCfg = Release|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Release|ARM.Build.0 = Release|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Release|x64.ActiveCfg = Release|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Release|x64.Build.0 = Release|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Release|x86.ActiveCfg = Release|Any CPU
+		{1AB7E673-F9F2-48D4-9B30-884567782729}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

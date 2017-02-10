@@ -46,6 +46,8 @@ namespace W10Home.IoTCoreApp
             _deferral = taskInstance.GetDeferral();
 
 
+			// Get local serial number from disk
+
 			// Build configuration object to configure all devices
 			var configurationObject = new RootConfiguration();
 
@@ -103,8 +105,8 @@ namespace W10Home.IoTCoreApp
             MessageLoopWorker();
 
 			// define cron timers
-			_everySecondTimer = new Timer(everySecondTimerCallback, null, 1000, 1000);
-			_everyMinuteTimer = new Timer(everyMinuteTimerCallback, null, 60 * 1000, 60 * 1000);
+			_everySecondTimer = new Timer(EverySecondTimerCallback, null, 1000, 1000);
+			_everyMinuteTimer = new Timer(EveryMinuteTimerCallback, null, 60 * 1000, 60 * 1000);
 
 			// start local webserver
 
@@ -126,7 +128,7 @@ namespace W10Home.IoTCoreApp
             // Dont release deferral, otherwise app will stop
         }
 
-		private async void everyMinuteTimerCallback(object state)
+		private async void EveryMinuteTimerCallback(object state)
 		{
 			var iotHub = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>();
 			var eta = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<ETATouchDevice>();
@@ -143,7 +145,7 @@ namespace W10Home.IoTCoreApp
 			}
 		}
 
-		private void everySecondTimerCallback(object state)
+		private void EverySecondTimerCallback(object state)
 		{
 		}
 
@@ -153,8 +155,7 @@ namespace W10Home.IoTCoreApp
 			do
 			{
 				var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-				QueueMessage message;
-				if(queue.TryDeque("windsensor", out message))
+				if (queue.TryDeque("windsensor", out QueueMessage message))
 				{
 					await iotHub.SendMessageToIoTHubAsync("homecontroller", "home", message.Key, Double.Parse(message.Value));
 				}

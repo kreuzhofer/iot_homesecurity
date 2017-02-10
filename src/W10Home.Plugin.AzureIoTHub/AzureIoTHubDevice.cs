@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,9 @@ namespace W10Home.Plugin.AzureIoTHub
 					var message = await deviceClient.ReceiveAsync();
 					if (message != null)
 					{
-						Debug.WriteLine(message.ToString());
+						var reader = new StreamReader(message.BodyStream);
+						var bodyString = await reader.ReadToEndAsync();
+						Debug.WriteLine(bodyString);
 					}
 
 				}
@@ -78,6 +81,7 @@ namespace W10Home.Plugin.AzureIoTHub
 			{
 				// Instantiate the Azure IoT Hub device client
 				deviceClient = DeviceClient.CreateFromConnectionString(configuration.Properties["ConnectionString"]);
+				deviceClient.SetMethodHandler("configure", HandleConfigureMethod, null);
 
 				MessageReceiverLoop(); // launch message loop in the background
 			}
@@ -87,6 +91,12 @@ namespace W10Home.Plugin.AzureIoTHub
 				//TODO Log
 			}
 
+		}
+
+		private async Task<MethodResponse> HandleConfigureMethod(MethodRequest methodRequest, object userContext)
+		{
+			Debug.WriteLine("HandleConfigureMethod called");
+			return new MethodResponse(0);
 		}
 
 		public Task<IEnumerable<IChannel>> GetChannelsAsync()
