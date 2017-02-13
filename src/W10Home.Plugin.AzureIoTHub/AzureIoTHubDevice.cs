@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Devices.Client;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using uPLibrary.Networking.M2Mqtt;
 using W10Home.Core.Configuration;
 using W10Home.Core.Queing;
 using W10Home.Interfaces;
@@ -15,37 +15,10 @@ namespace W10Home.Plugin.AzureIoTHub
 {
     public class AzureIoTHubDevice : IDevice
     {
-        private DeviceClient deviceClient;
- 
-        private async void MessageReceiverLoop()
-        {
-			do
-			{
-				try
-				{
-					var message = await deviceClient.ReceiveAsync();
-					if (message != null)
-					{
-						var reader = new StreamReader(message.BodyStream);
-						var bodyString = await reader.ReadToEndAsync();
-						Debug.WriteLine(bodyString);
-						var messageObject = JsonConvert.DeserializeObject<QueueMessage>(bodyString);
-						if (messageObject.Key == "configure")
-						{
-							
-						}
-						await deviceClient.CompleteAsync(message);
-					}
-				}
-				catch (Exception ex)
-				{
-					Debug.WriteLine(ex.Message);
-					//TODO Log
-				}
-			} while (true);
-        }
+	    private MqttClient _mqttclient;
+	    private string _deviceid;
 
-        public async Task SendMessageToIoTHubAsync(string deviceId, string location, string key, object value)
+	    public async Task SendMessageToIoTHubAsync(string deviceId, string location, string key, object value)
         {
             try
             {
@@ -62,9 +35,7 @@ namespace W10Home.Plugin.AzureIoTHub
                 var payload =
 	                $"{{\"deviceid\": \"{deviceId}\", \"location\": \"{location}\", \"channelvalue\": {value}, \"channelkey\": \"{key}\", \"localtimestamp\": \"{DateTime.Now.ToUniversalTime():O}\"}}";
 
-                var msg = new Message(Encoding.UTF8.GetBytes(payload));
-
-                await deviceClient.SendEventAsync(msg);
+				_mqttclient.Publish($"devices/{_deviceid}/messages/events/", Encoding.UTF8.GetBytes(payload));
 				Debug.WriteLine(payload);
             }
             catch (Exception ex)
@@ -78,11 +49,18 @@ namespace W10Home.Plugin.AzureIoTHub
 		{
 			try
 			{
-				// Instantiate the Azure IoT Hub device client
-				deviceClient = DeviceClient.CreateFromConnectionString(configuration.Properties["ConnectionString"]);
-				await deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
+				_deviceid = configuration.Properties["DeviceId"];
+				string deviceSas = configuration.Properties["DeviceSas"];
+				string iotHubAddress = configuration.Properties["IotHubAddress"];
+				int iotHubPort = Int32.Parse(configuration.Properties["IotHubPort"]);
 
-				MessageReceiverLoop(); // launch message loop in the background
+				// init mqtt client
+				_mqttclient = new MqttClient(iotHubAddress, iotHubPort, true, MqttSslProtocols.TLSv1_2);
+				_mqttclient.MqttMsgPublishReceived += Mqttclient_MqttMsgPublishReceived;
+				_mqttclient.ConnectionClosed += MqttclientOnConnectionClosed;
+				_mqttclient.Connect(_deviceid, $"{iotHubAddress}/{_deviceid}/api-version=2016-11-14", deviceSas);
+				_mqttclient.Subscribe(new[] {$"devices/{_deviceid}/messages/devicebound/#"}, new byte[]{0});
+				_mqttclient.Subscribe(new[] { "$iothub/methods/POST/#" }, new byte[] { 0 });
 			}
 			catch (Exception ex)
 			{
@@ -92,10 +70,29 @@ namespace W10Home.Plugin.AzureIoTHub
 
 		}
 
-		private async Task<MethodResponse> HandleConfigureMethod(MethodRequest methodRequest, object userContext)
+	    private void MqttclientOnConnectionClosed(object sender, EventArgs eventArgs)
+	    {
+		    Debug.WriteLine("MQTT Connection closed");
+	    }
+
+	    private void Mqttclient_MqttMsgPublishReceived(object sender, uPLibrary.Networking.M2Mqtt.Messages.MqttMsgPublishEventArgs e)
 		{
-			Debug.WriteLine("HandleConfigureMethod called");
-			return new MethodResponse(0);
+			var message = Encoding.UTF8.GetString(e.Message);
+			Debug.WriteLine("Message from cloud to device: " + message);
+			var methodCallTopic = "$iothub/methods/POST/";
+			if (e.Topic.StartsWith(methodCallTopic)) // direct method call
+			{
+				var methodCallSubstring = e.Topic.Substring(methodCallTopic.Length);
+				var methodName = methodCallSubstring.Split('/')[0];
+				var requestId = methodCallSubstring.Split('/')[1].Substring(6);
+
+				Debug.WriteLine($"Method: [{methodName}], Request: [{requestId}]");
+
+				int status = 0;
+				string responseBody = JsonConvert.SerializeObject("hello world");
+				// respond to server
+				_mqttclient.Publish($"$iothub/methods/res/{status}/?$rid={requestId}", Encoding.UTF8.GetBytes(responseBody));
+			}
 		}
 
 		public Task<IEnumerable<IChannel>> GetChannelsAsync()
@@ -105,11 +102,10 @@ namespace W10Home.Plugin.AzureIoTHub
 
 	    public async Task Teardown()
 	    {
-		    if (deviceClient != null)
+		    if (_mqttclient != null)
 		    {
-			    await deviceClient.CloseAsync();
-				deviceClient.Dispose();
-			    deviceClient = null;
+			    _mqttclient.Disconnect();
+			    _mqttclient = null;
 		    }
 	    }
     }

@@ -59,7 +59,10 @@ namespace W10Home.IoTCoreApp
 					Type = "AzureIoTHubDevice",
 					Properties = new Dictionary<string, string>()
 					{
-						{"ConnectionString" ,Config.AZURE_IOT_HUB_CONNECTION}
+						{"DeviceId" ,Config.AZURE_IOT_HUB_DEVICEID},
+						{"DeviceSas" ,Config.AZURE_IOT_HUB_DEVICESAS},
+						{"IotHubAddress", Config.AZURE_IOT_HUB_ADDRESS },
+						{"IotHubPort", Config.AZURE_IOT_HUB_PORT }
 					}
 				},
 				new DeviceConfiguration
