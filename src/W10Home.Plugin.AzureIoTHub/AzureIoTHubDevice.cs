@@ -104,5 +104,15 @@ namespace W10Home.Plugin.AzureIoTHub
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+	    public async Task Teardown()
+	    {
+		    if (deviceClient != null)
+		    {
+			    await deviceClient.CloseAsync();
+				deviceClient.Dispose();
+			    deviceClient = null;
+		    }
+	    }
+    }
 }

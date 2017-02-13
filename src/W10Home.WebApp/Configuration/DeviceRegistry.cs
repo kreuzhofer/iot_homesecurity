@@ -36,6 +36,14 @@ namespace W10Home.Core.Configuration
 			}
 		}
 
+		public async Task TeardownDevicesAsync()
+		{
+			foreach (var device in _deviceList)
+			{
+				await device.Value.Teardown();
+			}
+		}
+
 		public IEnumerable<T> GetDevices<T>() where T : class, IDevice
 		{
 			return _deviceList.Select(d => d.Value).Where(d => (d as T) != null).Select(d=>d as T);

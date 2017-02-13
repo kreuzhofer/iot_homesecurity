@@ -119,5 +119,10 @@ namespace W10Home.Plugin.ETATouch
 		{
 			return Task.FromResult(_channels.AsEnumerable());
 		}
-	}
+
+	    public async Task Teardown()
+	    {
+		    // nothing to do yet
+	    }
+    }
 }

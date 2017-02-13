@@ -11,5 +11,6 @@ namespace W10Home.Interfaces
 	{
 		Task InitializeAsync(IDeviceConfiguration configuration);
 		Task<IEnumerable<IChannel>> GetChannelsAsync();
+		Task Teardown();
 	}
 }
