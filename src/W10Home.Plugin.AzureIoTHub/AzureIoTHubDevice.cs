@@ -27,6 +27,7 @@ namespace W10Home.Plugin.AzureIoTHub
 						var reader = new StreamReader(message.BodyStream);
 						var bodyString = await reader.ReadToEndAsync();
 						Debug.WriteLine(bodyString);
+						await deviceClient.CompleteAsync(message);
 					}
 
 				}
@@ -81,7 +82,7 @@ namespace W10Home.Plugin.AzureIoTHub
 			{
 				// Instantiate the Azure IoT Hub device client
 				deviceClient = DeviceClient.CreateFromConnectionString(configuration.Properties["ConnectionString"]);
-				deviceClient.SetMethodHandler("configure", HandleConfigureMethod, null);
+				await deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
 
 				MessageReceiverLoop(); // launch message loop in the background
 			}

@@ -10,7 +10,7 @@
         bootbox.prompt({
             title: "Enter message for this device",
             inputType: "textarea",
-            callback: function(result) {
+            callback: function (result) {
                 if (result != null) {
                     $.ajax({
                         type: "POST",
@@ -22,6 +22,17 @@
                     });
                 }
             }});
+    }
+
+    function calldevicemethod(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CallMethod", "Device")',
+            data: { id: id, method: "configure", payload:"hello device" },
+            cache: false,
+            success: function (data) { alert(data); },
+            error: function (){ alert("error"); }
+        });
     }
 </script>
 
@@ -88,8 +99,9 @@
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
             @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id }, new { onclick="return confirm('Are you sure?');" })
-            <a href="#" onclick="opensendmessagedialog('@item.Id'); return false;">Send Message</a>
+            @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { onclick = "return confirm('Are you sure?');" }) |
+            <a href="#" onclick="opensendmessagedialog('@item.Id'); return false;">Send Message</a> |
+            <a href="#" onclick="calldevicemethod('@item.Id'); return false;">Call Device Method</a>
         </td>
     </tr>
 }

@@ -34,5 +34,15 @@ namespace W10Home.DevicePortal.Controllers
 		    await client.SendAsync(id, new Message(Encoding.UTF8.GetBytes(message)));
 		    return Json("message sent");
 	    }
-    }
+
+		[HttpPost]
+		public async Task<ActionResult> CallMethod(string id, string method, string payload)
+		{
+			var client = DevicesManagementSingleton.ServiceClient;
+			var c2dmethod = new CloudToDeviceMethod(method);
+			c2dmethod.SetPayloadJson("{payload: '"+payload+"'}");
+			var result = await client.InvokeDeviceMethodAsync(id, c2dmethod);
+			return Json(result.GetPayloadAsJson());
+		}
+	}
 }
