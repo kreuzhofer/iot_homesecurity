@@ -6,7 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using W10Home.Core.Configuration;
+using W10Home.Core.Queing;
 using W10Home.Interfaces;
 
 namespace W10Home.Plugin.AzureIoTHub
@@ -27,9 +29,13 @@ namespace W10Home.Plugin.AzureIoTHub
 						var reader = new StreamReader(message.BodyStream);
 						var bodyString = await reader.ReadToEndAsync();
 						Debug.WriteLine(bodyString);
+						var messageObject = JsonConvert.DeserializeObject<QueueMessage>(bodyString);
+						if (messageObject.Key == "configure")
+						{
+							
+						}
 						await deviceClient.CompleteAsync(message);
 					}
-
 				}
 				catch (Exception ex)
 				{
@@ -46,23 +52,15 @@ namespace W10Home.Plugin.AzureIoTHub
 				string strvalue = null;
 				if(value is double || value is float)
 				{
-					strvalue = $"{((double)value).ToString("F")}";
+					strvalue = $"{((double)value):F}";
 				}
 				else
 				{
 					strvalue = $"\"{value.ToString()}\"";
 				}
 
-                var payload = "{\"deviceId\": \"" +
-                    deviceId +
-                    "\", \"location\": \"" +
-                    location +
-                    "\", \"channelValue\": " +
-                    value +
-                    ", \"channelKey\": \""+ key + 
-                    "\", \"localTimestamp\": \"" +
-                    DateTime.Now.ToLocalTime().ToString("s") +
-                    "\"}";
+                var payload =
+	                $"{{\"deviceid\": \"{deviceId}\", \"location\": \"{location}\", \"channelvalue\": {value}, \"channelkey\": \"{key}\", \"localtimestamp\": \"{DateTime.Now.ToUniversalTime():O}\"}}";
 
                 var msg = new Message(Encoding.UTF8.GetBytes(payload));
 
