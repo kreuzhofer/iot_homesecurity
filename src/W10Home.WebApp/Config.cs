@@ -9,6 +9,9 @@ namespace W10Home.IoTCoreApp
 	internal static class Config
 	{
 		// Azure IoT Hub Configuration
+		public const string AZURE_IOT_HUB_CONNECTION = "";
+
+		// Mqtt Client Configuration
 		public const string AZURE_IOT_HUB_DEVICEID = "";
 		public const string AZURE_IOT_HUB_DEVICESAS = "";
 		public const string AZURE_IOT_HUB_ADDRESS = "";
