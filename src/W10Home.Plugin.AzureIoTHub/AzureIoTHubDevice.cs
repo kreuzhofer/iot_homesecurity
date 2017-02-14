@@ -30,6 +30,11 @@ namespace W10Home.Plugin.AzureIoTHub
 						var bodyString = await reader.ReadToEndAsync();
 						Debug.WriteLine(bodyString);
 						var messageObject = JsonConvert.DeserializeObject<QueueMessage>(bodyString);
+						if (messageObject == null) // maybe an incompatible message object -> throw away and continue
+						{
+							await deviceClient.CompleteAsync(message);
+							continue;
+						}
 						if (messageObject.Key == "configure")
 						{
 
