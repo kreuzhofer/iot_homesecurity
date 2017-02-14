@@ -26,20 +26,19 @@ namespace W10Home.Plugin.AzureIoTHub
 					var message = await deviceClient.ReceiveAsync();
 					if (message != null)
 					{
+						await deviceClient.CompleteAsync(message);
 						var reader = new StreamReader(message.BodyStream);
 						var bodyString = await reader.ReadToEndAsync();
 						Debug.WriteLine(bodyString);
 						var messageObject = JsonConvert.DeserializeObject<QueueMessage>(bodyString);
 						if (messageObject == null) // maybe an incompatible message object -> throw away and continue
 						{
-							await deviceClient.CompleteAsync(message);
 							continue;
 						}
 						if (messageObject.Key == "configure")
 						{
 
 						}
-						await deviceClient.CompleteAsync(message);
 					}
 				}
 				catch (Exception ex)
@@ -84,7 +83,7 @@ namespace W10Home.Plugin.AzureIoTHub
 			try
 			{
 				// Instantiate the Azure IoT Hub device client
-				deviceClient = DeviceClient.CreateFromConnectionString(configuration.Properties["ConnectionString"]);
+				deviceClient = DeviceClient.CreateFromConnectionString(configuration.Properties["ConnectionString"], TransportType.Mqtt);
 				await deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
 
 				MessageReceiverLoop(); // launch message loop in the background
