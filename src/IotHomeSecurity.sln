@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.Interfaces", "W10Ho
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.DevicePortal", "W10Home.DevicePortal\W10Home.DevicePortal.csproj", "{1AB7E673-F9F2-48D4-9B30-884567782729}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.MqttDevice", "W10Home.MqttDevice\W10Home.MqttDevice.csproj", "{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -145,6 +147,22 @@ Global
 		{1AB7E673-F9F2-48D4-9B30-884567782729}.Release|x64.Build.0 = Release|Any CPU
 		{1AB7E673-F9F2-48D4-9B30-884567782729}.Release|x86.ActiveCfg = Release|Any CPU
 		{1AB7E673-F9F2-48D4-9B30-884567782729}.Release|x86.Build.0 = Release|Any CPU
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Debug|ARM.ActiveCfg = Debug|ARM
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Debug|ARM.Build.0 = Debug|ARM
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Debug|x64.ActiveCfg = Debug|x64
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Debug|x64.Build.0 = Debug|x64
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Debug|x86.ActiveCfg = Debug|x86
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Debug|x86.Build.0 = Debug|x86
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Release|ARM.ActiveCfg = Release|ARM
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Release|ARM.Build.0 = Release|ARM
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Release|x64.ActiveCfg = Release|x64
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Release|x64.Build.0 = Release|x64
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Release|x86.ActiveCfg = Release|x86
+		{174A9F97-1DD6-4D50-8CD4-2052C525EF5A}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
