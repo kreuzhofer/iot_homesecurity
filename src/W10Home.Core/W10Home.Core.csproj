@@ -111,6 +111,7 @@
     <Compile Include="Configuration\DeviceConfiguration.cs" />
     <Compile Include="Configuration\RootConfiguration.cs" />
     <Compile Include="Channels\NotificationChannel.cs" />
+    <Compile Include="PacketForwardingWorker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queing\IMessageQueue.cs" />
     <Compile Include="Queing\MessageQueue.cs" />

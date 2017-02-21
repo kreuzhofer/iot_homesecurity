@@ -24,6 +24,7 @@ using W10Home.Core.Configuration;
 using W10Home.Plugin.AzureIoTHub;
 using W10Home.Interfaces;
 using Newtonsoft.Json;
+using W10Home.Core;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
@@ -125,7 +126,10 @@ namespace W10Home.IoTCoreApp
 
             await httpServer.StartServerAsync();
 
-            // Dont release deferral, otherwise app will stop
+			CancellationToken token = new CancellationToken();
+	        new PacketForwardingWorker("192.168.0.20", "554", "51.4.225.35", "10000").RunAsync(token);
+
+	        // Dont release deferral, otherwise app will stop
         }
 
 		private async void EveryMinuteTimerCallback(object state)
