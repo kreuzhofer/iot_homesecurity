@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,41 +26,66 @@ namespace W10Home.Core
 
 		public async Task RunAsync(CancellationToken token)
 		{
-			var sourceSocket = new StreamSocket();
-			var sourceStreamReader = new DataReader(sourceSocket.InputStream);
-			sourceStreamReader.InputStreamOptions = InputStreamOptions.Partial;
-			var sourceStreamWriter = new DataWriter(sourceSocket.OutputStream);
-			await sourceSocket.ConnectAsync(new HostName(_sourceHost), _sourcePort);
-
-			var targetSocket = new StreamSocket();
-			var targetStreamReader = new DataReader(targetSocket.InputStream);
-			targetStreamReader.InputStreamOptions = InputStreamOptions.Partial;
-			var targetStreamWriter = new DataWriter(targetSocket.OutputStream);
-			await targetSocket.ConnectAsync(new HostName(_targetHost), _targetPort);
-
-			uint packetSize = 1024;
-
 			do
 			{
 				token.ThrowIfCancellationRequested();
 
-				var readBytes = await sourceStreamReader.LoadAsync(packetSize);
-				if (readBytes > 0)
+				try
 				{
-					var buffer = new byte[readBytes];
-					sourceStreamReader.ReadBytes(buffer);
-					targetStreamWriter.WriteBytes(buffer);
-					await targetStreamWriter.StoreAsync();
+					await RunAsyncInternal(token);
 				}
-				readBytes = await targetStreamReader.LoadAsync(packetSize);
-				if (readBytes > 0)
+				catch
 				{
-					var buffer = new byte[readBytes];
-					targetStreamReader.ReadBytes(buffer);
-					sourceStreamWriter.WriteBytes(buffer);
-					await sourceStreamWriter.StoreAsync();
+					// ignore
 				}
+				await Task.Delay(1000);
 			} while (true);
+		}
+
+		private async Task RunAsyncInternal(CancellationToken token)
+		{
+			var sourceSocket = new StreamSocket();
+			var sourceStreamReader = sourceSocket.InputStream.AsStreamForRead();
+			var sourceStreamWriter = sourceSocket.OutputStream.AsStreamForWrite();
+			await sourceSocket.ConnectAsync(new HostName(_sourceHost), _sourcePort);
+
+			var targetSocket = new StreamSocket();
+			var targetStreamReader = targetSocket.InputStream.AsStreamForRead();
+			var targetStreamWriter = targetSocket.OutputStream.AsStreamForWrite();
+			await targetSocket.ConnectAsync(new HostName(_targetHost), _targetPort);
+
+			int packetSize = 8192;
+			var buffer = new byte[packetSize];
+
+			var task1 = Task.Factory.StartNew(() =>
+			{
+				do
+				{
+					token.ThrowIfCancellationRequested();
+
+					var readBytes = sourceStreamReader.Read(buffer, 0, packetSize);
+					if (readBytes > 0)
+					{
+						targetStreamWriter.Write(buffer, 0, readBytes);
+						targetStreamWriter.Flush();
+					}
+				} while (true);
+			}, token);
+			var task2 = Task.Factory.StartNew(() =>
+			{
+				do
+				{
+					token.ThrowIfCancellationRequested();
+
+					var readBytes = targetStreamReader.Read(buffer, 0, packetSize);
+					if (readBytes > 0)
+					{
+						sourceStreamWriter.Write(buffer, 0, readBytes);
+						sourceStreamWriter.Flush();
+					}
+				} while (true);
+			}, token);
+			Task.WaitAll(new[]{task1, task2}, token);
 		}
 	}
 }
