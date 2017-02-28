@@ -47,27 +47,27 @@ namespace W10Home.App.Shared
 						{"ConnectionString" ,Config.AZURE_IOT_HUB_CONNECTION},
 					}
 				},
-				new DeviceConfiguration
-				{
-					Name = "eta",
-					Type = "ETATouchDevice",
-					Properties = new Dictionary<string, string>()
-					{
-						{"ConnectionString", Config.ETA_TOUCH_URL}
-					}
-				},
-				new DeviceConfiguration
-				{
-					Name = "twilio",
-					Type = "TwilioDevice",
-					Properties = new Dictionary<string, string>()
-					{
-						{"AccountSid", Config.TWILIO_ACCOUNT_SID},
-						{"AuthToken", Config.TWILIO_AUTH_TOKEN },
-						{"OutgoingPhone", Config.TWILIO_OUTGOING_PHONE },
-						{"ReceiverPhone", Config.TWILIO_RECEIVER_PHONE }
-					}
-				}
+				//new DeviceConfiguration
+				//{
+				//	Name = "eta",
+				//	Type = "ETATouchDevice",
+				//	Properties = new Dictionary<string, string>()
+				//	{
+				//		{"ConnectionString", Config.ETA_TOUCH_URL}
+				//	}
+				//},
+				//new DeviceConfiguration
+				//{
+				//	Name = "twilio",
+				//	Type = "TwilioDevice",
+				//	Properties = new Dictionary<string, string>()
+				//	{
+				//		{"AccountSid", Config.TWILIO_ACCOUNT_SID},
+				//		{"AuthToken", Config.TWILIO_AUTH_TOKEN },
+				//		{"OutgoingPhone", Config.TWILIO_OUTGOING_PHONE },
+				//		{"ReceiverPhone", Config.TWILIO_RECEIVER_PHONE }
+				//	}
+				//}
 			});
 
 			var configString = JsonConvert.SerializeObject(configurationObject, Formatting.Indented);
@@ -75,8 +75,8 @@ namespace W10Home.App.Shared
 			// init device registry and add devices
 			var deviceRegistry = new DeviceRegistry();
 			deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
-			deviceRegistry.RegisterDeviceType<ETATouchDevice>();
-			deviceRegistry.RegisterDeviceType<TwilioDevice>();
+			//deviceRegistry.RegisterDeviceType<ETATouchDevice>();
+			//deviceRegistry.RegisterDeviceType<TwilioDevice>();
 			await deviceRegistry.InitializeDevicesAsync(configurationObject);
 
 			// init IoC
@@ -112,19 +112,19 @@ namespace W10Home.App.Shared
 		}
 		private async void EveryMinuteTimerCallback(object state)
 		{
-			var iotHub = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>();
-			var eta = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<ETATouchDevice>();
-			try
-			{
-				var menu = await eta.GetMenuStructureFromEtaAsync();
-				var value = await eta.GetValueFromEtaValuePathAsync(menu, "/Sys/Eingänge/Außentemperatur");
-				double degrees = (double)value.Value / (double)value.ScaleFactor;
-				await iotHub.SendMessageToIoTHubAsync("homecontroller", "home", "outdoortemp", degrees);
-			}
-			catch (Exception ex)
-			{
-				Debug.WriteLine(ex.Message);
-			}
+			//var iotHub = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>();
+			//var eta = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<ETATouchDevice>();
+			//try
+			//{
+			//	var menu = await eta.GetMenuStructureFromEtaAsync();
+			//	var value = await eta.GetValueFromEtaValuePathAsync(menu, "/Sys/Eingänge/Außentemperatur");
+			//	double degrees = (double)value.Value / (double)value.ScaleFactor;
+			//	await iotHub.SendMessageToIoTHubAsync("homecontroller", "home", "outdoortemp", degrees);
+			//}
+			//catch (Exception ex)
+			//{
+			//	Debug.WriteLine(ex.Message);
+			//}
 		}
 
 		private void EverySecondTimerCallback(object state)
