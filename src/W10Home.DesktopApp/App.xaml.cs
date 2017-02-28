@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using W10Home.App.Shared;
 
 namespace W10Home.DesktopApp
 {
@@ -22,7 +23,9 @@ namespace W10Home.DesktopApp
     /// </summary>
     sealed partial class App : Application
     {
-        /// <summary>
+	    private CoreApp _coreApp;
+
+	    /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
@@ -71,7 +74,10 @@ namespace W10Home.DesktopApp
                 // Ensure the current window is active
                 Window.Current.Activate();
             }
-        }
+
+			_coreApp = new CoreApp();
+			_coreApp.Run();
+		}
 
         /// <summary>
         /// Invoked when Navigation to a certain page fails

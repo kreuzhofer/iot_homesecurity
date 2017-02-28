@@ -127,6 +127,32 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
+      <Project>{48f2bfd9-0f10-4609-9b33-f8d99e7c5f6d}</Project>
+      <Name>W10Home.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\W10Home.Interfaces\W10Home.Interfaces.csproj">
+      <Project>{b5026c36-9a23-46c9-8140-1e26ba08845d}</Project>
+      <Name>W10Home.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\W10Home.MqttDevice\W10Home.MqttDevice.csproj">
+      <Project>{174a9f97-1dd6-4d50-8cd4-2052c525ef5a}</Project>
+      <Name>W10Home.MqttDevice</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.AzureIoTHub\W10Home.Plugin.AzureIoTHub.csproj">
+      <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
+      <Name>W10Home.Plugin.AzureIoTHub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.ETATouch\W10Home.Plugin.ETATouch.csproj">
+      <Project>{7f92bd3f-114b-431a-9b00-48aa60d22ead}</Project>
+      <Name>W10Home.Plugin.ETATouch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.Twilio\W10Home.Plugin.Twilio.csproj">
+      <Project>{106b0c81-2fd4-45ec-a72c-2e5e6679a576}</Project>
+      <Name>W10Home.Plugin.Twilio</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="..\W10Home.App.Shared\W10Home.App.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
