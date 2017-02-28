@@ -17,6 +17,7 @@ using W10Home.Interfaces;
 using W10Home.IoTCoreApp;
 using W10Home.IoTCoreApp.Auth;
 using W10Home.IoTCoreApp.Controllers;
+using W10Home.Plugin.ABUS.SecVest;
 using W10Home.Plugin.AzureIoTHub;
 using W10Home.Plugin.ETATouch;
 using W10Home.Plugin.Twilio;
@@ -47,6 +48,17 @@ namespace W10Home.App.Shared
 						{"ConnectionString" ,Config.AZURE_IOT_HUB_CONNECTION},
 					}
 				},
+				new DeviceConfiguration()
+				{
+					Name = "secvest",
+					Type = "SecVestDevice",
+					Properties = new Dictionary<string, string>()
+					{
+						{"ConnectionString", "https://192.168.0.22:4433/" },
+						{"Username", "1234" },
+						{"Password", "1234" }
+					}
+				}
 				//new DeviceConfiguration
 				//{
 				//	Name = "eta",
@@ -77,6 +89,7 @@ namespace W10Home.App.Shared
 			deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
 			//deviceRegistry.RegisterDeviceType<ETATouchDevice>();
 			//deviceRegistry.RegisterDeviceType<TwilioDevice>();
+			deviceRegistry.RegisterDeviceType<SecVestDevice>();
 			await deviceRegistry.InitializeDevicesAsync(configurationObject);
 
 			// init IoC

@@ -138,6 +138,10 @@
       <Project>{B5026C36-9A23-46C9-8140-1E26BA08845D}</Project>
       <Name>W10Home.Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.ABUS.SecVest\W10Home.Plugin.ABUS.SecVest.csproj">
+      <Project>{0ACAF795-9493-4251-AE48-2A11EDC483BA}</Project>
+      <Name>W10Home.Plugin.ABUS.SecVest</Name>
+    </ProjectReference>
     <ProjectReference Include="..\W10Home.Plugin.AzureIoTHub\W10Home.Plugin.AzureIoTHub.csproj">
       <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
       <Name>W10Home.Plugin.AzureIoTHub</Name>
