@@ -21,7 +21,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.MqttDevice", "W10Ho
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.DesktopApp", "W10Home.DesktopApp\W10Home.DesktopApp.csproj", "{7B1D6F05-331A-4A91-9EA3-AB4125AAAC5E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{D2EF9F8A-781F-4EE7-8FCA-42C2016C95A4}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "W10Home.App.Shared", "W10Home.App.Shared\W10Home.App.Shared.shproj", "{7152D6D1-CCC8-425F-B260-A8472B43C79A}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		W10Home.App.Shared\W10Home.App.Shared.projitems*{7152d6d1-ccc8-425f-b260-a8472b43c79a}*SharedItemsImports = 13
+		W10Home.App.Shared\W10Home.App.Shared.projitems*{7b1d6f05-331a-4a91-9ea3-ab4125aaac5e}*SharedItemsImports = 4
+		W10Home.App.Shared\W10Home.App.Shared.projitems*{88d70cf5-da46-4568-8055-2dc337144b33}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|ARM = Debug|ARM
@@ -188,5 +197,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{88D70CF5-DA46-4568-8055-2DC337144B33} = {D2EF9F8A-781F-4EE7-8FCA-42C2016C95A4}
+		{7B1D6F05-331A-4A91-9EA3-AB4125AAAC5E} = {D2EF9F8A-781F-4EE7-8FCA-42C2016C95A4}
+		{7152D6D1-CCC8-425F-B260-A8472B43C79A} = {D2EF9F8A-781F-4EE7-8FCA-42C2016C95A4}
 	EndGlobalSection
 EndGlobal
