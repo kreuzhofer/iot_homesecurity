@@ -140,6 +140,10 @@
       <Project>{174a9f97-1dd6-4d50-8cd4-2052c525ef5a}</Project>
       <Name>W10Home.MqttDevice</Name>
     </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.ABUS.SecVest\W10Home.Plugin.ABUS.SecVest.csproj">
+      <Project>{0acaf795-9493-4251-ae48-2a11edc483ba}</Project>
+      <Name>W10Home.Plugin.ABUS.SecVest</Name>
+    </ProjectReference>
     <ProjectReference Include="..\W10Home.Plugin.AzureIoTHub\W10Home.Plugin.AzureIoTHub.csproj">
       <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
       <Name>W10Home.Plugin.AzureIoTHub</Name>
