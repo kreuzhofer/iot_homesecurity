@@ -15,7 +15,8 @@ namespace W10Home.Plugin.AzureIoTHub
 {
 	public class AzureIoTHubDevice : IDevice
 	{
-		private DeviceClient deviceClient;
+		private DeviceClient _deviceClient;
+		private string _deviceId;
 
 		private async void MessageReceiverLoop()
 		{
@@ -23,10 +24,10 @@ namespace W10Home.Plugin.AzureIoTHub
 			{
 				try
 				{
-					var message = await deviceClient.ReceiveAsync();
+					var message = await _deviceClient.ReceiveAsync();
 					if (message != null)
 					{
-						await deviceClient.CompleteAsync(message);
+						await _deviceClient.CompleteAsync(message);
 						var reader = new StreamReader(message.BodyStream);
 						var bodyString = await reader.ReadToEndAsync();
 						Debug.WriteLine(bodyString);
@@ -49,7 +50,7 @@ namespace W10Home.Plugin.AzureIoTHub
 			} while (true);
 		}
 
-		public async Task SendMessageToIoTHubAsync(string deviceId, string location, string key, object value)
+		public async Task SendMessageToIoTHubAsync(string key, object value)
 		{
 			try
 			{
@@ -64,11 +65,11 @@ namespace W10Home.Plugin.AzureIoTHub
 				}
 
 				var payload =
-					$"{{\"deviceid\": \"{deviceId}\", \"location\": \"{location}\", \"channelvalue\": {value}, \"channelkey\": \"{key}\", \"localtimestamp\": \"{DateTime.Now.ToUniversalTime():O}\"}}";
+					$"{{\"deviceid\": \"{_deviceId}\", \"channelvalue\": {value}, \"channelkey\": \"{key}\", \"localtimestamp\": \"{DateTime.Now.ToUniversalTime():O}\"}}";
 
 				var msg = new Message(Encoding.UTF8.GetBytes(payload));
 
-				await deviceClient.SendEventAsync(msg);
+				await _deviceClient.SendEventAsync(msg);
 				Debug.WriteLine(payload);
 			}
 			catch (Exception ex)
@@ -82,9 +83,11 @@ namespace W10Home.Plugin.AzureIoTHub
 		{
 			try
 			{
+				var connectionString = configuration.Properties["ConnectionString"];
+				_deviceId = connectionString.Split(';').Single(c => c.ToLower().StartsWith("deviceid")).Split('=')[0];
 				// Instantiate the Azure IoT Hub device client
-				deviceClient = DeviceClient.CreateFromConnectionString(configuration.Properties["ConnectionString"], TransportType.Mqtt);
-				await deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
+				_deviceClient = DeviceClient.CreateFromConnectionString(connectionString, TransportType.Mqtt);
+				await _deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
 
 				MessageReceiverLoop(); // launch message loop in the background
 			}
@@ -109,11 +112,11 @@ namespace W10Home.Plugin.AzureIoTHub
 
 		public async Task Teardown()
 		{
-			if (deviceClient != null)
+			if (_deviceClient != null)
 			{
-				await deviceClient.CloseAsync();
-				deviceClient.Dispose();
-				deviceClient = null;
+				await _deviceClient.CloseAsync();
+				_deviceClient.Dispose();
+				_deviceClient = null;
 			}
 		}
 	}
