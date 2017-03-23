@@ -21,6 +21,7 @@ using W10Home.Plugin.ABUS.SecVest;
 using W10Home.Plugin.AzureIoTHub;
 using W10Home.Plugin.ETATouch;
 using W10Home.Plugin.Twilio;
+using System.Linq;
 
 namespace W10Home.App.Shared
 {
@@ -79,7 +80,7 @@ namespace W10Home.App.Shared
 
 			// define cron timers
 			_everySecondTimer = new Timer(EverySecondTimerCallback, null, 1000, 1000);
-			_everyMinuteTimer = new Timer(EveryMinuteTimerCallback, null, 60 * 1000, 60 * 1000);
+			_everyMinuteTimer = new Timer(EveryMinuteTimerCallbackAsync, null, 60 * 1000, 60 * 1000);
 
 			// start local webserver
 			var authProvider = new BasicAuthorizationProvider("Login", new FixedCredentialsValidator());
@@ -97,8 +98,17 @@ namespace W10Home.App.Shared
 
 			await httpServer.StartServerAsync();
 		}
-		private void EveryMinuteTimerCallback(object state)
+		private async void EveryMinuteTimerCallbackAsync(object state)
 		{
+			// get status from secvest every minute
+			var secvest = ServiceLocator.Current.GetInstance<SecVestDevice>();
+			var channels = await secvest.GetChannelsAsync();
+			var statusChannel = (SecVestStatusChannel)channels.Single(c => c.Name == "status");
+			var status = await statusChannel.GetStatusAsync();
+
+			// send status to iothub queue for
+			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+			queue.Enqueue("iothub", new QueueMessage("secveststatus", JsonConvert.SerializeObject(status)));
 		}
 
 		private void EverySecondTimerCallback(object state)
@@ -113,7 +123,7 @@ namespace W10Home.App.Shared
 			{
 				if (queue.TryDeque("iothub", out QueueMessage message))
 				{
-					await iotHub.SendMessageToIoTHubAsync(message.Key, Double.Parse(message.Value));
+					await iotHub.SendMessageToIoTHubAsync(message.Key, message.Value);
 				}
 				await Task.Delay(250);
 			} while (true);

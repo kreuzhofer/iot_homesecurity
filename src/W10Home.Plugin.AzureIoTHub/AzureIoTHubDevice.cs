@@ -65,7 +65,7 @@ namespace W10Home.Plugin.AzureIoTHub
 				}
 
 				var payload =
-					$"{{\"deviceid\": \"{_deviceId}\", \"channelvalue\": {value}, \"channelkey\": \"{key}\", \"localtimestamp\": \"{DateTime.Now.ToUniversalTime():O}\"}}";
+					$"{{\"deviceid\": \"{_deviceId}\", \"channelvalue\": {strvalue}, \"channelkey\": \"{key}\", \"localtimestamp\": \"{DateTime.Now.ToUniversalTime():O}\"}}";
 
 				var msg = new Message(Encoding.UTF8.GetBytes(payload));
 
