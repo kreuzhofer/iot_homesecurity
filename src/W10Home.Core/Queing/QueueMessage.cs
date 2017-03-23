@@ -15,5 +15,11 @@ namespace W10Home.Core.Queing
         {
 		    return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
+		public QueueMessage() { }
+		public QueueMessage(string key, string value)
+		{
+			this.Key = key;
+			this.Value = value;
+		}
     }
 }

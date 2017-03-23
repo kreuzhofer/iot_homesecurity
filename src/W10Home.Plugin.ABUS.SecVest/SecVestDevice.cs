@@ -4,19 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using W10Home.Interfaces;
+using Windows.Web.Http;
 
 namespace W10Home.Plugin.ABUS.SecVest
 {
     public class SecVestDevice : IDevice
     {
-	    public Task InitializeAsync(IDeviceConfiguration configuration)
+		private HttpClient _httpClient;
+		private List<IChannel> _channels = new List<IChannel>();
+
+		public async Task InitializeAsync(IDeviceConfiguration configuration)
 	    {
-		    throw new NotImplementedException();
+			var connectionString = configuration.Properties["ConnectionString"];
+			var username = configuration.Properties["Username"];
+			var password = configuration.Properties["Password"];
+
+			_channels.Add(new SecVestStatusChannel());
+
+			_httpClient = new HttpClient();
 	    }
 
-	    public Task<IEnumerable<IChannel>> GetChannelsAsync()
+	    public async Task<IEnumerable<IChannel>> GetChannelsAsync()
 	    {
-		    throw new NotImplementedException();
+		    return _channels;
 	    }
 
 	    public Task Teardown()
