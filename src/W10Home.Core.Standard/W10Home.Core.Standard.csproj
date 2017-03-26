@@ -15,4 +15,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\W10Home.Interfaces\W10Home.Interfaces.csproj" />
+  </ItemGroup>
+
 </Project>

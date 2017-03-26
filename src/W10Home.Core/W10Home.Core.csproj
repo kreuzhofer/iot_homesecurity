@@ -107,10 +107,6 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Channels\UnitType.cs" />
-    <Compile Include="Configuration\DeviceConfiguration.cs" />
-    <Compile Include="Configuration\RootConfiguration.cs" />
-    <Compile Include="Channels\NotificationChannel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\W10Home.Core.rd.xml" />
   </ItemGroup>
