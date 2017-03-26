@@ -112,10 +112,6 @@
     <EmbeddedResource Include="Properties\W10Home.MqttDevice.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
-      <Project>{48f2bfd9-0f10-4609-9b33-f8d99e7c5f6d}</Project>
-      <Name>W10Home.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\W10Home.Interfaces\W10Home.Interfaces.csproj">
       <Project>{b5026c36-9a23-46c9-8140-1e26ba08845d}</Project>
       <Name>W10Home.Interfaces</Name>

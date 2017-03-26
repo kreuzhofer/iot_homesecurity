@@ -116,10 +116,6 @@
       <Project>{17f72865-2575-47dd-b1d6-d4a0397fd3e6}</Project>
       <Name>W10Home.Core.Standard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
-      <Project>{48F2BFD9-0F10-4609-9B33-F8D99E7C5F6D}</Project>
-      <Name>W10Home.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\W10Home.Interfaces\W10Home.Interfaces.csproj">
       <Project>{B5026C36-9A23-46C9-8140-1E26BA08845D}</Project>
       <Name>W10Home.Interfaces</Name>
