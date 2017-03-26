@@ -53,7 +53,7 @@ namespace W10Home.Plugin.ETATouch
         {
             HttpClient client = new HttpClient();
             var content = (await client.GetStringAsync(new Uri($"{_etatouchUrl}/user/menu")));
-            XmlDocument doc = new XmlDocument();
+			Windows.Data.Xml.Dom.XmlDocument doc = new Windows.Data.Xml.Dom.XmlDocument();
             doc.LoadXml(content, new XmlLoadSettings() { ElementContentWhiteSpace = false });
 
             var result = new List<TreeItem>();
@@ -79,7 +79,7 @@ namespace W10Home.Plugin.ETATouch
 		{
 			HttpClient client = new HttpClient();
 			var content = (await client.GetStringAsync(new Uri($"{_etatouchUrl}/user/var{uri}")));
-			XmlDocument doc = new XmlDocument();
+			Windows.Data.Xml.Dom.XmlDocument doc = new Windows.Data.Xml.Dom.XmlDocument();
 			doc.LoadXml(content, new XmlLoadSettings() { ElementContentWhiteSpace = false });
 			var valueNode = doc.DocumentElement.ChildNodes.Single(d => d.NodeName == "value");
 			var result = new EtaValue()

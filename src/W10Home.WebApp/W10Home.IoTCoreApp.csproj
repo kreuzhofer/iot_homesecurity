@@ -130,6 +130,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\W10Home.Core.Standard\W10Home.Core.Standard.csproj">
+      <Project>{17f72865-2575-47dd-b1d6-d4a0397fd3e6}</Project>
+      <Name>W10Home.Core.Standard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
       <Project>{48f2bfd9-0f10-4609-9b33-f8d99e7c5f6d}</Project>
       <Name>W10Home.Core</Name>

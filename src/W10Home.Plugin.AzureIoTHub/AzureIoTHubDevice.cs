@@ -34,7 +34,7 @@ namespace W10Home.Plugin.AzureIoTHub
 					}
 
 					// check iot hub incoming messages for processing
-					var message = await _deviceClient.ReceiveAsync();
+					var message = await _deviceClient.ReceiveAsync(TimeSpan.FromMilliseconds(250));
 					if (message != null)
 					{
 						await _deviceClient.CompleteAsync(message);

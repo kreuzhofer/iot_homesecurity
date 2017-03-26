@@ -8,7 +8,6 @@ using Restup.Webserver.Rest;
 using Restup.Webserver.File;
 using System.Threading.Tasks;
 using W10Home.Plugin.ETATouch;
-using MoonSharp.Interpreter;
 using Windows.Web.Http;
 using Restup.WebServer.Http;
 using W10Home.IoTCoreApp.Auth;

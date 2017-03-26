@@ -112,9 +112,6 @@
     <Compile Include="Configuration\RootConfiguration.cs" />
     <Compile Include="Channels\NotificationChannel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Queing\IMessageQueue.cs" />
-    <Compile Include="Queing\MessageQueue.cs" />
-    <Compile Include="Queing\QueueMessage.cs" />
     <EmbeddedResource Include="Properties\W10Home.Core.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -123,6 +120,7 @@
       <Name>W10Home.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
