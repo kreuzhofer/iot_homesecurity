@@ -36,28 +36,28 @@ namespace W10Home.App.Shared
 			// Build configuration object to configure all devices
 			var configurationObject = new RootConfiguration();
 
+			// check whether there is alread an iot hub configuration in the TPM
+
+
 			configurationObject.DeviceConfigurations = new List<IDeviceConfiguration>(new[]
 			{
+				// by default iot hub configuration now uses TPM chip
 				new DeviceConfiguration
 				{
 					Name = "iothub",
-					Type = "AzureIoTHubDevice",
-					Properties = new Dictionary<string, string>()
-					{
-						{"ConnectionString" ,Config.AZURE_IOT_HUB_CONNECTION},
-					}
+					Type = "AzureIoTHubDevice"
 				},
-				new DeviceConfiguration()
-				{
-					Name = "secvest",
-					Type = "SecVestDevice",
-					Properties = new Dictionary<string, string>()
-					{
-						{"ConnectionString", "https://192.168.0.22:4433/" },
-						{"Username", "1234" },
-						{"Password", "1234" }
-					}
-				}
+				//new DeviceConfiguration()
+				//{
+				//	Name = "secvest",
+				//	Type = "SecVestDevice",
+				//	Properties = new Dictionary<string, string>()
+				//	{
+				//		{"ConnectionString", "https://192.168.0.22:4433/" },
+				//		{"Username", "1234" },
+				//		{"Password", "1234" }
+				//	}
+				//}
 			});
 
 			var configString = JsonConvert.SerializeObject(configurationObject, Formatting.Indented);
@@ -100,15 +100,15 @@ namespace W10Home.App.Shared
 		}
 		private async void EveryMinuteTimerCallbackAsync(object state)
 		{
-			// get status from secvest every minute
-			var secvest = ServiceLocator.Current.GetInstance<SecVestDevice>();
-			var channels = await secvest.GetChannelsAsync();
-			var statusChannel = (SecVestStatusChannel)channels.Single(c => c.Name == "status");
-			var status = await statusChannel.GetStatusAsync();
+			//// get status from secvest every minute
+			//var secvest = ServiceLocator.Current.GetInstance<SecVestDevice>();
+			//var channels = await secvest.GetChannelsAsync();
+			//var statusChannel = (SecVestStatusChannel)channels.Single(c => c.Name == "status");
+			//var status = await statusChannel.GetStatusAsync();
 
-			// send status to iothub queue for
-			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-			queue.Enqueue("iothub", new QueueMessage("secveststatus", JsonConvert.SerializeObject(status)));
+			//// send status to iothub queue for
+			//var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+			//queue.Enqueue("iothub", new QueueMessage("secveststatus", JsonConvert.SerializeObject(status)));
 		}
 
 		private void EverySecondTimerCallback(object state)
@@ -121,12 +121,18 @@ namespace W10Home.App.Shared
 			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
 			do
 			{
-				if (queue.TryDeque("iothub", out QueueMessage message))
+				if (queue.TryDeque("windsensor", out QueueMessage message))
 				{
-					await iotHub.SendMessageToIoTHubAsync(message.Key, message.Value);
+					// call function
+					HandleWindSensorFunctionLua(message);
 				}
 				await Task.Delay(250);
 			} while (true);
+		}
+
+		private void HandleWindSensorFunctionLua(QueueMessage message)
+		{
+			// call lua script with message, which is our dynamic function
 		}
 	}
 }

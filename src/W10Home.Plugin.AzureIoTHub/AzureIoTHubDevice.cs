@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using W10Home.Core.Configuration;
 using W10Home.Core.Queing;
 using W10Home.Interfaces;
+using Microsoft.Devices.Tpm;
+using Microsoft.Practices.ServiceLocation;
 
 namespace W10Home.Plugin.AzureIoTHub
 {
@@ -24,6 +26,14 @@ namespace W10Home.Plugin.AzureIoTHub
 			{
 				try
 				{
+					// check internal message queue for iot hub messages to be forwarded
+					var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+					if (queue.TryDeque("iothub", out QueueMessage queuemessage))
+					{
+						await SendMessageToIoTHubAsync(queuemessage.Key, queuemessage.Value);
+					}
+
+					// check iot hub incoming messages for processing
 					var message = await _deviceClient.ReceiveAsync();
 					if (message != null)
 					{
@@ -83,10 +93,25 @@ namespace W10Home.Plugin.AzureIoTHub
 		{
 			try
 			{
-				var connectionString = configuration.Properties["ConnectionString"];
-				_deviceId = connectionString.Split(';').Single(c => c.ToLower().StartsWith("deviceid")).Split('=')[0];
-				// Instantiate the Azure IoT Hub device client
-				_deviceClient = DeviceClient.CreateFromConnectionString(connectionString, TransportType.Mqtt);
+				if (configuration.Properties.ContainsKey("ConnectionString"))
+				{
+					var connectionString = configuration.Properties["ConnectionString"];
+					_deviceId = connectionString.Split(';').Single(c => c.ToLower().StartsWith("deviceid")).Split('=')[0];
+					// Instantiate the Azure IoT Hub device client
+					_deviceClient = DeviceClient.CreateFromConnectionString(connectionString, TransportType.Mqtt);
+				}
+				else
+				{
+					// check tpm next
+					TpmDevice myDevice = new TpmDevice(0); // Use logical device 0 on the TPM by default
+					string hubUri = myDevice.GetHostName();
+					string deviceId = myDevice.GetDeviceId();
+					string sasToken = myDevice.GetSASToken();
+					_deviceClient = DeviceClient.Create(
+						hubUri,
+						AuthenticationMethodFactory.
+							CreateAuthenticationWithToken(deviceId, sasToken), TransportType.Mqtt);
+				}
 				await _deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
 
 				MessageReceiverLoop(); // launch message loop in the background
