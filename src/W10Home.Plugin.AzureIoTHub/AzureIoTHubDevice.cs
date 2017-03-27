@@ -28,9 +28,12 @@ namespace W10Home.Plugin.AzureIoTHub
 				{
 					// check internal message queue for iot hub messages to be forwarded
 					var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-					if (queue.TryDeque("iothub", out QueueMessage queuemessage))
+					if (queue.TryPeek("iothub", out QueueMessage queuemessage))
 					{
-						await SendMessageToIoTHubAsync(queuemessage.Key, queuemessage.Value);
+						if (await SendMessageToIoTHubAsync(queuemessage.Key, queuemessage.Value))
+						{
+							queue.TryDeque("iothub", out QueueMessage pop);
+						};
 					}
 
 					// check iot hub incoming messages for processing
@@ -60,7 +63,7 @@ namespace W10Home.Plugin.AzureIoTHub
 			} while (true);
 		}
 
-		public async Task SendMessageToIoTHubAsync(string key, object value)
+		private async Task<bool> SendMessageToIoTHubAsync(string key, object value)
 		{
 			try
 			{
@@ -81,11 +84,13 @@ namespace W10Home.Plugin.AzureIoTHub
 
 				await _deviceClient.SendEventAsync(msg);
 				Debug.WriteLine(payload);
+				return true;
 			}
 			catch (Exception ex)
 			{
 				Debug.WriteLine(ex.Message);
 				//TODO Log
+				return false;
 			}
 		}
 
@@ -105,12 +110,10 @@ namespace W10Home.Plugin.AzureIoTHub
 					// check tpm next
 					TpmDevice myDevice = new TpmDevice(0); // Use logical device 0 on the TPM by default
 					string hubUri = myDevice.GetHostName();
-					string deviceId = myDevice.GetDeviceId();
-					string sasToken = myDevice.GetSASToken();
 					_deviceClient = DeviceClient.Create(
 						hubUri,
-						AuthenticationMethodFactory.
-							CreateAuthenticationWithToken(deviceId, sasToken), TransportType.Mqtt);
+						new AuthenticationProvider(),
+						TransportType.Mqtt);
 				}
 				await _deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
 
@@ -122,6 +125,19 @@ namespace W10Home.Plugin.AzureIoTHub
 				//TODO Log
 			}
 
+		}
+
+		private class AuthenticationProvider : IAuthenticationMethod
+		{
+			public IotHubConnectionStringBuilder Populate(IotHubConnectionStringBuilder iotHubConnectionStringBuilder)
+			{
+				// check tpm next
+				TpmDevice myDevice = new TpmDevice(0); // Use logical device 0 on the TPM by default
+				string deviceId = myDevice.GetDeviceId();
+				string sasToken = myDevice.GetSASToken();
+
+				return AuthenticationMethodFactory.CreateAuthenticationWithToken(deviceId, sasToken).Populate(iotHubConnectionStringBuilder);
+			}
 		}
 
 		private async Task<MethodResponse> HandleConfigureMethod(MethodRequest methodRequest, object userContext)
