@@ -22,6 +22,8 @@ using W10Home.Plugin.AzureIoTHub;
 using W10Home.Plugin.ETATouch;
 using W10Home.Plugin.Twilio;
 using System.Linq;
+using MoonSharp.Interpreter;
+using MoonSharp.Interpreter.Interop;
 
 namespace W10Home.App.Shared
 {
@@ -128,8 +130,8 @@ namespace W10Home.App.Shared
 					try
 					{
 						// call function
-						//HandleMessageLua(message, "queue.enqueue(\"iothub\", message); -- simply forward to iot hub message queue");
-						queue.Enqueue("iothub", message);
+						HandleMessageLua(message, "queue.enqueue(\"iothub\", message); -- simply forward to iot hub message queue");
+						//queue.Enqueue("iothub", message);
 					}
 					catch(Exception ex)
 					{
@@ -143,22 +145,20 @@ namespace W10Home.App.Shared
 
 		private void HandleMessageLua(QueueMessage message, string scriptCode)
 		{
-			//UserData.RegisterType<QueueMessage>();
-			//UserData.RegisterType<AzureIoTHubDevice>();
-			//UserData.RegisterType<IMessageQueue>();
-			//var iotHub = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>();
-			//var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+			UserData.RegistrationPolicy = InteropRegistrationPolicy.Automatic;
+			var iotHub = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>();
+			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
 
-			//// call lua script with message, which is our dynamic function
-			//var script = new Script(CoreModules.Preset_Complete);
-			//var iotHubeDynValue = UserData.Create(iotHub);
-			//script.Globals.Set("iothub", iotHubeDynValue);
-			//var messageDynValue = UserData.Create(message);
-			//script.Globals.Set("message", messageDynValue);
-			//var messageQueueDynValue = UserData.Create(queue);
-			//script.Globals.Set("queue", messageQueueDynValue);
+			// call lua script with message, which is our dynamic function
+			var script = new Script(CoreModules.Preset_Complete);
+			var iotHubeDynValue = UserData.Create(iotHub);
+			script.Globals.Set("iothub", iotHubeDynValue);
+			var messageDynValue = UserData.Create(message);
+			script.Globals.Set("message", messageDynValue);
+			var messageQueueDynValue = UserData.Create(queue);
+			script.Globals.Set("queue", messageQueueDynValue);
 
-			//script.DoString(scriptCode);
+			script.DoString(scriptCode);
 		}
 	}
 }
