@@ -30,7 +30,17 @@ namespace W10Home.Core.Queing
             return _queues[queue].TryDequeue(out message);
         }
 
-        public bool IsEmpty(string queue)
+		public bool TryPeek(string queue, out QueueMessage message)
+		{
+			if (!_queues.ContainsKey(queue))
+			{
+				message = null;
+				return false;
+			}
+			return _queues[queue].TryPeek(out message);
+		}
+
+		public bool IsEmpty(string queue)
         {
             if(!_queues.ContainsKey(queue))
             {
