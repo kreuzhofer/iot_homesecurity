@@ -49,17 +49,17 @@ namespace W10Home.App.Shared
 					Name = "iothub",
 					Type = "AzureIoTHubDevice"
 				},
-				//new DeviceConfiguration()
-				//{
-				//	Name = "secvest",
-				//	Type = "SecVestDevice",
-				//	Properties = new Dictionary<string, string>()
-				//	{
-				//		{"ConnectionString", "https://192.168.0.22:4433/" },
-				//		{"Username", "1234" },
-				//		{"Password", "1234" }
-				//	}
-				//}
+				new DeviceConfiguration()
+				{
+					Name = "secvest",
+					Type = "SecVestDevice",
+					Properties = new Dictionary<string, string>()
+					{
+						{"ConnectionString", "https://192.168.0.22:4433/" },
+						{"Username", "1234" },
+						{"Password", "1234" }
+					}
+				}
 			});
 
 			var configString = JsonConvert.SerializeObject(configurationObject, Formatting.Indented);
@@ -104,15 +104,15 @@ namespace W10Home.App.Shared
 		}
 		private async void EveryMinuteTimerCallbackAsync(object state)
 		{
-			//// get status from secvest every minute
-			//var secvest = ServiceLocator.Current.GetInstance<SecVestDevice>();
-			//var channels = await secvest.GetChannelsAsync();
-			//var statusChannel = (SecVestStatusChannel)channels.Single(c => c.Name == "status");
-			//var status = await statusChannel.GetStatusAsync();
+			// get status from secvest every minute
+			var secvest = ServiceLocator.Current.GetInstance<SecVestDevice>();
+			var channels = await secvest.GetChannelsAsync();
+			var statusChannel = (SecVestStatusChannel)channels.Single(c => c.Name == "status");
+			var status = await statusChannel.GetStatusAsync();
 
-			//// send status to iothub queue for
-			//var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-			//queue.Enqueue("iothub", new QueueMessage("secveststatus", JsonConvert.SerializeObject(status)));
+			// send status to iothub queue for
+			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+			queue.Enqueue("iothub", new QueueMessage("secveststatus", JsonConvert.SerializeObject(status)));
 		}
 
 		private void EverySecondTimerCallback(object state)

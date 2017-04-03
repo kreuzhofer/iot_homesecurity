@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using W10Home.Interfaces;
-using Windows.Web.Http;
+using W10Home.Plugin.ABUS.SecVest.Utils;
 
 namespace W10Home.Plugin.ABUS.SecVest
 {
@@ -19,12 +21,15 @@ namespace W10Home.Plugin.ABUS.SecVest
 			var username = configuration.Properties["Username"];
 			var password = configuration.Properties["Password"];
 
-			_channels.Add(new SecVestStatusChannel());
-
+			// create default HttpClient used by all channels
 			_httpClient = new HttpClient();
-	    }
+			System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Base64.EncodeTo64(username+":"+password));
 
-	    public async Task<IEnumerable<IChannel>> GetChannelsAsync()
+			_channels.Add(new SecVestStatusChannel(_httpClient));
+		}
+
+		public async Task<IEnumerable<IChannel>> GetChannelsAsync()
 	    {
 		    return _channels;
 	    }

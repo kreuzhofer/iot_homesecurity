@@ -107,10 +107,14 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\SecVestPartition.cs" />
+    <Compile Include="Models\SecVestSystem.cs" />
+    <Compile Include="SecVestChannel.cs" />
     <Compile Include="SecVestDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecVestStatus.cs" />
     <Compile Include="SecVestStatusChannel.cs" />
+    <Compile Include="Utils\Base64.cs" />
     <EmbeddedResource Include="Properties\W10Home.Plugin.ABUS.SecVest.rd.xml" />
   </ItemGroup>
   <ItemGroup>
