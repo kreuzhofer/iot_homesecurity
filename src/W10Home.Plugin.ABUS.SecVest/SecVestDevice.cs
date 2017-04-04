@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -15,6 +16,11 @@ namespace W10Home.Plugin.ABUS.SecVest
 		private HttpClient _httpClient;
 		private List<IChannel> _channels = new List<IChannel>();
 
+	    public SecVestDevice()
+	    {
+		    Debug.WriteLine("SecVestDevice Instance created.");
+	    }
+
 		public async Task InitializeAsync(IDeviceConfiguration configuration)
 	    {
 			var connectionString = configuration.Properties["ConnectionString"];
@@ -23,8 +29,8 @@ namespace W10Home.Plugin.ABUS.SecVest
 
 			// create default HttpClient used by all channels
 			_httpClient = new HttpClient();
-			System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
-			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Base64.EncodeTo64(username+":"+password));
+		    _httpClient.BaseAddress = new Uri(connectionString);
+			_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Base64.EncodeTo64(username+":"+password));
 
 			_channels.Add(new SecVestStatusChannel(_httpClient));
 		}

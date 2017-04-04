@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Practices.ServiceLocation;
 using W10Home.Interfaces;
 
 namespace W10Home.Core.Configuration
@@ -24,7 +25,7 @@ namespace W10Home.Core.Configuration
 			{
 				try
 				{
-					var deviceInstance = (IDevice)Activator.CreateInstance(_deviceTypes[configuration.Type]);
+					var deviceInstance = (IDevice)ServiceLocator.Current.GetInstance(_deviceTypes[configuration.Type]);
 					_deviceList.Add(configuration.Name, deviceInstance);
 					await deviceInstance.InitializeAsync(configuration);
 				}

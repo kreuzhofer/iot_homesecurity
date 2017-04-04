@@ -73,6 +73,7 @@ namespace W10Home.App.Shared
 			var container = new UnityContainer();
 			container.RegisterInstance<IMessageQueue>(new MessageQueue());
 			container.RegisterInstance<IDeviceRegistry>(deviceRegistry);
+		    container.RegisterType<SecVestDevice>(new ContainerControlledLifetimeManager());
 			var locator = new UnityServiceLocator(container);
 			ServiceLocator.SetLocatorProvider(() => locator);
 
