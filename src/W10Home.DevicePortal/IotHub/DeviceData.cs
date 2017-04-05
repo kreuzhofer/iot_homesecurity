@@ -11,7 +11,10 @@
 //*********************************************************
 
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.Web.WebPages;
 using Microsoft.Azure.Devices;
+using W10Home.DevicePortal.Models;
 
 namespace W10Home.DevicePortal.IotHub
 {
@@ -25,8 +28,10 @@ namespace W10Home.DevicePortal.IotHub
         public int MessageCount { get; set; }
         public string State { get; set; }
         public string SuspensionReason { get; set; }
+		[DataType(DataType.MultilineText)]
+		public string Configuration { get; set; }
 
-        public int CompareTo(DeviceData other)
+	    public int CompareTo(DeviceData other)
         {
             return string.Compare(this.Id, other.Id, StringComparison.OrdinalIgnoreCase);
         }
@@ -35,6 +40,9 @@ namespace W10Home.DevicePortal.IotHub
         {
             return $"Device ID = {this.Id}, ConnState = {this.ConnectionState}, ActivityTime = {this.LastActivityTime}, LastConnState = {this.LastConnectionStateUpdatedTime}, LastStateUpdatedTime = {this.LastStateUpdatedTime}, MessageCount = {this.MessageCount}, State = {this.State}, SuspensionReason = {this.SuspensionReason}\r\n";
         }
+
+		public DeviceData()
+		{ }
         public DeviceData(Device dev)
         {
             Id = dev.Id;

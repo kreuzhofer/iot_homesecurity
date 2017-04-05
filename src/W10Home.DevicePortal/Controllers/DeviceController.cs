@@ -8,6 +8,8 @@ using System.Web;
 using System.Web.Http.Results;
 using System.Web.Mvc;
 using Microsoft.Azure.Devices;
+using Newtonsoft.Json;
+using W10Home.DevicePortal.DataAccess;
 using W10Home.DevicePortal.IotHub;
 
 namespace W10Home.DevicePortal.Controllers
@@ -26,6 +28,47 @@ namespace W10Home.DevicePortal.Controllers
 			}
 			return View(devdatalist);
 		}
+
+	    public async Task<ActionResult> Details(string id)
+	    {
+		    var rm = DevicesManagementSingleton.GlobalRegistryManager;
+		    Device device = await rm.GetDeviceAsync(id);
+
+			var deviceData = new DeviceData(device);
+			var configService = new DeviceConfigurationService();
+		    var configData = await configService.LoadConfig("daniel", id);
+		    if (configData != null)
+		    {
+			    deviceData.Configuration = configData.Configuration;
+		    }
+
+		    return View(new DeviceData(device));
+	    }
+
+		public async Task<ActionResult> Edit(string id)
+		{
+			var rm = DevicesManagementSingleton.GlobalRegistryManager;
+			Device device = await rm.GetDeviceAsync(id);
+
+			var deviceData = new DeviceData(device);
+			var configService = new DeviceConfigurationService();
+			var configData = await configService.LoadConfig("daniel", id);
+			if (configData != null)
+			{
+				deviceData.Configuration = JsonConvert.DeserializeObject<string>(configData.Configuration);
+			}
+
+			return View(deviceData);
+		}
+
+		[HttpPost]
+	    public async Task<ActionResult> Edit(DeviceData data)
+	    {
+			// save configuration data
+			var configService = new DeviceConfigurationService();
+		    await configService.SaveConfig("daniel", data.Id, JsonConvert.SerializeObject(data.Configuration));
+			return await Edit(data.Id);
+	    }
 
 		[HttpPost]
 	    public async Task<ActionResult> SendMessage(string id, string message)
