@@ -2,5 +2,6 @@
 {
 	public class SecVestStatus
 	{
+		public string Name { get; set; }
 	}
 }

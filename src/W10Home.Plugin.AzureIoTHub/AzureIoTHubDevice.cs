@@ -12,10 +12,12 @@ using W10Home.Core.Queing;
 using W10Home.Interfaces;
 using Microsoft.Devices.Tpm;
 using Microsoft.Practices.ServiceLocation;
+using W10Home.Core.Standard;
+using W10Home.Interfaces.Configuration;
 
 namespace W10Home.Plugin.AzureIoTHub
 {
-	public class AzureIoTHubDevice : IDevice
+	public class AzureIoTHubDevice : DeviceBase
 	{
 		private DeviceClient _deviceClient;
 		private string _deviceId;
@@ -72,13 +74,25 @@ namespace W10Home.Plugin.AzureIoTHub
 				{
 					strvalue = $"{((double)value):F}";
 				}
+				else if (value is string)
+				{
+					strvalue = value.ToString();
+				}
 				else
 				{
-					strvalue = $"\"{value.ToString()}\"";
+					strvalue = $"{JsonConvert.SerializeObject(value)}";
 				}
 
-				var payload =
-					$"{{\"deviceid\": \"{_deviceId}\", \"channelvalue\": {strvalue}, \"channelkey\": \"{key}\", \"localtimestamp\": \"{DateTime.Now.ToUniversalTime():O}\"}}";
+				var message = new IotHubMessage()
+				{
+					deviceId = _deviceId,
+					deviceType = "tbd",
+					channelKey = key,
+					channelValue = strvalue,
+					localtimestamp = $"{DateTime.Now.ToUniversalTime():O}"
+				};
+
+				var payload = JsonConvert.SerializeObject(message);
 
 				var msg = new Message(Encoding.UTF8.GetBytes(payload));
 
@@ -94,14 +108,14 @@ namespace W10Home.Plugin.AzureIoTHub
 			}
 		}
 
-		public async Task InitializeAsync(IDeviceConfiguration configuration)
+		public override async Task InitializeAsync(IDeviceConfiguration configuration)
 		{
 			try
 			{
 				if (configuration.Properties.ContainsKey("ConnectionString"))
 				{
 					var connectionString = configuration.Properties["ConnectionString"];
-					_deviceId = connectionString.Split(';').Single(c => c.ToLower().StartsWith("deviceid")).Split('=')[0];
+					_deviceId = connectionString.Split(';').Single(c => c.ToLower().StartsWith("deviceid")).Split('=')[1];
 					// Instantiate the Azure IoT Hub device client
 					_deviceClient = DeviceClient.CreateFromConnectionString(connectionString, TransportType.Mqtt);
 				}
@@ -146,12 +160,12 @@ namespace W10Home.Plugin.AzureIoTHub
 			return new MethodResponse(0);
 		}
 
-		public Task<IEnumerable<IChannel>> GetChannelsAsync()
+		public override IEnumerable<IDeviceChannel> GetChannels()
 		{
 			throw new NotImplementedException();
 		}
 
-		public async Task Teardown()
+		public override async Task Teardown()
 		{
 			if (_deviceClient != null)
 			{

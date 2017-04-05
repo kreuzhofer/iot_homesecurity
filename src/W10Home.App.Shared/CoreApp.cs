@@ -24,6 +24,7 @@ using W10Home.Plugin.Twilio;
 using System.Linq;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using W10Home.Interfaces.Configuration;
 
 namespace W10Home.App.Shared
 {
@@ -40,14 +41,17 @@ namespace W10Home.App.Shared
 
 			// check whether there is alread an iot hub configuration in the TPM
 
-
 			configurationObject.DeviceConfigurations = new List<IDeviceConfiguration>(new[]
 			{
 				// by default iot hub configuration now uses TPM chip
 				new DeviceConfiguration
 				{
 					Name = "iothub",
-					Type = "AzureIoTHubDevice"
+					Type = "AzureIoTHubDevice",
+					Properties = new Dictionary<string, string>()
+					{
+						//{ "ConnectionString", "IOT_HUB_CONNECTION_STRING_ONLY_FOR_DEBUGGING"}
+					}
 				},
 				new DeviceConfiguration()
 				{
@@ -61,6 +65,27 @@ namespace W10Home.App.Shared
 					}
 				}
 			});
+			configurationObject.Functions = new List<IFunctionDeclaration>(new[]
+			{
+				new RecurringIntervalTriggeredFunctionDeclaration()
+				{
+					TriggerType = FunctionTriggerType.RecurringIntervalTimer,
+					Name = "PollSecvestEveryMinute",
+					Interval = 10*1000, // ten seconds test interval
+					Code = @"
+					function run()
+						-- get status from secvest every minute
+						secvest = registry.getDevice(""secvest"");
+						statusChannel = secvest.getChannel(""status"");
+						statusValue = statusChannel.read();
+
+						-- send status to iothub queue
+						queue.enqueue(""iothub"", ""status@secvest"", statusValue);
+						return 0;
+					end;
+					"
+				}
+			});
 
 			var configString = JsonConvert.SerializeObject(configurationObject, Formatting.Indented);
 
@@ -68,17 +93,31 @@ namespace W10Home.App.Shared
 			var deviceRegistry = new DeviceRegistry();
 			deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
 			deviceRegistry.RegisterDeviceType<SecVestDevice>();
+			deviceRegistry.RegisterDeviceType<ETATouchDevice>();
+			deviceRegistry.RegisterDeviceType<TwilioDevice>();
+
+			// add functions engine
+			var functionsEngine = new FunctionsEngine();
 
 			// init IoC
 			var container = new UnityContainer();
 			container.RegisterInstance<IMessageQueue>(new MessageQueue());
 			container.RegisterInstance<IDeviceRegistry>(deviceRegistry);
-		    container.RegisterType<SecVestDevice>(new ContainerControlledLifetimeManager());
+			container.RegisterInstance(functionsEngine);
+
+			// register device instances
+			container.RegisterType<SecVestDevice>(new ContainerControlledLifetimeManager());
+		    container.RegisterType<ETATouchDevice>(new ContainerControlledLifetimeManager());
+		    container.RegisterType<TwilioDevice>(new ContainerControlledLifetimeManager());
+
 			var locator = new UnityServiceLocator(container);
 			ServiceLocator.SetLocatorProvider(() => locator);
 
 			// configure devices
 			await deviceRegistry.InitializeDevicesAsync(configurationObject);
+
+			// start lua engine
+			functionsEngine.Initialize(configurationObject);
 			
 			// start background worker that collects and forwards data
 			MessageLoopWorker();
@@ -105,15 +144,14 @@ namespace W10Home.App.Shared
 		}
 		private async void EveryMinuteTimerCallbackAsync(object state)
 		{
-			// get status from secvest every minute
-			var secvest = ServiceLocator.Current.GetInstance<SecVestDevice>();
-			var channels = await secvest.GetChannelsAsync();
-			var statusChannel = (SecVestStatusChannel)channels.Single(c => c.Name == "status");
-			var status = await statusChannel.GetStatusAsync();
+			//// get status from secvest every minute
+			//var secvest = ServiceLocator.Current.GetInstance<SecVestDevice>();
+			//var statusChannel = (SecVestStatusChannel)secvest.GetChannel("status");
+			//var status = await statusChannel.GetStatusAsync();
 
-			// send status to iothub queue for
-			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-			queue.Enqueue("iothub", new QueueMessage("secveststatus", JsonConvert.SerializeObject(status)));
+			//// send status to iothub queue for
+			//var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+			//queue.Enqueue("iothub", new QueueMessage("secveststatus", JsonConvert.SerializeObject(status)));
 		}
 
 		private void EverySecondTimerCallback(object state)
@@ -132,7 +170,6 @@ namespace W10Home.App.Shared
 					{
 						// call function
 						HandleMessageLua(message, "queue.enqueue(\"iothub\", message); -- simply forward to iot hub message queue");
-						//queue.Enqueue("iothub", message);
 					}
 					catch(Exception ex)
 					{
@@ -149,6 +186,7 @@ namespace W10Home.App.Shared
 			UserData.RegistrationPolicy = InteropRegistrationPolicy.Automatic;
 			var iotHub = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>();
 			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+			var secvest = ServiceLocator.Current.GetInstance<SecVestDevice>();
 
 			// call lua script with message, which is our dynamic function
 			var script = new Script(CoreModules.Preset_Complete);
@@ -158,6 +196,8 @@ namespace W10Home.App.Shared
 			script.Globals.Set("message", messageDynValue);
 			var messageQueueDynValue = UserData.Create(queue);
 			script.Globals.Set("queue", messageQueueDynValue);
+			var secvestDynValue = UserData.Create(secvest);
+			script.Globals.Set("secvest", secvestDynValue);
 
 			script.DoString(scriptCode);
 		}

@@ -27,11 +27,26 @@ namespace W10Home.Plugin.ABUS.SecVest
 
 		public override ChannelType ChannelType => ChannelType.None;
 
-		public async Task<SecVestStatus> GetStatusAsync()
+		public override object Read()
 		{
-			var system = await GetSystem();
-			Debug.WriteLine(system.Name);
-			return new SecVestStatus();
+			var statusTask = GetStatusAsync();
+			Task.WaitAll(statusTask);
+			return statusTask.Result;
+		}
+
+		public override void Write(object value)
+		{
+			throw new NotImplementedException();
+		}
+
+		private async Task<SecVestStatus> GetStatusAsync()
+		{
+			//var system = await GetSystem();
+			//Debug.WriteLine(system.Name);
+			return new SecVestStatus()
+			{
+				Name = "Home Sweet Home"
+			};
 		}
 
 		private async Task<SecVestSystem> GetSystem()
@@ -55,5 +70,7 @@ namespace W10Home.Plugin.ABUS.SecVest
 			}
 			return partition;
 		}
+
+
 	}
 }

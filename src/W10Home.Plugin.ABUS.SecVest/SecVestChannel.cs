@@ -3,7 +3,7 @@ using W10Home.Interfaces;
 
 namespace W10Home.Plugin.ABUS.SecVest
 {
-	public abstract class SecVestChannel : IChannel
+	public abstract class SecVestChannel : IDeviceChannel
 	{
 		protected HttpClient _client;
 
@@ -16,5 +16,7 @@ namespace W10Home.Plugin.ABUS.SecVest
 		public abstract bool IsRead { get; }
 		public abstract bool IsWrite { get; }
 		public abstract ChannelType ChannelType { get; }
+		public abstract object Read();
+		public abstract void Write(object value);
 	}
 }

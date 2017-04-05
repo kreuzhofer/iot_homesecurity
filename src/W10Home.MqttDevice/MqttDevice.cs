@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using uPLibrary.Networking.M2Mqtt;
+using W10Home.Core.Standard;
 using W10Home.Interfaces;
+using W10Home.Interfaces.Configuration;
 
 namespace W10Home.MqttDevice
 {
-    public class MqttDevice : IDevice
+    public class MqttDevice : DeviceBase
     {
 	    private MqttClient _mqttclient;
 	    private string _deviceid;
@@ -42,7 +44,7 @@ namespace W10Home.MqttDevice
             }
         }
 
-		public async Task InitializeAsync(IDeviceConfiguration configuration)
+		public override async Task InitializeAsync(IDeviceConfiguration configuration)
 		{
 			try
 			{
@@ -70,12 +72,12 @@ namespace W10Home.MqttDevice
 		    _methodRegistrations.Add(methodName, deviceMethodImpl);
 	    }
 
-		public Task<IEnumerable<IChannel>> GetChannelsAsync()
+		public override IEnumerable<IDeviceChannel> GetChannels()
 		{
 			throw new NotImplementedException();
 		}
 
-		public async Task Teardown()
+		public override async Task Teardown()
 		{
 			if (_mqttclient != null)
 			{

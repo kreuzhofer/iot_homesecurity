@@ -9,24 +9,26 @@ using W10Home.Core.Channels;
 using W10Home.Core.Configuration;
 using W10Home.Interfaces;
 using Windows.Data.Xml.Dom;
+using W10Home.Core.Standard;
+using W10Home.Interfaces.Configuration;
 
 namespace W10Home.Plugin.ETATouch
 {
-	public class ETATouchDevice : IDevice
+	public class ETATouchDevice : DeviceBase
     {
         private string _etatouchUrl;
 		private List<TreeItem> _menustructure;
-		private List<IChannel> _channels;
+		private List<IDeviceChannel> _channels;
 
-		public async Task InitializeAsync(IDeviceConfiguration configuration)
+		public override async Task InitializeAsync(IDeviceConfiguration configuration)
 		{
 			_etatouchUrl = configuration.Properties["ConnectionString"];
 			_menustructure = await GetMenuStructureFromEtaAsync();
-			_channels = new List<IChannel>();
+			_channels = new List<IDeviceChannel>();
 			await ParseChannelListAsync(_menustructure, _channels);
 		}
 
-		private async Task ParseChannelListAsync(List<TreeItem> treeItems, List<IChannel> channels)
+		private async Task ParseChannelListAsync(List<TreeItem> treeItems, List<IDeviceChannel> channels)
 		{
 			foreach (var item in treeItems)
 			{
@@ -115,12 +117,12 @@ namespace W10Home.Plugin.ETATouch
 			}
 		}
 
-		public Task<IEnumerable<IChannel>> GetChannelsAsync()
+		public override IEnumerable<IDeviceChannel> GetChannels()
 		{
-			return Task.FromResult(_channels.AsEnumerable());
+			return _channels.AsEnumerable();
 		}
 
-	    public async Task Teardown()
+	    public override async Task Teardown()
 	    {
 		    // nothing to do yet
 	    }

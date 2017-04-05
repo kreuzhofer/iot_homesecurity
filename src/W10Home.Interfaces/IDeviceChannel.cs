@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace W10Home.Interfaces
 {
-	public interface IChannel
+	public interface IDeviceChannel
 	{
 		string Name { get; }
 		bool IsRead { get; }
 		bool IsWrite { get; }
 		ChannelType ChannelType { get; }
+		object Read();
+		void Write(object value);
 	}
 }

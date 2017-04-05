@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace W10Home.Core.Queing
 {
@@ -48,5 +49,10 @@ namespace W10Home.Core.Queing
             }
             return _queues[queue].IsEmpty;
         }
+
+	    public void Enqueue(string queue, string key, object value)
+	    {
+		    Enqueue(queue, new QueueMessage(key, JsonConvert.SerializeObject(value)));
+	    }
     }
 }
