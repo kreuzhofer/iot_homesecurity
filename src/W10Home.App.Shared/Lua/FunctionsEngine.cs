@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Practices.ServiceLocation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
@@ -17,7 +18,7 @@ namespace W10Home.App.Shared
 {
 	internal class FunctionsEngine
     {
-		private List<Timer> timers = new List<Timer>();
+		private readonly List<Timer> _timers = new List<Timer>();
 
 	    public void Initialize(RootConfiguration configuration)
 		{
@@ -37,10 +38,43 @@ namespace W10Home.App.Shared
 					{
 						lock (script)
 						{
-							script.Call(script.Globals["run"]);
-						}
+							try
+							{
+								script.Call(script.Globals["run"]);
+							}
+							catch (Exception ex)
+							{
+								Debug.WriteLine(ex.Message);
+								//todo log
+							}						}
 					}, null ,timerFunction.Interval, timerFunction.Interval);
-					timers.Add(timer);
+					_timers.Add(timer);
+				}
+				else if (function.TriggerType == FunctionTriggerType.MessageQueue)
+				{
+					var queueFunction = (QueueMessageTriggeredFunctionDeclaration) function;
+					var script = SetupNewScript();
+					script.DoString(queueFunction.Code);
+					var task = Task.Factory.StartNew(() =>
+					{
+						var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+						do
+						{
+							if (queue.TryDeque(queueFunction.QueueName, out QueueMessage message))
+							{
+								try
+								{
+									// call function
+									script.Call(script.Globals["run"], message);
+								}
+								catch (Exception ex)
+								{
+									Debug.WriteLine(ex.Message);
+									//todo log
+								}
+							}
+						} while (true);
+					});
 				}
 			}
 		}

@@ -124,6 +124,7 @@ namespace W10Home.Plugin.AzureIoTHub
 					// check tpm next
 					TpmDevice myDevice = new TpmDevice(0); // Use logical device 0 on the TPM by default
 					string hubUri = myDevice.GetHostName();
+					_deviceId = myDevice.GetDeviceId();
 					_deviceClient = DeviceClient.Create(
 						hubUri,
 						new AuthenticationProvider(),

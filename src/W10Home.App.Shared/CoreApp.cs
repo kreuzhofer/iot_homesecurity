@@ -65,7 +65,7 @@ namespace W10Home.App.Shared
 					}
 				}
 			});
-			configurationObject.Functions = new List<IFunctionDeclaration>(new[]
+			configurationObject.Functions = new List<IFunctionDeclaration>(new IFunctionDeclaration[]
 			{
 				new RecurringIntervalTriggeredFunctionDeclaration()
 				{
@@ -84,10 +84,30 @@ namespace W10Home.App.Shared
 						return 0;
 					end;
 					"
+				},
+				new QueueMessageTriggeredFunctionDeclaration()
+				{
+					TriggerType = FunctionTriggerType.MessageQueue,
+					Name = "WindSensorQueueHandler",
+					QueueName = "windsensor",
+					Code = @"
+					function run(message)
+						if(message.Key == ""Wind"") then
+							message.Key = ""windspeed@windsensor"";
+						end;
+						if(message.Key == ""Temperature"") then
+							message.Key = ""temperature@windsensor"";
+						end;
+
+						queue.enqueue(""iothub"", message); -- simply forward to iot hub message queue
+						return 0;
+					end;
+					"
 				}
 			});
 
 			var configString = JsonConvert.SerializeObject(configurationObject, Formatting.Indented);
+			Debug.WriteLine(configString);
 
 			// init device registry and add devices
 			var deviceRegistry = new DeviceRegistry();
@@ -120,7 +140,7 @@ namespace W10Home.App.Shared
 			functionsEngine.Initialize(configurationObject);
 			
 			// start background worker that collects and forwards data
-			MessageLoopWorker();
+			//MessageLoopWorker();
 
 			// define cron timers
 			_everySecondTimer = new Timer(EverySecondTimerCallback, null, 1000, 1000);
@@ -144,6 +164,7 @@ namespace W10Home.App.Shared
 		}
 		private async void EveryMinuteTimerCallbackAsync(object state)
 		{
+			// ******** This code has been replaced by a lua function *********
 			//// get status from secvest every minute
 			//var secvest = ServiceLocator.Current.GetInstance<SecVestDevice>();
 			//var statusChannel = (SecVestStatusChannel)secvest.GetChannel("status");
@@ -158,48 +179,48 @@ namespace W10Home.App.Shared
 		{
 		}
 
-		private async void MessageLoopWorker()
-		{
-			var iotHub = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>();
-			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-			do
-			{
-				if (queue.TryDeque("windsensor", out QueueMessage message))
-				{
-					try
-					{
-						// call function
-						HandleMessageLua(message, "queue.enqueue(\"iothub\", message); -- simply forward to iot hub message queue");
-					}
-					catch(Exception ex)
-					{
-						Debug.WriteLine(ex.Message);
-						//todo log
-					}
-				}
-				await Task.Delay(250);
-			} while (true);
-		}
+		//private async void MessageLoopWorker()
+		//{
+		//	var iotHub = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>();
+		//	var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+		//	do
+		//	{
+		//		if (queue.TryDeque("windsensor", out QueueMessage message))
+		//		{
+		//			try
+		//			{
+		//				// call function
+		//				HandleMessageLua(message, "queue.enqueue(\"iothub\", message); -- simply forward to iot hub message queue");
+		//			}
+		//			catch(Exception ex)
+		//			{
+		//				Debug.WriteLine(ex.Message);
+		//				//todo log
+		//			}
+		//		}
+		//		await Task.Delay(250);
+		//	} while (true);
+		//}
 
-		private void HandleMessageLua(QueueMessage message, string scriptCode)
-		{
-			UserData.RegistrationPolicy = InteropRegistrationPolicy.Automatic;
-			var iotHub = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>();
-			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-			var secvest = ServiceLocator.Current.GetInstance<SecVestDevice>();
+		//private void HandleMessageLua(QueueMessage message, string scriptCode)
+		//{
+		//	UserData.RegistrationPolicy = InteropRegistrationPolicy.Automatic;
+		//	var iotHub = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>();
+		//	var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+		//	var secvest = ServiceLocator.Current.GetInstance<SecVestDevice>();
 
-			// call lua script with message, which is our dynamic function
-			var script = new Script(CoreModules.Preset_Complete);
-			var iotHubeDynValue = UserData.Create(iotHub);
-			script.Globals.Set("iothub", iotHubeDynValue);
-			var messageDynValue = UserData.Create(message);
-			script.Globals.Set("message", messageDynValue);
-			var messageQueueDynValue = UserData.Create(queue);
-			script.Globals.Set("queue", messageQueueDynValue);
-			var secvestDynValue = UserData.Create(secvest);
-			script.Globals.Set("secvest", secvestDynValue);
+		//	// call lua script with message, which is our dynamic function
+		//	var script = new Script(CoreModules.Preset_Complete);
+		//	var iotHubeDynValue = UserData.Create(iotHub);
+		//	script.Globals.Set("iothub", iotHubeDynValue);
+		//	var messageDynValue = UserData.Create(message);
+		//	script.Globals.Set("message", messageDynValue);
+		//	var messageQueueDynValue = UserData.Create(queue);
+		//	script.Globals.Set("queue", messageQueueDynValue);
+		//	var secvestDynValue = UserData.Create(secvest);
+		//	script.Globals.Set("secvest", secvestDynValue);
 
-			script.DoString(scriptCode);
-		}
+		//	script.DoString(scriptCode);
+		//}
 	}
 }
