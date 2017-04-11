@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -8,6 +9,8 @@ using System.Web;
 using System.Web.Http.Results;
 using System.Web.Mvc;
 using Microsoft.Azure.Devices;
+using Newtonsoft.Json;
+using W10Home.DevicePortal.DataAccess;
 using W10Home.DevicePortal.IotHub;
 
 namespace W10Home.DevicePortal.Controllers
@@ -26,6 +29,64 @@ namespace W10Home.DevicePortal.Controllers
 			}
 			return View(devdatalist);
 		}
+
+	    public async Task<ActionResult> Details(string id)
+	    {
+		    var rm = DevicesManagementSingleton.GlobalRegistryManager;
+		    Device device = await rm.GetDeviceAsync(id);
+
+			var deviceData = new DeviceData(device);
+			var configService = new DeviceConfigurationService();
+		    var configData = await configService.LoadConfig(id, "configurationFileUrl");
+		    if (configData != null)
+		    {
+			    deviceData.Configuration = configData.Configuration;
+		    }
+
+		    return View(new DeviceData(device));
+	    }
+
+		public async Task<ActionResult> Edit(string id)
+		{
+			var rm = DevicesManagementSingleton.GlobalRegistryManager;
+			Device device = await rm.GetDeviceAsync(id);
+
+			var deviceData = new DeviceData(device);
+			var configService = new DeviceConfigurationService();
+			var configData = await configService.LoadConfig(id, "configurationFileUrl");
+			if (configData != null)
+			{
+				deviceData.Configuration = configData.Configuration;
+			}
+
+			return View(deviceData);
+		}
+
+		[HttpPost]
+	    public async Task<ActionResult> Edit(DeviceData data)
+	    {
+			// save configuration data
+			var configService = new DeviceConfigurationService();
+			await configService.SaveConfig(data.Id, "configurationFileUrl", data.Configuration);
+
+		    var patch = new
+		    {
+				properties = new
+				{
+					desired = new
+					{
+						configurationUrl = data.Configuration,
+					}
+				}
+		    };
+
+			// get device management client to send the congfiguration
+			var registryManager = DevicesManagementSingleton.GlobalRegistryManager;
+		    var twin = await registryManager.GetTwinAsync(data.Id);
+		    await registryManager.UpdateTwinAsync(data.Id, JsonConvert.SerializeObject(patch), twin.ETag);
+
+			return await Edit(data.Id);
+	    }
 
 		[HttpPost]
 	    public async Task<ActionResult> SendMessage(string id, string message)

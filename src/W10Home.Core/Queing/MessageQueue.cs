@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace W10Home.Core.Queing
 {
@@ -30,7 +31,17 @@ namespace W10Home.Core.Queing
             return _queues[queue].TryDequeue(out message);
         }
 
-        public bool IsEmpty(string queue)
+		public bool TryPeek(string queue, out QueueMessage message)
+		{
+			if (!_queues.ContainsKey(queue))
+			{
+				message = null;
+				return false;
+			}
+			return _queues[queue].TryPeek(out message);
+		}
+
+		public bool IsEmpty(string queue)
         {
             if(!_queues.ContainsKey(queue))
             {
@@ -38,5 +49,10 @@ namespace W10Home.Core.Queing
             }
             return _queues[queue].IsEmpty;
         }
+
+	    public void Enqueue(string queue, string key, object value)
+	    {
+		    Enqueue(queue, new QueueMessage(key, JsonConvert.SerializeObject(value)));
+	    }
     }
 }

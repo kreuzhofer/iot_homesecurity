@@ -117,7 +117,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
-      <Project>{48F2BFD9-0F10-4609-9B33-F8D99E7C5F6D}</Project>
+      <Project>{C3C103FF-8993-420D-8F50-979ECA9C7D73}</Project>
       <Name>W10Home.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\W10Home.Interfaces\W10Home.Interfaces.csproj">

@@ -14,5 +14,6 @@ namespace W10Home.Interfaces
 		T GetDevice<T>() where T : class, IDevice;
 		T GetDevice<T>(string name) where T : class, IDevice;
 		Task TeardownDevicesAsync();
+		object GetDevice(string name);
 	}
 }

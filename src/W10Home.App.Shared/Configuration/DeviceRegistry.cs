@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Practices.ServiceLocation;
 using W10Home.Interfaces;
+using W10Home.Interfaces.Configuration;
 
 namespace W10Home.Core.Configuration
 {
@@ -24,7 +27,7 @@ namespace W10Home.Core.Configuration
 			{
 				try
 				{
-					var deviceInstance = (IDevice)Activator.CreateInstance(_deviceTypes[configuration.Type]);
+					var deviceInstance = (IDevice)ServiceLocator.Current.GetInstance(_deviceTypes[configuration.Type]);
 					_deviceList.Add(configuration.Name, deviceInstance);
 					await deviceInstance.InitializeAsync(configuration);
 				}
@@ -57,6 +60,11 @@ namespace W10Home.Core.Configuration
 		public T GetDevice<T>(string name) where T : class, IDevice
 		{
 			return (T)_deviceList[name];
+		}
+
+		public object GetDevice(string name)
+		{
+			return _deviceList[name];
 		}
 	}
 }

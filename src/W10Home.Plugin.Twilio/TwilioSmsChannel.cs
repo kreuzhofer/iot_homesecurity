@@ -42,5 +42,15 @@ namespace W10Home.Plugin.Twilio
 
 			return true;
 		}
+
+		public override object Read()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Write(object value)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

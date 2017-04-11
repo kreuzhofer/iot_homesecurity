@@ -5,7 +5,7 @@ using W10Home.Interfaces;
 
 namespace W10Home.Plugin.ETATouch
 {
-	public class EtaChannel : IChannel
+	public class EtaChannel : IDeviceChannel
 	{
 		private ChannelType _channelType;
 		private string _name;
@@ -25,5 +25,14 @@ namespace W10Home.Plugin.ETATouch
 		public bool IsWrite => false;
 
 		public string Name => _name;
+		public object Read()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Write(object value)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

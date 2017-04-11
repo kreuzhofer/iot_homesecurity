@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace W10Home.Core.Queing
 {
-    public sealed class QueueMessage
+    public class QueueMessage
     {
 		public string Key { get; set; }
 		public string Value { get; set; }
@@ -15,5 +15,11 @@ namespace W10Home.Core.Queing
         {
 		    return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
+		public QueueMessage() { }
+		public QueueMessage(string key, string value)
+		{
+			this.Key = key;
+			this.Value = value;
+		}
     }
 }
