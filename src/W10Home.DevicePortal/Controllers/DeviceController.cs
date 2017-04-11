@@ -66,7 +66,15 @@ namespace W10Home.DevicePortal.Controllers
 	    {
 			// save configuration data
 			var configService = new DeviceConfigurationService();
-		    await configService.SaveConfig("daniel", data.Id, JsonConvert.SerializeObject(data.Configuration));
+		    var configJson = JsonConvert.SerializeObject(data.Configuration);
+
+			await configService.SaveConfig("daniel", data.Id, configJson);
+
+			// get device management client to send the congfiguration
+			var registryManager = DevicesManagementSingleton.GlobalRegistryManager;
+		    var twin = await registryManager.GetTwinAsync(data.Id);
+		    await registryManager.UpdateTwinAsync(data.Id, configJson, twin.ETag);
+
 			return await Edit(data.Id);
 	    }
 

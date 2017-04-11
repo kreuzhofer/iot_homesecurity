@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Web.Http;
 using Newtonsoft.Json;
 using W10Home.Interfaces;
 using W10Home.Plugin.ABUS.SecVest.Models;
@@ -15,7 +14,7 @@ namespace W10Home.Plugin.ABUS.SecVest
 {
 	public class SecVestStatusChannel : SecVestChannel
 	{
-		public SecVestStatusChannel(HttpClient client) : base(client)
+		public SecVestStatusChannel(HttpClient client, string baseUrl) : base(client, baseUrl)
 		{
 		}
 
@@ -29,10 +28,19 @@ namespace W10Home.Plugin.ABUS.SecVest
 
 		public override object Read()
 		{
-			var statusTask = GetStatusAsync();
-			Task.WaitAll(statusTask);
-			return statusTask.Result;
-		}
+			try
+			{
+				var statusTask = GetStatusAsync();
+				Task.WaitAll(statusTask);
+				return statusTask.Result;
+
+			}
+			catch (Exception ex)
+			{
+				//TODO log
+				Debug.WriteLine(ex.Message);
+				return null;
+			}		}
 
 		public override void Write(object value)
 		{
@@ -41,11 +49,18 @@ namespace W10Home.Plugin.ABUS.SecVest
 
 		private async Task<SecVestStatus> GetStatusAsync()
 		{
-			//var system = await GetSystem();
-			//Debug.WriteLine(system.Name);
+			var system = await GetSystem();
+			var partitions = new List<SecVestPartition>();
+			foreach (var systemPartition in system.Partitions)
+			{
+				var partition = await GetPartitionAsync(systemPartition);
+				partitions.Add(partition);
+			}
+			Debug.WriteLine(system.Name);
 			return new SecVestStatus()
 			{
-				Name = "Home Sweet Home"
+				Name = system.Name,
+				Partitions = partitions
 			};
 		}
 
@@ -63,7 +78,7 @@ namespace W10Home.Plugin.ABUS.SecVest
 		{
 			T partition = default(T);
 
-			HttpResponseMessage response = await _client.GetAsync(query);
+			HttpResponseMessage response = await _client.GetAsync(new Uri(_baseUrl + query));
 			if (response.IsSuccessStatusCode)
 			{
 				partition = JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());

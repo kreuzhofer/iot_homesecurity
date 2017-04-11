@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Azure.Devices.Shared;
 using Newtonsoft.Json;
 using W10Home.Core.Configuration;
 using W10Home.Core.Queing;
@@ -131,6 +132,7 @@ namespace W10Home.Plugin.AzureIoTHub
 						TransportType.Mqtt);
 				}
 				await _deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
+				await _deviceClient.SetDesiredPropertyUpdateCallback(DesiredPropertyUpdateCallback, null);
 
 				MessageReceiverLoop(); // launch message loop in the background
 			}
@@ -140,6 +142,11 @@ namespace W10Home.Plugin.AzureIoTHub
 				//TODO Log
 			}
 
+		}
+
+		private async Task DesiredPropertyUpdateCallback(TwinCollection desiredProperties, object userContext)
+		{
+			Debug.WriteLine(desiredProperties.ToString());
 		}
 
 		private class AuthenticationProvider : IAuthenticationMethod

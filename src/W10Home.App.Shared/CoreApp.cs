@@ -59,7 +59,7 @@ namespace W10Home.App.Shared
 					Type = "SecVestDevice",
 					Properties = new Dictionary<string, string>()
 					{
-						{"ConnectionString", "https://192.168.0.22:4433/" },
+						{"ConnectionString", "https://192.168.178.127:4433/" },
 						{"Username", "1234" },
 						{"Password", "1234" }
 					}
@@ -78,9 +78,10 @@ namespace W10Home.App.Shared
 						secvest = registry.getDevice(""secvest"");
 						statusChannel = secvest.getChannel(""status"");
 						statusValue = statusChannel.read();
-
-						-- send status to iothub queue
-						queue.enqueue(""iothub"", ""status@secvest"", statusValue);
+						if(statusValue != nil) then
+							-- send status to iothub queue
+							queue.enqueue(""iothub"", ""status@secvest"", statusValue);
+							end;
 						return 0;
 					end;
 					"

@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Security.Cryptography.Certificates;
+using Windows.UI.Core;
+using Windows.Web.Http;
+using Windows.Web.Http.Filters;
+using Windows.Web.Http.Headers;
 using W10Home.Core.Standard;
 using W10Home.Interfaces;
 using W10Home.Interfaces.Configuration;
@@ -29,15 +32,18 @@ namespace W10Home.Plugin.ABUS.SecVest
 			var username = configuration.Properties["Username"];
 			var password = configuration.Properties["Password"];
 
-			// create default HttpClient used by all channels
-			_httpClient = new HttpClient();
-		    _httpClient.BaseAddress = new Uri(connectionString);
-			_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Base64.EncodeTo64(username+":"+password));
+		    var filter = new HttpBaseProtocolFilter();
+			filter.IgnorableServerCertificateErrors.Add(ChainValidationResult.Untrusted);
+			filter.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
 
-			_channels.Add(new SecVestStatusChannel(_httpClient));
+			// create default HttpClient used by all channels
+			_httpClient = new HttpClient(filter);
+			_httpClient.DefaultRequestHeaders.Authorization = new HttpCredentialsHeaderValue("Basic", Base64.EncodeTo64(username+":"+password));
+
+			_channels.Add(new SecVestStatusChannel(_httpClient, connectionString));
 		}
 
-		public override IEnumerable<IDeviceChannel> GetChannels()
+	    public override IEnumerable<IDeviceChannel> GetChannels()
 	    {
 		    return _channels;
 	    }
