@@ -128,8 +128,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\W10Home.Core.Standard\W10Home.Core.Standard.csproj">
-      <Project>{17f72865-2575-47dd-b1d6-d4a0397fd3e6}</Project>
+    <ProjectReference Include="..\W10Home.Core\W10Home.Core.Standard.csproj">
+      <Project>{C3C103FF-8993-420D-8F50-979ECA9C7D73}</Project>
       <Name>W10Home.Core.Standard</Name>
     </ProjectReference>
     <ProjectReference Include="..\W10Home.Interfaces\W10Home.Interfaces.csproj">

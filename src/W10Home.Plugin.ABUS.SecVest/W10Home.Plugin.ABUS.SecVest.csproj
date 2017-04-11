@@ -118,8 +118,8 @@
     <EmbeddedResource Include="Properties\W10Home.Plugin.ABUS.SecVest.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\W10Home.Core.Standard\W10Home.Core.Standard.csproj">
-      <Project>{17F72865-2575-47DD-B1D6-D4A0397FD3E6}</Project>
+    <ProjectReference Include="..\W10Home.Core\W10Home.Core.Standard.csproj">
+      <Project>{C3C103FF-8993-420D-8F50-979ECA9C7D73}</Project>
       <Name>W10Home.Core.Standard</Name>
     </ProjectReference>
     <ProjectReference Include="..\W10Home.Interfaces\W10Home.Interfaces.csproj">

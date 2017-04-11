@@ -113,8 +113,8 @@
     <EmbeddedResource Include="Properties\W10Home.Plugin.Twilio.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\W10Home.Core.Standard\W10Home.Core.Standard.csproj">
-      <Project>{17f72865-2575-47dd-b1d6-d4a0397fd3e6}</Project>
+    <ProjectReference Include="..\W10Home.Core\W10Home.Core.Standard.csproj">
+      <Project>{c3c103ff-8993-420d-8f50-979eca9c7d73}</Project>
       <Name>W10Home.Core.Standard</Name>
     </ProjectReference>
     <ProjectReference Include="..\W10Home.Interfaces\W10Home.Interfaces.csproj">

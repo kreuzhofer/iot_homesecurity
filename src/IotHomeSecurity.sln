@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.IoTCoreApp", "W10Home.WebApp\W10Home.IoTCoreApp.csproj", "{88D70CF5-DA46-4568-8055-2DC337144B33}"
 EndProject
@@ -23,7 +23,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "W10Home.App.Shared", "W10Ho
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.Plugin.ABUS.SecVest", "W10Home.Plugin.ABUS.SecVest\W10Home.Plugin.ABUS.SecVest.csproj", "{0ACAF795-9493-4251-AE48-2A11EDC483BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.Core.Standard", "W10Home.Core.Standard\W10Home.Core.Standard.csproj", "{17F72865-2575-47DD-B1D6-D4A0397FD3E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W10Home.Core.Standard", "W10Home.Core\W10Home.Core.Standard.csproj", "{C3C103FF-8993-420D-8F50-979ECA9C7D73}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -196,22 +196,22 @@ Global
 		{0ACAF795-9493-4251-AE48-2A11EDC483BA}.Release|x64.Build.0 = Release|x64
 		{0ACAF795-9493-4251-AE48-2A11EDC483BA}.Release|x86.ActiveCfg = Release|x86
 		{0ACAF795-9493-4251-AE48-2A11EDC483BA}.Release|x86.Build.0 = Release|x86
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Debug|ARM.Build.0 = Debug|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Debug|x64.Build.0 = Debug|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Debug|x86.Build.0 = Debug|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Release|ARM.ActiveCfg = Release|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Release|ARM.Build.0 = Release|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Release|x64.ActiveCfg = Release|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Release|x64.Build.0 = Release|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Release|x86.ActiveCfg = Release|Any CPU
-		{17F72865-2575-47DD-B1D6-D4A0397FD3E6}.Release|x86.Build.0 = Release|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Debug|ARM.Build.0 = Debug|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Debug|x64.Build.0 = Debug|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Debug|x86.Build.0 = Debug|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Release|ARM.ActiveCfg = Release|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Release|ARM.Build.0 = Release|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Release|x64.ActiveCfg = Release|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Release|x64.Build.0 = Release|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Release|x86.ActiveCfg = Release|Any CPU
+		{C3C103FF-8993-420D-8F50-979ECA9C7D73}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
