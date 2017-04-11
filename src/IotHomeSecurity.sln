@@ -23,7 +23,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "W10Home.App.Shared", "W10Ho
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.Plugin.ABUS.SecVest", "W10Home.Plugin.ABUS.SecVest\W10Home.Plugin.ABUS.SecVest.csproj", "{0ACAF795-9493-4251-AE48-2A11EDC483BA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W10Home.Core.Standard", "W10Home.Core\W10Home.Core.Standard.csproj", "{C3C103FF-8993-420D-8F50-979ECA9C7D73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W10Home.Core", "W10Home.Core\W10Home.Core.csproj", "{C3C103FF-8993-420D-8F50-979ECA9C7D73}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
