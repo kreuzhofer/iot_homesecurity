@@ -19,21 +19,21 @@ namespace W10Home.DevicePortal.DataAccess
 			_deviceConfigTableRef.CreateIfNotExists();
 		}
 
-		public async Task SaveConfig(string accountId, string deviceId, string configurationJson)
+		public async Task SaveConfig(string deviceId, string configurationKey, string configurationJson)
 		{
 			var entity = new DeviceConfigurationEntity()
 			{
-				PartitionKey = accountId,
-				RowKey = deviceId,
+				PartitionKey = deviceId,
+				RowKey = configurationKey,
 				Configuration = configurationJson
 			};
 			var operation = TableOperation.InsertOrReplace(entity);
 			await _deviceConfigTableRef.ExecuteAsync(operation);
 		}
 
-		public async Task<DeviceConfigurationEntity> LoadConfig(string accountId, string deviceId)
+		public async Task<DeviceConfigurationEntity> LoadConfig(string deviceId, string configurationKey)
 		{
-			var operation = TableOperation.Retrieve<DeviceConfigurationEntity>(accountId, deviceId);
+			var operation = TableOperation.Retrieve<DeviceConfigurationEntity>(deviceId, configurationKey);
 			var result = await _deviceConfigTableRef.ExecuteAsync(operation);
 			return result.Result as DeviceConfigurationEntity;
 		}

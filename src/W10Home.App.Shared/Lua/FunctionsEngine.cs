@@ -31,9 +31,8 @@ namespace W10Home.App.Shared
 			{
 				if (function.TriggerType == FunctionTriggerType.RecurringIntervalTimer)
 				{
-					var timerFunction = (RecurringIntervalTriggeredFunctionDeclaration)function;
 					var script = SetupNewScript();
-					script.DoString(timerFunction.Code);
+					script.DoString(function.Code);
 					var timer = new Timer(state =>
 					{
 						lock (script)
@@ -47,20 +46,19 @@ namespace W10Home.App.Shared
 								Debug.WriteLine(ex.Message);
 								//todo log
 							}						}
-					}, null ,timerFunction.Interval, timerFunction.Interval);
+					}, null , function.Interval, function.Interval);
 					_timers.Add(timer);
 				}
 				else if (function.TriggerType == FunctionTriggerType.MessageQueue)
 				{
-					var queueFunction = (QueueMessageTriggeredFunctionDeclaration) function;
 					var script = SetupNewScript();
-					script.DoString(queueFunction.Code);
+					script.DoString(function.Code);
 					var task = Task.Factory.StartNew(() =>
 					{
 						var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
 						do
 						{
-							if (queue.TryDeque(queueFunction.QueueName, out QueueMessage message))
+							if (queue.TryDeque(function.QueueName, out QueueMessage message))
 							{
 								try
 								{

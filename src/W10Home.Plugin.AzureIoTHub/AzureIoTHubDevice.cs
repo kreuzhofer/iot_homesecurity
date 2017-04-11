@@ -6,6 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Security.Authentication.Web.Provider;
+using Windows.Storage;
+using Windows.System;
+using Windows.Web.Http;
 using Microsoft.Azure.Devices.Shared;
 using Newtonsoft.Json;
 using W10Home.Core.Configuration;
@@ -134,6 +138,15 @@ namespace W10Home.Plugin.AzureIoTHub
 				await _deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
 				await _deviceClient.SetDesiredPropertyUpdateCallback(DesiredPropertyUpdateCallback, null);
 
+				if (configuration.Properties.ContainsKey("TryLoadConfiguration"))
+				{
+					var twin = await _deviceClient.GetTwinAsync(); // get configuration from server
+					if (twin.Properties.Desired.Contains("configurationUrl"))
+					{
+						await DownloadConfigAndReboot(twin.Properties.Desired);
+					}
+				}
+
 				MessageReceiverLoop(); // launch message loop in the background
 			}
 			catch (Exception ex)
@@ -147,6 +160,25 @@ namespace W10Home.Plugin.AzureIoTHub
 		private async Task DesiredPropertyUpdateCallback(TwinCollection desiredProperties, object userContext)
 		{
 			Debug.WriteLine(desiredProperties.ToString());
+			if (desiredProperties.Contains("configurationUrl"))
+			{
+				await DownloadConfigAndReboot(desiredProperties);
+			}
+		}
+
+		private async Task DownloadConfigAndReboot(TwinCollection desiredProperties)
+		{
+// download file
+			var fileToDownload = desiredProperties["configurationUrl"].ToString();
+			var httpClient = new HttpClient();
+			var configFileContent = await httpClient.GetStringAsync(new Uri(fileToDownload));
+
+			// save to disk
+			var localStorage = ApplicationData.Current.LocalFolder;
+			var file = await localStorage.CreateFileAsync("configuration.json", CreationCollisionOption.ReplaceExisting);
+			await FileIO.WriteTextAsync(file, configFileContent);
+
+			ShutdownManager.BeginShutdown(ShutdownKind.Restart, TimeSpan.Zero);
 		}
 
 		private class AuthenticationProvider : IAuthenticationMethod

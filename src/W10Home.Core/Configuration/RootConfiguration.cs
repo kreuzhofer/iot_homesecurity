@@ -11,7 +11,7 @@ namespace W10Home.Core.Configuration
 {
 	public class RootConfiguration
 	{
-		public List<IDeviceConfiguration> DeviceConfigurations { get; set; }
-		public List<IFunctionDeclaration> Functions { get; set; }
+		public List<DeviceConfiguration> DeviceConfigurations { get; set; }
+		public List<FunctionDeclaration> Functions { get; set; }
 	}
 }

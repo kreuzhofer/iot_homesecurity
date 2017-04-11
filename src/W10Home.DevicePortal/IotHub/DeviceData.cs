@@ -28,7 +28,6 @@ namespace W10Home.DevicePortal.IotHub
         public int MessageCount { get; set; }
         public string State { get; set; }
         public string SuspensionReason { get; set; }
-		[DataType(DataType.MultilineText)]
 		public string Configuration { get; set; }
 
 	    public int CompareTo(DeviceData other)

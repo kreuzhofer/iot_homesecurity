@@ -38,11 +38,11 @@
   <ItemGroup>
     <Compile Include="ChannelType.cs" />
     <Compile Include="Configuration\FunctionTriggerType.cs" />
+    <Compile Include="Configuration\IDeviceConfiguration.cs" />
+    <Compile Include="Configuration\IFunctionDeclaration.cs" />
     <Compile Include="IDeviceChannel.cs" />
     <Compile Include="IDevice.cs" />
-    <Compile Include="Configuration\IDeviceConfiguration.cs" />
     <Compile Include="IDeviceRegistry.cs" />
-    <Compile Include="Configuration\IFunctionDeclaration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

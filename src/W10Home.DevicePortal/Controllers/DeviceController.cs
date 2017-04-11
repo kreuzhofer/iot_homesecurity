@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -36,7 +37,7 @@ namespace W10Home.DevicePortal.Controllers
 
 			var deviceData = new DeviceData(device);
 			var configService = new DeviceConfigurationService();
-		    var configData = await configService.LoadConfig("daniel", id);
+		    var configData = await configService.LoadConfig(id, "configurationFileUrl");
 		    if (configData != null)
 		    {
 			    deviceData.Configuration = configData.Configuration;
@@ -52,10 +53,10 @@ namespace W10Home.DevicePortal.Controllers
 
 			var deviceData = new DeviceData(device);
 			var configService = new DeviceConfigurationService();
-			var configData = await configService.LoadConfig("daniel", id);
+			var configData = await configService.LoadConfig(id, "configurationFileUrl");
 			if (configData != null)
 			{
-				deviceData.Configuration = JsonConvert.DeserializeObject<string>(configData.Configuration);
+				deviceData.Configuration = configData.Configuration;
 			}
 
 			return View(deviceData);
@@ -66,14 +67,23 @@ namespace W10Home.DevicePortal.Controllers
 	    {
 			// save configuration data
 			var configService = new DeviceConfigurationService();
-		    var configJson = JsonConvert.SerializeObject(data.Configuration);
+			await configService.SaveConfig(data.Id, "configurationFileUrl", data.Configuration);
 
-			await configService.SaveConfig("daniel", data.Id, configJson);
+		    var patch = new
+		    {
+				properties = new
+				{
+					desired = new
+					{
+						configurationUrl = data.Configuration,
+					}
+				}
+		    };
 
 			// get device management client to send the congfiguration
 			var registryManager = DevicesManagementSingleton.GlobalRegistryManager;
 		    var twin = await registryManager.GetTwinAsync(data.Id);
-		    await registryManager.UpdateTwinAsync(data.Id, configJson, twin.ETag);
+		    await registryManager.UpdateTwinAsync(data.Id, JsonConvert.SerializeObject(patch), twin.ETag);
 
 			return await Edit(data.Id);
 	    }

@@ -22,6 +22,7 @@ using W10Home.Plugin.AzureIoTHub;
 using W10Home.Plugin.ETATouch;
 using W10Home.Plugin.Twilio;
 using System.Linq;
+using Windows.Storage;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using W10Home.Interfaces.Configuration;
@@ -37,75 +38,102 @@ namespace W10Home.App.Shared
 		public async Task Run()
 	    {
 			// Build configuration object to configure all devices
-			var configurationObject = new RootConfiguration();
+			RootConfiguration configurationObject = new RootConfiguration();
+
+			var localStorage = ApplicationData.Current.LocalFolder;
+			var file = await localStorage.TryGetItemAsync("configuration.json");
+		    if (file != null)
+		    {
+			    // local file content
+			    var configFileContent = await FileIO.ReadTextAsync((IStorageFile) file);
+			    configurationObject = JsonConvert.DeserializeObject<RootConfiguration>(configFileContent);
+		    }
+		    else
+		    {
+			    configurationObject.DeviceConfigurations = new List<DeviceConfiguration>(new[]
+			    {
+				    // by default iot hub configuration now uses TPM chip
+				    new DeviceConfiguration
+				    {
+					    Name = "iothub",
+					    Type = "AzureIoTHubDevice",
+					    Properties = new Dictionary<string, string>()
+					    {
+							{ "TryLoadConfiguration", "true" }
+						    //{ "ConnectionString", "IOT_HUB_CONNECTION_STRING_ONLY_FOR_DEBUGGING"}
+					    }
+				    }
+			    });
+		    }
+
 
 			// check whether there is alread an iot hub configuration in the TPM
 
-			configurationObject.DeviceConfigurations = new List<IDeviceConfiguration>(new[]
-			{
-				// by default iot hub configuration now uses TPM chip
-				new DeviceConfiguration
-				{
-					Name = "iothub",
-					Type = "AzureIoTHubDevice",
-					Properties = new Dictionary<string, string>()
-					{
-						//{ "ConnectionString", "IOT_HUB_CONNECTION_STRING_ONLY_FOR_DEBUGGING"}
-					}
-				},
-				new DeviceConfiguration()
-				{
-					Name = "secvest",
-					Type = "SecVestDevice",
-					Properties = new Dictionary<string, string>()
-					{
-						{"ConnectionString", "https://192.168.178.127:4433/" },
-						{"Username", "1234" },
-						{"Password", "1234" }
-					}
-				}
-			});
-			configurationObject.Functions = new List<IFunctionDeclaration>(new IFunctionDeclaration[]
-			{
-				new RecurringIntervalTriggeredFunctionDeclaration()
-				{
-					TriggerType = FunctionTriggerType.RecurringIntervalTimer,
-					Name = "PollSecvestEveryMinute",
-					Interval = 10*1000, // ten seconds test interval
-					Code = @"
-					function run()
-						-- get status from secvest every minute
-						secvest = registry.getDevice(""secvest"");
-						statusChannel = secvest.getChannel(""status"");
-						statusValue = statusChannel.read();
-						if(statusValue != nil) then
-							-- send status to iothub queue
-							queue.enqueue(""iothub"", ""status@secvest"", statusValue);
-							end;
-						return 0;
-					end;
-					"
-				},
-				new QueueMessageTriggeredFunctionDeclaration()
-				{
-					TriggerType = FunctionTriggerType.MessageQueue,
-					Name = "WindSensorQueueHandler",
-					QueueName = "windsensor",
-					Code = @"
-					function run(message)
-						if(message.Key == ""Wind"") then
-							message.Key = ""windspeed@windsensor"";
-						end;
-						if(message.Key == ""Temperature"") then
-							message.Key = ""temperature@windsensor"";
-						end;
+			//configurationObject.DeviceConfigurations = new List<IDeviceConfiguration>(new[]
+			//{
+			//	// by default iot hub configuration now uses TPM chip
+			//	new DeviceConfiguration
+			//	{
+			//		Name = "iothub",
+			//		Type = "AzureIoTHubDevice",
+			//		Properties = new Dictionary<string, string>()
+			//		{
+			//			//{ "ConnectionString", "IOT_HUB_CONNECTION_STRING_ONLY_FOR_DEBUGGING"}
+			//		}
+			//	},
+			//	new DeviceConfiguration()
+			//	{
+			//		Name = "secvest",
+			//		Type = "SecVestDevice",
+			//		Properties = new Dictionary<string, string>()
+			//		{
+			//			{"ConnectionString", "https://192.168.178.127:4433/" },
+			//			{"Username", "1234" },
+			//			{"Password", "1234" }
+			//		}
+			//	}
+			//});
+			//configurationObject.Functions = new List<IFunctionDeclaration>(new IFunctionDeclaration[]
+			//{
+			//	new RecurringIntervalTriggeredFunctionDeclaration()
+			//	{
+			//		TriggerType = FunctionTriggerType.RecurringIntervalTimer,
+			//		Name = "PollSecvestEveryMinute",
+			//		Interval = 60*1000, // polling interval measured in miliseconds
+			//		Code = @"
+			//		function run()
+			//			-- get status from secvest every minute
+			//			secvest = registry.getDevice(""secvest"");
+			//			statusChannel = secvest.getChannel(""status"");
+			//			statusValue = statusChannel.read();
+			//			if(statusValue != nil) then
+			//				-- send status to iothub queue
+			//				queue.enqueue(""iothub"", ""status@secvest"", statusValue);
+			//				end;
+			//			return 0;
+			//		end;
+			//		"
+			//	},
+			//	new QueueMessageTriggeredFunctionDeclaration()
+			//	{
+			//		TriggerType = FunctionTriggerType.MessageQueue,
+			//		Name = "WindSensorQueueHandler",
+			//		QueueName = "windsensor",
+			//		Code = @"
+			//		function run(message)
+			//			if(message.Key == ""Wind"") then
+			//				message.Key = ""windspeed@windsensor"";
+			//			end;
+			//			if(message.Key == ""Temperature"") then
+			//				message.Key = ""temperature@windsensor"";
+			//			end;
 
-						queue.enqueue(""iothub"", message); -- simply forward to iot hub message queue
-						return 0;
-					end;
-					"
-				}
-			});
+			//			queue.enqueue(""iothub"", message); -- simply forward to iot hub message queue
+			//			return 0;
+			//		end;
+			//		"
+			//	}
+			//});
 
 			var configString = JsonConvert.SerializeObject(configurationObject, Formatting.Indented);
 			Debug.WriteLine(configString);
