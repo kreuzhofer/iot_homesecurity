@@ -14,9 +14,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Configuration\DeviceRegistry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\QueueController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreApp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lua\FunctionsEngine.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Scripts\main.lua" />
     <None Include="$(MSBuildThisFileDirectory)Web\js\main.ts" />
   </ItemGroup>
   <ItemGroup>
@@ -38,5 +38,8 @@
     <Content Include="$(MSBuildThisFileDirectory)Web\js\bootstrap.min.js" />
     <Content Include="$(MSBuildThisFileDirectory)Web\js\main.js" />
     <Content Include="$(MSBuildThisFileDirectory)Web\js\npm.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Lua\" />
   </ItemGroup>
 </Project>

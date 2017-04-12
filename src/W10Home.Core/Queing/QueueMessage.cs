@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace W10Home.Core.Queing
 {
-    public sealed class QueueMessage
+    public class QueueMessage
     {
 		public string Key { get; set; }
 		public string Value { get; set; }

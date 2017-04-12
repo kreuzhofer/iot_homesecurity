@@ -4,29 +4,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using W10Home.Core.Configuration;
+using W10Home.Core.Standard;
 using W10Home.Interfaces;
+using W10Home.Interfaces.Configuration;
 
 namespace W10Home.Plugin.Twilio
 {
-	public class TwilioDevice : IDevice
+	public class TwilioDevice : DeviceBase
 	{
 		private string _accountSid;
 		private string _authToken;
-		private List<IChannel> _channels = new List<IChannel>();
+		private List<IDeviceChannel> _channels = new List<IDeviceChannel>();
 
-		public Task<IEnumerable<IChannel>> GetChannelsAsync()
+		public override IEnumerable<IDeviceChannel> GetChannels()
 		{
-			return Task.FromResult(_channels.AsEnumerable());
+			return _channels.AsEnumerable();
 		}
 
-		public async Task InitializeAsync(IDeviceConfiguration configuration)
+		public override async Task InitializeAsync(IDeviceConfiguration configuration)
 		{
 			_accountSid = configuration.Properties["AccountSid"];
 			_authToken = configuration.Properties["AuthToken"];
 			_channels.Add(new TwilioSmsChannel(_accountSid, _authToken, configuration.Properties["OutgoingPhone"], configuration.Properties["ReceiverPhone"]));
 		}
 
-		public async Task Teardown()
+		public override async Task Teardown()
 		{
 		}
 	}
