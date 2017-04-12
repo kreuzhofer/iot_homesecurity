@@ -11,6 +11,7 @@
 //*********************************************************
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.WebPages;
 using Microsoft.Azure.Devices;
@@ -28,7 +29,12 @@ namespace W10Home.DevicePortal.IotHub
         public int MessageCount { get; set; }
         public string State { get; set; }
         public string SuspensionReason { get; set; }
+
+		// Additional properties
 		public string Configuration { get; set; }
+	    public IEnumerable<DeviceStateEntity> StatusList { get; set; }
+
+// Url for config file
 
 	    public int CompareTo(DeviceData other)
         {

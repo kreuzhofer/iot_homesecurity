@@ -82,3 +82,35 @@
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>
+
+<div>
+    <h4>DeviceStatus</h4>
+    <hr />
+    <table class="table">
+        <tr>
+            <th>Channel</th>
+        </tr>
+        <tr>
+            <th>ChannelType</th>
+        </tr>
+        <tr>
+            <th>Value</th>
+        </tr>
+        
+        @foreach (var item in Model.StatusList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem=>item.ChannelKey)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChannelType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChannelValue)
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>

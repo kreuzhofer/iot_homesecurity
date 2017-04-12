@@ -50,9 +50,9 @@ namespace W10Home.Core.Queing
             return _queues[queue].IsEmpty;
         }
 
-	    public void Enqueue(string queue, string key, object value)
+	    public void Enqueue(string queue, string key, object value, string tag)
 	    {
-		    Enqueue(queue, new QueueMessage(key, JsonConvert.SerializeObject(value)));
+		    Enqueue(queue, new QueueMessage(key, JsonConvert.SerializeObject(value), tag));
 	    }
     }
 }

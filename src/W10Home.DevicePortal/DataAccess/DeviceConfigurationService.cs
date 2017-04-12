@@ -8,14 +8,13 @@ namespace W10Home.DevicePortal.DataAccess
 {
 	public class DeviceConfigurationService
 	{
-		private readonly CloudTableClient _tableClient;
 		private readonly CloudTable _deviceConfigTableRef;
 
 		public DeviceConfigurationService()
 		{
 			var connection = CloudConfigurationManager.GetSetting("DevicePortalStorageAccount");
-			_tableClient = CloudStorageAccount.Parse(connection).CreateCloudTableClient();
-			_deviceConfigTableRef = _tableClient.GetTableReference("DeviceConfiguration");
+			var tableClient = CloudStorageAccount.Parse(connection).CreateCloudTableClient();
+			_deviceConfigTableRef = tableClient.GetTableReference("DeviceConfiguration");
 			_deviceConfigTableRef.CreateIfNotExists();
 		}
 
