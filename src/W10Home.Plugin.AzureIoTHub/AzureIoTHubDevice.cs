@@ -26,6 +26,7 @@ namespace W10Home.Plugin.AzureIoTHub
 	{
 		private DeviceClient _deviceClient;
 		private string _deviceId;
+		private string _deviceType = "RaspberryPiGateway_v1";
 
 		private async void MessageReceiverLoop()
 		{
@@ -37,7 +38,7 @@ namespace W10Home.Plugin.AzureIoTHub
 					var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
 					if (queue.TryPeek("iothub", out QueueMessage queuemessage))
 					{
-						if (await SendMessageToIoTHubAsync(queuemessage.Key, queuemessage.Value))
+						if (await SendChannelMessageToIoTHubAsync(queuemessage.Key, queuemessage.Value, queuemessage.Tag))
 						{
 							queue.TryDeque("iothub", out QueueMessage pop);
 						};
@@ -70,7 +71,20 @@ namespace W10Home.Plugin.AzureIoTHub
 			} while (true);
 		}
 
-		private async Task<bool> SendMessageToIoTHubAsync(string key, object value)
+		public async Task<bool> SendLogMessageToIoTHubAsync(string severity, string message)
+		{
+			var messageObj = new IotHubLogMessage()
+			{
+				DeviceId = _deviceId,
+				DeviceType = _deviceType,
+				Severity = severity,
+				Message = message,
+				LocalTimestamp = $"{DateTime.Now.ToUniversalTime():O}"
+			};
+			return await SendMessageToIoTHubAsync(messageObj, "Log");
+		}
+
+		public async Task<bool> SendChannelMessageToIoTHubAsync(string key, object value, string channelType)
 		{
 			try
 			{
@@ -88,18 +102,34 @@ namespace W10Home.Plugin.AzureIoTHub
 					strvalue = $"{JsonConvert.SerializeObject(value)}";
 				}
 
-				var message = new IotHubMessage()
+				var message = new IotHubChannelMessage()
 				{
-					deviceId = _deviceId,
-					deviceType = "tbd",
-					channelKey = key,
-					channelValue = strvalue,
-					localtimestamp = $"{DateTime.Now.ToUniversalTime():O}"
+					DeviceId = _deviceId,
+					DeviceType = _deviceType,
+					ChannelType = channelType,
+					ChannelKey = key,
+					ChannelValue = strvalue,
+					LocalTimestamp = $"{DateTime.Now.ToUniversalTime():O}"
 				};
 
+				return await SendMessageToIoTHubAsync(message, "Channel");
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+				//TODO Log
+				return false;
+			}
+		}
+
+		private async Task<bool> SendMessageToIoTHubAsync(object message, string messageType)
+		{
+			try
+			{
 				var payload = JsonConvert.SerializeObject(message);
 
 				var msg = new Message(Encoding.UTF8.GetBytes(payload));
+				msg.Properties.Add("MessageType", messageType);
 
 				await _deviceClient.SendEventAsync(msg);
 				Debug.WriteLine(payload);
@@ -135,6 +165,8 @@ namespace W10Home.Plugin.AzureIoTHub
 						new AuthenticationProvider(),
 						TransportType.Mqtt);
 				}
+				await SendLogMessageToIoTHubAsync("Info", "Device connection established");
+
 				await _deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
 				await _deviceClient.SetDesiredPropertyUpdateCallback(DesiredPropertyUpdateCallback, null);
 
@@ -143,7 +175,7 @@ namespace W10Home.Plugin.AzureIoTHub
 					var twin = await _deviceClient.GetTwinAsync(); // get configuration from server
 					if (twin.Properties.Desired.Contains("configurationUrl"))
 					{
-						await DownloadConfigAndReboot(twin.Properties.Desired);
+						await DownloadConfigAndRestart(twin.Properties.Desired);
 					}
 				}
 
@@ -162,13 +194,13 @@ namespace W10Home.Plugin.AzureIoTHub
 			Debug.WriteLine(desiredProperties.ToString());
 			if (desiredProperties.Contains("configurationUrl"))
 			{
-				await DownloadConfigAndReboot(desiredProperties);
+				await DownloadConfigAndRestart(desiredProperties);
 			}
 		}
 
-		private async Task DownloadConfigAndReboot(TwinCollection desiredProperties)
+		private async Task DownloadConfigAndRestart(TwinCollection desiredProperties)
 		{
-// download file
+			// download file
 			var fileToDownload = desiredProperties["configurationUrl"].ToString();
 			var httpClient = new HttpClient();
 			var configFileContent = await httpClient.GetStringAsync(new Uri(fileToDownload));
@@ -178,7 +210,8 @@ namespace W10Home.Plugin.AzureIoTHub
 			var file = await localStorage.CreateFileAsync("configuration.json", CreationCollisionOption.ReplaceExisting);
 			await FileIO.WriteTextAsync(file, configFileContent);
 
-			ShutdownManager.BeginShutdown(ShutdownKind.Restart, TimeSpan.Zero);
+			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+			queue.Enqueue("management", "exit", null, null); // restart the app, StartupTask takes care of this
 		}
 
 		private class AuthenticationProvider : IAuthenticationMethod

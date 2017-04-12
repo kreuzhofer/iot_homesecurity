@@ -42,8 +42,10 @@ namespace W10Home.DevicePortal.Controllers
 		    {
 			    deviceData.Configuration = configData.Configuration;
 		    }
+		    var deviceStatusList = await new DeviceStateService().GetDeviceState(id);
+		    deviceData.StatusList = deviceStatusList;
 
-		    return View(new DeviceData(device));
+		    return View(deviceData);
 	    }
 
 		public async Task<ActionResult> Edit(string id)
