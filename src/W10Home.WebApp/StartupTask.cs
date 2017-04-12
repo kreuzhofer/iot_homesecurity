@@ -19,6 +19,7 @@ using W10Home.IoTCoreApp.Controllers;
 using W10Home.Core.Queing;
 using System.Threading;
 using System.Diagnostics;
+using Windows.System;
 using W10Home.Core.Configuration;
 using W10Home.Plugin.AzureIoTHub;
 using W10Home.Interfaces;
@@ -44,9 +45,61 @@ namespace W10Home.IoTCoreApp
 	        _coreApp = new CoreApp();
 			await _coreApp.Run();
 
+			// The message Loop Worker runs in the background and checks for specific messages
+			// which tell the CoreApp to either reboot the device or exit the app, which should
+			// restart of the app
+	        MessageLoopWorker();
+
 	        // Dont release deferral, otherwise app will stop
         }
 
+		private async void MessageLoopWorker()
+		{
+			IMessageQueue queue = null;
+			do
+			{
+				if (ServiceLocator.Current != null)
+				{
+					try
+					{
+						queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+					}
+					catch
+					{
+						/// ignore, might be too early
+					}
+				}
+			} while (queue == null);
+			do
+			{
+				if (queue.TryDeque("management", out QueueMessage message))
+				{
+					try
+					{
+						if (message.Key == "reboot")
+						{
+							ShutdownManager.BeginShutdown(ShutdownKind.Restart, TimeSpan.Zero);
+						}
+						else if (message.Key == "exit")
+						{
+							if (_deferral != null)
+							{
+								_deferral.Complete();
+								_deferral = null;
+								return;
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						Debug.WriteLine(ex.Message);
+						//todo log
+					}
+				}
+				await Task.Delay(250);
+			} while (true);
+		}
 
-    }
+
+	}
 }
