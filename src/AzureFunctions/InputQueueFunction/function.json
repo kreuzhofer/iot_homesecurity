@@ -1,0 +1,13 @@
+{
+  "bindings": [
+    {
+      "type": "eventHubTrigger",
+      "name": "myEventHubMessage",
+      "direction": "in",
+      "path": "logeventhub",
+      "connection": "logeventhub",
+      "consumerGroup": "$Default"
+    }
+  ],
+  "disabled": false
+}
