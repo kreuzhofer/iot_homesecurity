@@ -1,0 +1,38 @@
+SELECT
+    DeviceId,
+    DeviceType,
+    ChannelKey,
+    ChannelValue,
+    ChannelType,
+    LocalTimestamp
+INTO
+    [PowerBI]
+FROM
+    [iothub]
+TIMESTAMP BY LocalTimestamp
+
+SELECT
+    DeviceId,
+    DeviceType,
+    ChannelKey,
+    ChannelValue,
+    ChannelType,
+    LocalTimestamp
+INTO
+    [DeviceState]
+FROM
+    [iothub]
+TIMESTAMP BY LocalTimestamp
+
+SELECT
+    DeviceId,
+    DeviceType,
+    ChannelKey,
+    ChannelValue,
+    ChannelType,
+    LocalTimestamp
+INTO
+    [DeviceMessages]
+FROM
+    [iothub]
+TIMESTAMP BY LocalTimestamp
