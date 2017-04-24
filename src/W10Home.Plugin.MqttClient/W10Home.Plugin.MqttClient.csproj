@@ -107,7 +107,7 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MqttDevice.cs" />
+    <Compile Include="MqttClientDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\W10Home.MqttDevice.rd.xml" />
   </ItemGroup>

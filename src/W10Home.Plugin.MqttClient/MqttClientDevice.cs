@@ -11,7 +11,7 @@ using W10Home.Interfaces.Configuration;
 
 namespace W10Home.MqttDevice
 {
-    public class MqttDevice : DeviceBase
+    public class MqttClientDevice : DeviceBase
     {
 	    private MqttClient _mqttclient;
 	    private string _deviceid;
