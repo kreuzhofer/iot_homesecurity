@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\QueueController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreApp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lua\FunctionsEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketForwardingWorker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Web\js\main.ts" />
