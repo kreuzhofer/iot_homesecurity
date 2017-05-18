@@ -39,7 +39,7 @@ namespace W10Home.App.Shared
 		public async Task Run()
 	    {
 			// Build configuration object to configure all devices
-			RootConfiguration configurationObject = null;
+			RootConfiguration configurationObject = new RootConfiguration();
 
 			// first try to load the configuration file from the LocalFolder
 			var localStorage = ApplicationData.Current.LocalFolder;
@@ -77,42 +77,47 @@ namespace W10Home.App.Shared
 					Type = "AzureIoTHubDevice",
 					Properties = new Dictionary<string, string>()
 					{
-						//{ "ConnectionString", "IOT_HUB_CONNECTION_STRING_ONLY_FOR_DEBUGGING"}
+						//{ "ConnectionString", "HostName=ABUSIoTHub.azure-devices.de;DeviceId=IoTGateway;SharedAccessKey=dbfTELmRhBaq2uQih1sPCeU2D1t8a+WigDMWR1pdsl4="}
 					}
 				},
-				new DeviceConfiguration()
-				{
-					Name = "secvest",
-					Type = "SecVestDevice",
-					Properties = new Dictionary<string, string>()
-					{
-						{"ConnectionString", "https://192.168.178.127:4433/" },
-						{"Username", "1234" },
-						{"Password", "1234" }
-					}
-				}
+				//new DeviceConfiguration()
+				//{
+				//	Name = "secvest",
+				//	Type = "SecVestDevice",
+				//	Properties = new Dictionary<string, string>()
+				//	{
+				//		{"ConnectionString", "https://192.168.0.22:4433/" },
+				//		{"Username", "1234" },
+				//		{"Password", "1234" }
+				//	}
+				//},
+				//new DeviceConfiguration()
+				//{
+				//	Name = "cam1",
+				//	Type = ""
+				//}
 			});
 			configurationObject.Functions = new List<FunctionDeclaration>(new FunctionDeclaration[]
 			{
-				new FunctionDeclaration()
-				{
-					TriggerType = FunctionTriggerType.RecurringIntervalTimer,
-					Name = "PollSecvestEveryMinute",
-					Interval = 60*1000, // polling interval measured in miliseconds
-					Code = @"
-					function run()
-						-- get status from secvest every minute
-						secvest = registry.getDevice(""secvest"");
-						statusChannel = secvest.getChannel(""status"");
-						statusValue = statusChannel.read();
-						if(statusValue != nil) then
-							-- send status to iothub queue
-							queue.enqueue(""iothub"", ""status@secvest"", statusValue, ""json"");
-							end;
-						return 0;
-					end;
-					"
-				},
+				//new FunctionDeclaration()
+				//{
+				//	TriggerType = FunctionTriggerType.RecurringIntervalTimer,
+				//	Name = "PollSecvestEveryMinute",
+				//	Interval = 10*1000, // polling interval measured in miliseconds
+				//	Code = @"
+				//	function run()
+				//		-- get status from secvest every minute
+				//		secvest = registry.getDevice(""secvest"");
+				//		statusChannel = secvest.getChannel(""status"");
+				//		statusValue = statusChannel.read();
+				//		if(statusValue != nil) then
+				//			-- send status to iothub queue
+				//			queue.enqueue(""iothub"", ""status@secvest"", statusValue, ""json"");
+				//			end;
+				//		return 0;
+				//	end;
+				//	"
+				//},
 				new FunctionDeclaration()
 				{
 					TriggerType = FunctionTriggerType.MessageQueue,
@@ -130,6 +135,20 @@ namespace W10Home.App.Shared
 						end;
 
 						queue.enqueue(""iothub"", message); -- simply forward to iot hub message queue
+						return 0;
+					end;
+					"
+				},
+				new FunctionDeclaration()
+				{
+					TriggerType = FunctionTriggerType.MessageQueue,
+					Name = "SecvestOutputSwitchHandler",
+					QueueName = "secvestoutput",
+					Code = @"
+					function run(message)
+						secvest = registry.getDevice(""secvest"");
+						statusChannel = secvest.getChannel(""status"");
+						statusChannel.setOutput(message.Key, message.Value);
 						return 0;
 					end;
 					"
@@ -193,12 +212,13 @@ namespace W10Home.App.Shared
 		}
 		private async void EveryMinuteTimerCallbackAsync(object state)
 		{
+			//var iotHub = ServiceLocator.Current.GetInstance<AzureIoTHubDevice>();
+			//await iotHub.SendLogMessageToIoTHubAsync("Debug", "EveryMinuteTimerCallbackAsync started");
 		}
 
 		private async void EverySecondTimerCallback(object state)
 		{
-			var iotHub = ServiceLocator.Current.GetInstance<AzureIoTHubDevice>();
-			await iotHub.SendLogMessageToIoTHubAsync("Debug", "EverySecondTimerCallback started");
+
 		}
 	}
 }

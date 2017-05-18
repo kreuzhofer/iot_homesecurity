@@ -7,5 +7,6 @@ namespace W10Home.Plugin.ABUS.SecVest
 	{
 		public string Name { get; set; }
 		public List<SecVestPartition> Partitions { get; set; }
+		public List<SecVestOutput> Outputs { get; set; }
 	}
 }

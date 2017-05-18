@@ -10,7 +10,8 @@ namespace W10Home.Core.Queing
     {
         void Enqueue(string queue, QueueMessage message);
 	    void Enqueue(string queue, string key, object value, string tag);
-        bool TryDeque(string queue, out QueueMessage message);
+		void Enqueue(string queue, string key, string value, string tag);
+		bool TryDeque(string queue, out QueueMessage message);
 		bool TryPeek(string queue, out QueueMessage message);
 		bool IsEmpty(string queue);
     }

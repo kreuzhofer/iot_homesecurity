@@ -32,7 +32,7 @@ namespace W10Home.DevicePortal.IotHub
 
 		// Additional properties
 		public string Configuration { get; set; }
-	    public IEnumerable<DeviceStateEntity> StatusList { get; set; }
+	    public List<DeviceStateEntity> StatusList { get; set; }
 
 // Url for config file
 

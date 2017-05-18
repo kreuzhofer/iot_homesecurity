@@ -89,25 +89,25 @@
     <table class="table">
         <tr>
             <th>Channel</th>
-        </tr>
-        <tr>
             <th>ChannelType</th>
-        </tr>
-        <tr>
             <th>Value</th>
+            <th>Last Change</th>
         </tr>
         
         @foreach (var item in Model.StatusList)
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem=>item.ChannelKey)
+                    @Html.DisplayFor(modelItem=>item.channelkey)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ChannelType)
+                    @Html.DisplayFor(modelItem => item.channeltype)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ChannelValue)
+                    @Html.DisplayFor(modelItem => item.channelvalue)
+                </td>
+                <td>
+                    @DateTime.Parse(Html.DisplayFor(modelItem => item.localtimestamp).ToString()).ToLocalTime().ToString()
                 </td>
             </tr>
         }

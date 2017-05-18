@@ -250,4 +250,4 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
-/src/W10Home.DevicePortal/Web.Debug.config
+

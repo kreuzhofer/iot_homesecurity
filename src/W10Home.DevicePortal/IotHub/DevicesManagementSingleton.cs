@@ -11,6 +11,7 @@
 //*********************************************************
 
 using System.Configuration;
+using System.Diagnostics;
 using Microsoft.Azure.Devices;
 
 namespace W10Home.DevicePortal.IotHub
@@ -27,6 +28,7 @@ namespace W10Home.DevicePortal.IotHub
             {
                 if (_globalRegistryManager == null)
                 {
+					Debug.WriteLine(ConfigurationManager.ConnectionStrings["IotHub"].ConnectionString);
                     _globalRegistryManager = RegistryManager.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["IotHub"].ConnectionString);
                 }
 	            return _globalRegistryManager;
