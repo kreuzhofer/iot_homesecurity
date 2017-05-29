@@ -1,19 +1,20 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Azure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using W10Home.DevicePortal.Models;
 
 namespace W10Home.DevicePortal.DataAccess
 {
-	public class DeviceConfigurationService
-	{
+	public class DeviceConfigurationService : IDeviceConfigurationService
+    {
 		private readonly CloudTable _deviceConfigTableRef;
 
-		public DeviceConfigurationService()
+		public DeviceConfigurationService(IConfiguration configuration)
 		{
-			var connection = CloudConfigurationManager.GetSetting("DevicePortalStorageAccount");
-			var tableClient = CloudStorageAccount.Parse(connection).CreateCloudTableClient();
+		    var connection = configuration.GetSection("ConnectionStrings")["DevicePortalStorageAccount"];
+            var tableClient = CloudStorageAccount.Parse(connection).CreateCloudTableClient();
 			_deviceConfigTableRef = tableClient.GetTableReference("DeviceConfiguration");
 			_deviceConfigTableRef.CreateIfNotExistsAsync();
 		}

@@ -1,21 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using W10Home.DevicePortal.Models;
 
-namespace W10Home.DevicePortal.DataAccess
+namespace W10Home.NetCoreDevicePortal.DataAccess
 {
-	public class DeviceStateService
+	public class DeviceStateService : IDeviceStateService
 	{
 		private readonly CloudTable _deviceStateTableRef;
 
-		public DeviceStateService()
+		public DeviceStateService(IConfiguration configuration)
 		{
-			var connection = CloudConfigurationManager.GetSetting("DevicePortalStorageAccount");
+			var connection = configuration.GetSection("ConnectionStrings")["DevicePortalStorageAccount"];
 			var tableClient = CloudStorageAccount.Parse(connection).CreateCloudTableClient();
 			_deviceStateTableRef = tableClient.GetTableReference("DeviceState");
 			_deviceStateTableRef.CreateIfNotExistsAsync();
