@@ -136,10 +136,6 @@
       <Project>{b5026c36-9a23-46c9-8140-1e26ba08845d}</Project>
       <Name>W10Home.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\W10Home.MqttDevice\W10Home.MqttDevice.csproj">
-      <Project>{174a9f97-1dd6-4d50-8cd4-2052c525ef5a}</Project>
-      <Name>W10Home.MqttDevice</Name>
-    </ProjectReference>
     <ProjectReference Include="..\W10Home.Plugin.ABUS.SecVest\W10Home.Plugin.ABUS.SecVest.csproj">
       <Project>{0acaf795-9493-4251-ae48-2a11edc483ba}</Project>
       <Name>W10Home.Plugin.ABUS.SecVest</Name>

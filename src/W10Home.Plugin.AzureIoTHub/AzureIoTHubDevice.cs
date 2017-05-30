@@ -15,7 +15,9 @@ using Newtonsoft.Json;
 using W10Home.Core.Configuration;
 using W10Home.Core.Queing;
 using W10Home.Interfaces;
+#if USE_TPM
 using Microsoft.Devices.Tpm;
+#endif
 using Microsoft.Practices.ServiceLocation;
 using W10Home.Core.Standard;
 using W10Home.Interfaces.Configuration;
@@ -154,6 +156,7 @@ namespace W10Home.Plugin.AzureIoTHub
 					// Instantiate the Azure IoT Hub device client
 					_deviceClient = DeviceClient.CreateFromConnectionString(connectionString, TransportType.Mqtt);
 				}
+#if USE_TPM
 				else
 				{
 					// check tpm next
@@ -165,6 +168,7 @@ namespace W10Home.Plugin.AzureIoTHub
 						new AuthenticationProvider(),
 						TransportType.Mqtt);
 				}
+#endif
 				await SendLogMessageToIoTHubAsync("Info", "Device connection established");
 
 				await _deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
@@ -214,6 +218,7 @@ namespace W10Home.Plugin.AzureIoTHub
 			queue.Enqueue("management", "exit", null, null); // restart the app, StartupTask takes care of this
 		}
 
+#if USE_TPM
 		private class AuthenticationProvider : IAuthenticationMethod
 		{
 			public IotHubConnectionStringBuilder Populate(IotHubConnectionStringBuilder iotHubConnectionStringBuilder)
@@ -226,7 +231,7 @@ namespace W10Home.Plugin.AzureIoTHub
 				return AuthenticationMethodFactory.CreateAuthenticationWithToken(deviceId, sasToken).Populate(iotHubConnectionStringBuilder);
 			}
 		}
-
+#endif
 		private async Task<MethodResponse> HandleConfigureMethod(MethodRequest methodRequest, object userContext)
 		{
 			Debug.WriteLine("HandleConfigureMethod called");

@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:iot="http://schemas.microsoft.com/appx/manifest/iot/windows10" IgnorableNamespaces="uap mp iot">
-  <Identity Name="W10Home.IoTCoreApp-uwp" Publisher="CN=daniel" Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="7acc66ef-c95c-4653-bf72-48be07b6f898" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="30128DanielKreuzhofer.IoTHomesecurity" Publisher="CN=89613764-437E-44C3-8C77-D273D41F523B" Version="1.1.0.0" />
+  <mp:PhoneIdentity PhoneProductId="bed62629-0301-4b9e-9c5e-83b4436c462d" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>W10Home.IoTCoreApp</DisplayName>
-    <PublisherDisplayName>daniel</PublisherDisplayName>
+    <DisplayName>IoT_Homesecurity</DisplayName>
+    <PublisherDisplayName>Daniel Kreuzhofer</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App">
-      <uap:VisualElements DisplayName="W10Home.IoTCoreApp" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="W10Home.IoTCoreApp" BackgroundColor="transparent" AppListEntry="none">
+      <uap:VisualElements DisplayName="IoT_Homesecurity" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="W10Home.IoTCoreApp" BackgroundColor="transparent" AppListEntry="none">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
@@ -33,6 +33,6 @@
     <Capability Name="internetClient" />
     <Capability Name="internetClientServer" />
     <Capability Name="privateNetworkClientServer" />
-    <iot:Capability Name="systemManagement"/>
+    <iot:Capability Name="systemManagement" />
   </Capabilities>
 </Package>
