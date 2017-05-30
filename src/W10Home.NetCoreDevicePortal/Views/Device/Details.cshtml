@@ -1,0 +1,116 @@
+﻿@model W10Home.DevicePortal.IotHub.DeviceData
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>DeviceData</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ConnectionState)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ConnectionState)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastActivityTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastActivityTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastConnectionStateUpdatedTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastConnectionStateUpdatedTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastStateUpdatedTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastStateUpdatedTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MessageCount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MessageCount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.State)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.State)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SuspensionReason)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SuspensionReason)
+        </dd>
+        
+        <dt>
+            @Html.DisplayNameFor(model => model.Configuration)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Configuration)
+        </dd>
+
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+<div>
+    <h4>DeviceStatus</h4>
+    <hr />
+    <table class="table">
+        <tr>
+            <th>Channel</th>
+        </tr>
+        <tr>
+            <th>ChannelType</th>
+        </tr>
+        <tr>
+            <th>Value</th>
+        </tr>
+        
+        @foreach (var item in Model.StatusList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem=>item.ChannelKey)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChannelType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChannelValue)
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>
