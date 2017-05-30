@@ -54,15 +54,19 @@ namespace W10Home.Plugin.AzureIoTHub
 						var reader = new StreamReader(message.BodyStream);
 						var bodyString = await reader.ReadToEndAsync();
 						Debug.WriteLine(bodyString);
-						var messageObject = JsonConvert.DeserializeObject<QueueMessage>(bodyString);
-						if (messageObject == null) // maybe an incompatible message object -> throw away and continue
+						dynamic messageObject = JsonConvert.DeserializeObject(bodyString); // try to deserialize into something json...
+						if (messageObject == null) // maybe a json incompatible message object -> throw away and continue
 						{
 							continue;
 						}
-						if (messageObject.Key == "configure")
-						{
+						string queueName = messageObject.queue;
+						string key = messageObject.key;
+						string value = messageObject.value;
+						queue.Enqueue(queueName, key, value, "");
+						//if (messageObject.Key == "configure")
+						//{
 
-						}
+						//}
 					}
 				}
 				catch (Exception ex)

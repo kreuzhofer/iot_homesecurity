@@ -54,5 +54,10 @@ namespace W10Home.Core.Queing
 	    {
 		    Enqueue(queue, new QueueMessage(key, JsonConvert.SerializeObject(value), tag));
 	    }
-    }
+
+		public void Enqueue(string queue, string key, string value, string tag)
+		{
+			Enqueue(queue, new QueueMessage(key, value, tag));
+		}
+	}
 }

@@ -112,6 +112,7 @@
     <Compile Include="SecVestChannel.cs" />
     <Compile Include="SecVestDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\SecVestOutput.cs" />
     <Compile Include="SecVestStatus.cs" />
     <Compile Include="SecVestStatusChannel.cs" />
     <Compile Include="Utils\Base64.cs" />
