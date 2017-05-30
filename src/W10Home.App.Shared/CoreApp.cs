@@ -77,7 +77,7 @@ namespace W10Home.App.Shared
 					Type = "AzureIoTHubDevice",
 					Properties = new Dictionary<string, string>()
 					{
-						//{ "ConnectionString", "HostName=ABUSIoTHub.azure-devices.de;DeviceId=IoTGateway;SharedAccessKey=dbfTELmRhBaq2uQih1sPCeU2D1t8a+WigDMWR1pdsl4="}
+						//{ "ConnectionString", ""}
 					}
 				},
 				//new DeviceConfiguration()
