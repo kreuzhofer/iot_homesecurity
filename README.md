@@ -1,5 +1,5 @@
-# homeautomation
-Open Source Home Automation Framework for Windows 10 and Windows 10 IoT Core
+# iot_homesecurity
+Open source home automation and edge gateway framework for Windows 10 and Windows 10 IoT Core
 
 ## Introduction
 One of the main issues with home automation devices today is that they are mostly isolated solutions which are not interconnected and use incompatible proprietary protocols for communication.
