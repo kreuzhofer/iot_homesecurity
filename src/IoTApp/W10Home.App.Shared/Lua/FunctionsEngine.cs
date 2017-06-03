@@ -11,8 +11,6 @@ using W10Home.Core.Configuration;
 using W10Home.Core.Queing;
 using W10Home.Interfaces;
 using W10Home.Interfaces.Configuration;
-using W10Home.Plugin.ABUS.SecVest;
-using W10Home.Plugin.AzureIoTHub;
 
 namespace W10Home.App.Shared
 {
