@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.IoTCoreApp", "W10Home.WebApp\W10Home.IoTCoreApp.csproj", "{88D70CF5-DA46-4568-8055-2DC337144B33}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.IoTCoreApp", "W10Home.IoTApp\W10Home.IoTCoreApp.csproj", "{88D70CF5-DA46-4568-8055-2DC337144B33}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.Plugin.AzureIoTHub", "W10Home.Plugin.AzureIoTHub\W10Home.Plugin.AzureIoTHub.csproj", "{7BE70B2C-FD65-4769-A810-F8681E4478E4}"
 EndProject
