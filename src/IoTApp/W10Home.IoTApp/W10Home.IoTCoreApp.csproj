@@ -36,7 +36,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <OutputPath>bin\ARM\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;AZUREIOTHUB</DefineConstants>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;AZUREIOTHUB;ETATOUCH</DefineConstants>
     <Optimize>true</Optimize>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
@@ -142,6 +142,18 @@
     <ProjectReference Include="..\W10Home.Plugin.AzureIoTHub\W10Home.Plugin.AzureIoTHub.csproj">
       <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
       <Name>W10Home.Plugin.AzureIoTHub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.ETATouch\W10Home.Plugin.ETATouch.csproj">
+      <Project>{7f92bd3f-114b-431a-9b00-48aa60d22ead}</Project>
+      <Name>W10Home.Plugin.ETATouch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.HomeMatic\W10Home.Plugin.HomeMatic.csproj">
+      <Project>{b500eb85-8a90-45bc-aa6e-448dabb187cc}</Project>
+      <Name>W10Home.Plugin.HomeMatic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.MqttClient\W10Home.Plugin.MqttClient.csproj">
+      <Project>{174a9f97-1dd6-4d50-8cd4-2052c525ef5a}</Project>
+      <Name>W10Home.Plugin.MqttClient</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
