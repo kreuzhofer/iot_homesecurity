@@ -17,10 +17,18 @@ using W10Home.Interfaces;
 using W10Home.IoTCoreApp;
 using W10Home.IoTCoreApp.Auth;
 using W10Home.IoTCoreApp.Controllers;
+#if SECVEST
 using W10Home.Plugin.ABUS.SecVest;
+#endif
+#if AZUREIOTHUB
 using W10Home.Plugin.AzureIoTHub;
+#endif
+#if ETATOUCH
 using W10Home.Plugin.ETATouch;
+#endif
+#if TWILIO
 using W10Home.Plugin.Twilio;
+#endif
 using System.Linq;
 using Windows.Storage;
 using Windows.System;
@@ -160,10 +168,18 @@ namespace W10Home.App.Shared
 
 			// init device registry and add devices
 			var deviceRegistry = new DeviceRegistry();
-			deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
-			deviceRegistry.RegisterDeviceType<SecVestDevice>();
-			deviceRegistry.RegisterDeviceType<ETATouchDevice>();
-			deviceRegistry.RegisterDeviceType<TwilioDevice>();
+#if AZUREIOTHUB
+            deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
+#endif
+#if SECVEST
+            deviceRegistry.RegisterDeviceType<SecVestDevice>();
+#endif
+#if ETATOUCH
+            deviceRegistry.RegisterDeviceType<ETATouchDevice>();
+#endif
+#if TWILIO
+            deviceRegistry.RegisterDeviceType<TwilioDevice>();
+#endif
 
 			// add functions engine
 			var functionsEngine = new FunctionsEngine();
@@ -174,12 +190,19 @@ namespace W10Home.App.Shared
 			container.RegisterInstance<IDeviceRegistry>(deviceRegistry);
 			container.RegisterInstance(functionsEngine);
 
-			// register device instances
-		    container.RegisterType<AzureIoTHubDevice>(new ContainerControlledLifetimeManager());
-			container.RegisterType<SecVestDevice>(new ContainerControlledLifetimeManager());
-		    container.RegisterType<ETATouchDevice>(new ContainerControlledLifetimeManager());
-		    container.RegisterType<TwilioDevice>(new ContainerControlledLifetimeManager());
-
+            // register device instances
+#if AZUREIOTHUB
+            container.RegisterType<AzureIoTHubDevice>(new ContainerControlledLifetimeManager());
+#endif
+#if SECVEST
+            container.RegisterType<SecVestDevice>(new ContainerControlledLifetimeManager());
+#endif
+#if ETATOUCH
+            container.RegisterType<ETATouchDevice>(new ContainerControlledLifetimeManager());
+#endif
+#if TWILIO
+            container.RegisterType<TwilioDevice>(new ContainerControlledLifetimeManager());
+#endif
 			// make Unity container available to ServiceLocator
 			var locator = new UnityServiceLocator(container);
 			ServiceLocator.SetLocatorProvider(() => locator);
