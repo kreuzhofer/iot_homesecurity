@@ -19,6 +19,7 @@
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
     <PackageCertificateKeyFile>W10Home.DesktopApp_TemporaryKey.pfx</PackageCertificateKeyFile>
     <HockeyAppResourceId>190306ba9b774a43969df424ec3a4953</HockeyAppResourceId>
+    <PackageCertificateThumbprint>36D9FE487F1A5E68EF64DFD219CD93447F55C8C7</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -93,6 +94,7 @@
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="Connected Services\HockeyApp\ConnectedService.json" />
     <None Include="project.json" />
+    <None Include="W10Home.DesktopApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -107,7 +109,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="W10Home.DesktopApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\Default.rd.xml" />
