@@ -219,7 +219,7 @@ namespace W10Home.Plugin.AzureIoTHub
 			await FileIO.WriteTextAsync(file, configFileContent);
 
 			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-			queue.Enqueue("management", "exit", null, null); // restart the app, StartupTask takes care of this
+			queue.Enqueue("management", "reboot", null, null); // restart the app, StartupTask takes care of this
 		}
 
 #if USE_TPM
