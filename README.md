@@ -11,9 +11,11 @@ In the meanwhile I had another PoC with ABUS devices (Secvest alert panel and so
 The approach of the iot_homesecurity framework is to have a local broker device which has several device adapters to connect to the individual proprietary device interfaces, a local message bus and dynamic LUA functions to handle the different device messages, creating rules and make decisions as well as trigger device methods to react upon those messages.
 
 ## Supported devices
-- ETA heating systems - Read only access to the heating system's variables.
+- ETA heating systems - Read only access to the heating system's variables available. Still a bit rough.
 
-- Homematic central - In development
+- Homematic plugin - In development
+
+- ABUS SecVest plugin - In development
 
 ## Solutions
 - IoTApp - The device gateway. Runs in the local network of the user's home and talks to his local devices like the Homematic central, ETA heating system or ABUS alert panel or ABUS security camera.
