@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Security.Authentication.Web.Provider;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.System;
 using Windows.Web.Http;
 using Microsoft.Azure.Devices.Shared;
@@ -173,7 +174,16 @@ namespace W10Home.Plugin.AzureIoTHub
 						TransportType.Mqtt);
 				}
 #endif
-				await SendLogMessageToIoTHubAsync("Info", "Device connection established");
+#if USE_LIMPET
+				else
+				{
+				    var connectionString = await GetConnectionStringFromTpmAsync();
+				    _deviceId = connectionString.Split(';').Single(c => c.ToLower().StartsWith("deviceid")).Split('=')[1];
+				    // Instantiate the Azure IoT Hub device client
+				    _deviceClient = DeviceClient.CreateFromConnectionString(connectionString, TransportType.Mqtt);
+                }
+#endif
+                await SendLogMessageToIoTHubAsync("Info", "Device connection established");
 
 				await _deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
 				await _deviceClient.SetDesiredPropertyUpdateCallback(DesiredPropertyUpdateCallback, null);
@@ -236,7 +246,43 @@ namespace W10Home.Plugin.AzureIoTHub
 			}
 		}
 #endif
-		private async Task<MethodResponse> HandleConfigureMethod(MethodRequest methodRequest, object userContext)
+#if USE_LIMPET
+        /// <summary>
+        /// TPM access in release mode with .net native and Microsoft TPM library is not possible.
+        /// See https://github.com/Azure/azure-iot-hub-vs-cs/issues/9 for more information why this workaround is needed
+        /// </summary>
+        /// <returns></returns>
+        private async Task<string> GetConnectionStringFromTpmAsync()
+	    {
+	        var processLauncherOptions = new ProcessLauncherOptions();
+	        var standardOutput = new InMemoryRandomAccessStream();
+
+	        processLauncherOptions.StandardOutput = standardOutput;
+	        processLauncherOptions.StandardError = null;
+	        processLauncherOptions.StandardInput = null;
+
+	        var processLauncherResult = await ProcessLauncher.RunToCompletionAsync(@"c:\windows\system32\limpet.exe", "0 -ast", processLauncherOptions);
+	        if (processLauncherResult.ExitCode == 0)
+	        {
+	            using (var outStreamRedirect = standardOutput.GetInputStreamAt(0))
+	            {
+	                var size = standardOutput.Size;
+	                using (var dataReader = new DataReader(outStreamRedirect))
+	                {
+	                    var bytesLoaded = await dataReader.LoadAsync((uint)size);
+	                    var stringRead = dataReader.ReadString(bytesLoaded);
+	                    var result = stringRead.Trim();
+	                    return result;
+	                }
+	            }
+	        }
+	        else
+	        {
+	            throw new Exception("Cannot get connection string");
+	        }
+	    }
+#endif
+        private async Task<MethodResponse> HandleConfigureMethod(MethodRequest methodRequest, object userContext)
 		{
 			Debug.WriteLine("HandleConfigureMethod called");
 			return new MethodResponse(0);
