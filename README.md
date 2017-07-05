@@ -17,6 +17,8 @@ The approach of the iot_homesecurity framework is to have a local broker device 
 
 - ABUS SecVest plugin - In development
 
+- ABUS Security camera plugin - Planned
+
 ## Solutions
 - IoTApp - The device gateway. Runs in the local network of the user's home and talks to his local devices like the Homematic central, ETA heating system or ABUS alert panel or ABUS security camera.
 
