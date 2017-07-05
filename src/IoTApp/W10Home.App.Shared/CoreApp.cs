@@ -76,92 +76,92 @@ namespace W10Home.App.Shared
 			    });
 		    }
 
-			configurationObject.DeviceConfigurations = new List<DeviceConfiguration>(new[]
-			{
-				// by default iot hub configuration now uses TPM chip
-				new DeviceConfiguration
-				{
-					Name = "iothub",
-					Type = "AzureIoTHubDevice",
-					Properties = new Dictionary<string, string>()
-					{
-						//{ "ConnectionString", ""}
-					}
-				},
-				//new DeviceConfiguration()
-				//{
-				//	Name = "secvest",
-				//	Type = "SecVestDevice",
-				//	Properties = new Dictionary<string, string>()
-				//	{
-				//		{"ConnectionString", "https://192.168.0.22:4433/" },
-				//		{"Username", "1234" },
-				//		{"Password", "1234" }
-				//	}
-				//},
-				//new DeviceConfiguration()
-				//{
-				//	Name = "cam1",
-				//	Type = ""
-				//}
-			});
-			configurationObject.Functions = new List<FunctionDeclaration>(new FunctionDeclaration[]
-			{
-				//new FunctionDeclaration()
-				//{
-				//	TriggerType = FunctionTriggerType.RecurringIntervalTimer,
-				//	Name = "PollSecvestEveryMinute",
-				//	Interval = 10*1000, // polling interval measured in miliseconds
-				//	Code = @"
-				//	function run()
-				//		-- get status from secvest every minute
-				//		secvest = registry.getDevice(""secvest"");
-				//		statusChannel = secvest.getChannel(""status"");
-				//		statusValue = statusChannel.read();
-				//		if(statusValue != nil) then
-				//			-- send status to iothub queue
-				//			queue.enqueue(""iothub"", ""status@secvest"", statusValue, ""json"");
-				//			end;
-				//		return 0;
-				//	end;
-				//	"
-				//},
-				new FunctionDeclaration()
-				{
-					TriggerType = FunctionTriggerType.MessageQueue,
-					Name = "WindSensorQueueHandler",
-					QueueName = "windsensor",
-					Code = @"
-					function run(message)
-						if(message.Key == ""Wind"") then
-							message.Key = ""windspeed@windsensor"";
-							message.Tag = ""windspeed_kmh""
-						end;
-						if(message.Key == ""Temperature"") then
-							message.Key = ""temperature@windsensor"";
-							message.Tag = ""temperature_celsius""
-						end;
+			//configurationObject.DeviceConfigurations = new List<DeviceConfiguration>(new[]
+			//{
+			//	// by default iot hub configuration now uses TPM chip
+			//	new DeviceConfiguration
+			//	{
+			//		Name = "iothub",
+			//		Type = "AzureIoTHubDevice",
+			//		Properties = new Dictionary<string, string>()
+			//		{
+			//			//{ "ConnectionString", ""}
+			//		}
+			//	},
+			//	//new DeviceConfiguration()
+			//	//{
+			//	//	Name = "secvest",
+			//	//	Type = "SecVestDevice",
+			//	//	Properties = new Dictionary<string, string>()
+			//	//	{
+			//	//		{"ConnectionString", "https://192.168.0.22:4433/" },
+			//	//		{"Username", "1234" },
+			//	//		{"Password", "1234" }
+			//	//	}
+			//	//},
+			//	//new DeviceConfiguration()
+			//	//{
+			//	//	Name = "cam1",
+			//	//	Type = ""
+			//	//}
+			//});
+			//configurationObject.Functions = new List<FunctionDeclaration>(new FunctionDeclaration[]
+			//{
+			//	//new FunctionDeclaration()
+			//	//{
+			//	//	TriggerType = FunctionTriggerType.RecurringIntervalTimer,
+			//	//	Name = "PollSecvestEveryMinute",
+			//	//	Interval = 10*1000, // polling interval measured in miliseconds
+			//	//	Code = @"
+			//	//	function run()
+			//	//		-- get status from secvest every minute
+			//	//		secvest = registry.getDevice(""secvest"");
+			//	//		statusChannel = secvest.getChannel(""status"");
+			//	//		statusValue = statusChannel.read();
+			//	//		if(statusValue != nil) then
+			//	//			-- send status to iothub queue
+			//	//			queue.enqueue(""iothub"", ""status@secvest"", statusValue, ""json"");
+			//	//			end;
+			//	//		return 0;
+			//	//	end;
+			//	//	"
+			//	//},
+			//	new FunctionDeclaration()
+			//	{
+			//		TriggerType = FunctionTriggerType.MessageQueue,
+			//		Name = "WindSensorQueueHandler",
+			//		QueueName = "windsensor",
+			//		Code = @"
+			//		function run(message)
+			//			if(message.Key == ""Wind"") then
+			//				message.Key = ""windspeed@windsensor"";
+			//				message.Tag = ""windspeed_kmh""
+			//			end;
+			//			if(message.Key == ""Temperature"") then
+			//				message.Key = ""temperature@windsensor"";
+			//				message.Tag = ""temperature_celsius""
+			//			end;
 
-						queue.enqueue(""iothub"", message); -- simply forward to iot hub message queue
-						return 0;
-					end;
-					"
-				},
-				new FunctionDeclaration()
-				{
-					TriggerType = FunctionTriggerType.MessageQueue,
-					Name = "SecvestOutputSwitchHandler",
-					QueueName = "secvestoutput",
-					Code = @"
-					function run(message)
-						secvest = registry.getDevice(""secvest"");
-						statusChannel = secvest.getChannel(""status"");
-						statusChannel.setOutput(message.Key, message.Value);
-						return 0;
-					end;
-					"
-				}
-			});
+			//			queue.enqueue(""iothub"", message); -- simply forward to iot hub message queue
+			//			return 0;
+			//		end;
+			//		"
+			//	},
+			//	new FunctionDeclaration()
+			//	{
+			//		TriggerType = FunctionTriggerType.MessageQueue,
+			//		Name = "SecvestOutputSwitchHandler",
+			//		QueueName = "secvestoutput",
+			//		Code = @"
+			//		function run(message)
+			//			secvest = registry.getDevice(""secvest"");
+			//			statusChannel = secvest.getChannel(""status"");
+			//			statusChannel.setOutput(message.Key, message.Value);
+			//			return 0;
+			//		end;
+			//		"
+			//	}
+			//});
 
 			var configString = JsonConvert.SerializeObject(configurationObject, Formatting.Indented);
 			Debug.WriteLine(configString);
@@ -214,8 +214,8 @@ namespace W10Home.App.Shared
 			functionsEngine.Initialize(configurationObject);
 			
 			// define cron timers
-			_everySecondTimer = new Timer(EverySecondTimerCallback, null, 1000, 1000);
-			_everyMinuteTimer = new Timer(EveryMinuteTimerCallbackAsync, null, 60 * 1000, 60 * 1000);
+			//_everySecondTimer = new Timer(EverySecondTimerCallback, null, 1000, 1000);
+			//_everyMinuteTimer = new Timer(EveryMinuteTimerCallbackAsync, null, 60 * 1000, 60 * 1000);
 
 			// start local webserver
 			var authProvider = new BasicAuthorizationProvider("Login", new FixedCredentialsValidator());
@@ -233,15 +233,15 @@ namespace W10Home.App.Shared
 
 			await httpServer.StartServerAsync();
 		}
-		private async void EveryMinuteTimerCallbackAsync(object state)
-		{
-			//var iotHub = ServiceLocator.Current.GetInstance<AzureIoTHubDevice>();
-			//await iotHub.SendLogMessageToIoTHubAsync("Debug", "EveryMinuteTimerCallbackAsync started");
-		}
+		//private async void EveryMinuteTimerCallbackAsync(object state)
+		//{
+		//	//var iotHub = ServiceLocator.Current.GetInstance<AzureIoTHubDevice>();
+		//	//await iotHub.SendLogMessageToIoTHubAsync("Debug", "EveryMinuteTimerCallbackAsync started");
+		//}
 
-		private async void EverySecondTimerCallback(object state)
-		{
+		//private async void EverySecondTimerCallback(object state)
+		//{
 
-		}
+		//}
 	}
 }
