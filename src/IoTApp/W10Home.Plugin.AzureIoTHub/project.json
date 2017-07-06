@@ -2,7 +2,7 @@
   "dependencies": {
     "Microsoft.Azure.Devices.Client": "1.2.6",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.3",
-    "Newtonsoft.Json": "10.0.1",
+    "Newtonsoft.Json": "10.0.3",
     "Unity": "4.0.1",
     "Unity.ServiceLocator": "2.0.0"
   },

@@ -1,5 +1,4 @@
-﻿using Microsoft.HockeyApp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,7 +30,6 @@ namespace W10Home.DesktopApp
         /// </summary>
         public App()
         {
-			Microsoft.HockeyApp.HockeyClient.Current.Configure("190306ba9b774a43969df424ec3a4953");
 			this.InitializeComponent();
             this.Suspending += OnSuspending;
         }
