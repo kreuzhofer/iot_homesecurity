@@ -3,7 +3,6 @@
     "Microsoft.Devices.Tpm": "1.0.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.3",
     "MoonSharp": "1.8.0",
-    "Restup": "1.0.4",
     "Unity.ServiceLocator": "2.0.0"
   },
   "frameworks": {

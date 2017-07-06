@@ -4,7 +4,6 @@
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.3",
     "MoonSharp": "1.8.0",
     "Newtonsoft.Json": "10.0.3",
-    "Restup": "1.0.4",
     "Unity": "4.0.1",
     "Unity.ServiceLocator": "2.0.0"
   },
