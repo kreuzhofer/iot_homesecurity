@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:iot="http://schemas.microsoft.com/appx/manifest/iot/windows10" IgnorableNamespaces="uap mp iot">
-  <Identity Name="30128DanielKreuzhofer.IoTHomesecurity" Publisher="CN=89613764-437E-44C3-8C77-D273D41F523B" Version="1.1.7.0" />
+  <Identity Name="30128DanielKreuzhofer.IoTHomesecurity" Publisher="CN=89613764-437E-44C3-8C77-D273D41F523B" Version="1.1.8.0" />
   <mp:PhoneIdentity PhoneProductId="9a99cc75-d069-46bb-a747-77c77543fb1a" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>IoT_Homesecurity</DisplayName>

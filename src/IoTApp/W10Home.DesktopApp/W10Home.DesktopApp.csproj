@@ -159,6 +159,20 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Restup.WebServer, Version=1.0.6249.23386, Culture=neutral, PublicKeyToken=64b98b5a45f1b6f4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\libs\Restup.WebServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Restup.WebServer.Logging, Version=1.0.0.0, Culture=neutral, PublicKeyToken=64b98b5a45f1b6f4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\libs\Restup.WebServer.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Restup.Webserver.Models, Version=1.0.0.0, Culture=neutral, PublicKeyToken=64b98b5a45f1b6f4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\libs\Restup.Webserver.Models.winmd</HintPath>
+    </Reference>
+  </ItemGroup>
   <Import Project="..\W10Home.App.Shared\W10Home.App.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
