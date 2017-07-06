@@ -23,3 +23,9 @@ The approach of the iot_homesecurity framework is to have a local broker device 
 - IoTApp - The device gateway. Runs in the local network of the user's home and talks to his local devices like the Homematic central, ETA heating system or ABUS alert panel or ABUS security camera.
 
 - DevicePortal - This solution contains the device portal running in the Azure cloud, which enables access to your local devices. It uses Azure IoT Hub as the communication hub for the device gateway.
+
+## Device Installtion and Updates
+The IoT_Homesecurity UWP app is deployed directly on the device. If you like to use the Windows Store to update your device automatically, you may use my appx packages or create your own packages but you will need to submit them to the Windows Store and have an OEM exception. Otherwise you can always deploy the app directly to your device with Visual Studio or by building packages and deploy them to the device using the device portal.
+
+## Packages
+The latest version of the IoT_Homesecurity appx store packages you will find here: ![https://github.com/kreuzhofer/iot_homesecurity/releases](https://github.com/kreuzhofer/iot_homesecurity/releases)
