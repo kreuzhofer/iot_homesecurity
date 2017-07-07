@@ -24,8 +24,8 @@ The approach of the iot_homesecurity framework is to have a local broker device 
 
 - DevicePortal - This solution contains the device portal running in the Azure cloud, which enables access to your local devices. It uses Azure IoT Hub as the communication hub for the device gateway.
 
-## Device Installtion and Updates
+## Device Installation and Updates
 The IoT_Homesecurity UWP app is deployed directly on the device. If you like to use the Windows Store to update your device automatically, you may use my appx packages or create your own packages but you will need to submit them to the Windows Store and have an OEM exception. Otherwise you can always deploy the app directly to your device with Visual Studio or by building packages and deploy them to the device using the device portal.
 
-## Packages
-You will find the latest version of the IoT_Homesecurity appx store packages here: [https://github.com/kreuzhofer/iot_homesecurity/releases](https://github.com/kreuzhofer/iot_homesecurity/releases)
+### Packages
+- You will find the latest version of the IoT_Homesecurity appx store packages here: [https://github.com/kreuzhofer/iot_homesecurity/releases](https://github.com/kreuzhofer/iot_homesecurity/releases)
