@@ -5,8 +5,6 @@ using W10Home.App.Shared;
 using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
-using Microsoft.Azure.Mobile;
-using Microsoft.Azure.Mobile.Analytics;
 using Microsoft.Practices.ServiceLocation;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
@@ -24,9 +22,6 @@ namespace W10Home.IoTCoreApp
             // come some day, see that this method is not active anymore and the local variable
             // should be removed. Which results in the application being closed.
             _deferral = taskInstance.GetDeferral();
-
-            // Start mobile center
-            MobileCenter.Start("9f179516-2701-4b25-bf08-e272d7ba00a0", typeof(Analytics));
 
             _coreApp = new CoreApp();
 			await _coreApp.Run();
