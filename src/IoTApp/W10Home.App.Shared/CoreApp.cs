@@ -32,6 +32,7 @@ using W10Home.Plugin.Twilio;
 using System.Linq;
 using Windows.Storage;
 using Windows.System;
+using MetroLog;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using W10Home.Interfaces.Configuration;
@@ -43,10 +44,13 @@ namespace W10Home.App.Shared
 		private Timer _everySecondTimer;
 		private Timer _everyMinuteTimer;
 		private HttpServer _httpServer;
+        private ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<CoreApp>();
 
 		public async Task Run()
 	    {
-			// Build configuration object to configure all devices
+            _log.Trace("Run");
+
+            // Build configuration object to configure all devices
 			RootConfiguration configurationObject = new RootConfiguration();
 
 			// first try to load the configuration file from the LocalFolder

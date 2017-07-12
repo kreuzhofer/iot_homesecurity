@@ -5,6 +5,8 @@ using W10Home.App.Shared;
 using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
+using MetroLog;
+using MetroLog.Targets;
 using Microsoft.Practices.ServiceLocation;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
@@ -15,20 +17,27 @@ namespace W10Home.IoTCoreApp
     {
         private BackgroundTaskDeferral _deferral;
 	    private CoreApp _coreApp;
+        private ILogger _log;
 
-	    public async void Run(IBackgroundTaskInstance taskInstance)
+        public async void Run(IBackgroundTaskInstance taskInstance)
         {
             // This deferral should have an instance reference, if it doesn't... the GC will
             // come some day, see that this method is not active anymore and the local variable
             // should be removed. Which results in the application being closed.
             _deferral = taskInstance.GetDeferral();
 
+            // configure logging first
+            //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new EtwTarget());
+            _log = LogManagerFactory.DefaultLogManager.GetLogger<CoreApp>();
+
+            _log.Trace("Launching CoreApp");
             _coreApp = new CoreApp();
 			await _coreApp.Run();
 
 			// The message Loop Worker runs in the background and checks for specific messages
 			// which tell the CoreApp to either reboot the device or exit the app, which should
 			// restart of the app
+            _log.Trace("Launching MessageLoopWorker");
 	        MessageLoopWorker();
 
 	        // Dont release deferral, otherwise app will stop
@@ -36,6 +45,7 @@ namespace W10Home.IoTCoreApp
 
 		private async void MessageLoopWorker()
 		{
+            _log.Trace("MessageLoopWorker");
 			IMessageQueue queue = null;
 			do
 			{
