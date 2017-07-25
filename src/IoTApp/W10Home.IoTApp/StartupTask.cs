@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
 using MetroLog;
-using MetroLog.Targets;
 using Microsoft.Practices.ServiceLocation;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
@@ -27,10 +26,11 @@ namespace W10Home.IoTCoreApp
             _deferral = taskInstance.GetDeferral();
 
             // configure logging first
-            //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new EtwTarget());
+            GlobalCrashHandler.Configure();
             _log = LogManagerFactory.DefaultLogManager.GetLogger<CoreApp>();
 
             _log.Trace("Launching CoreApp");
+            _log.Trace("Local data folder: " + Windows.Storage.ApplicationData.Current.LocalFolder.Path);
             _coreApp = new CoreApp();
 			await _coreApp.Run();
 
