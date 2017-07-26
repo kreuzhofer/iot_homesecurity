@@ -212,9 +212,16 @@ namespace W10Home.Plugin.AzureIoTHub
 	                        queue.TryDeque("iothub", out QueueMessage pop);
 	                    };
 	                }
+	                if (queue.TryPeek("iothublog", out QueueMessage logmessage))
+	                {
+	                    if (await SendLogMessageToIoTHubAsync(logmessage.Key, logmessage.Value))
+	                    {
+	                        queue.TryDeque("iothublog", out QueueMessage pop);
+	                    };
+	                }
 
-	                // check iot hub incoming messages for processing
-	                var message = await _deviceClient.ReceiveAsync(TimeSpan.FromMilliseconds(250));
+                    // check iot hub incoming messages for processing
+                    var message = await _deviceClient.ReceiveAsync(TimeSpan.FromMilliseconds(250));
 	                if (message != null)
 	                {
 	                    await _deviceClient.CompleteAsync(message);

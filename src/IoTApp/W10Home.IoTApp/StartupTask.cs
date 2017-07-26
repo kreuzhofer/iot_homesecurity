@@ -7,7 +7,9 @@ using System;
 using System.Threading.Tasks;
 using MetroLog;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.Practices.ServiceLocation;
+using W10Home.App.Shared.Logging;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
@@ -30,6 +32,9 @@ namespace W10Home.IoTCoreApp
             var telemetryClient = new TelemetryClient();
             telemetryClient.InstrumentationKey = "4e4ea96b-6b69-4aba-919b-558b4a4583ae";
             LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new ApplicationInsightsTarget(telemetryClient));
+            // init custom metrolog logger for iot hub
+            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new IotHubTarget());
+
             _log = LogManagerFactory.DefaultLogManager.GetLogger<CoreApp>();
 
             _log.Trace("Launching CoreApp");

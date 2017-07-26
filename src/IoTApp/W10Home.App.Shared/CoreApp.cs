@@ -35,6 +35,7 @@ using Windows.System;
 using MetroLog;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using W10Home.App.Shared.Logging;
 using W10Home.Interfaces.Configuration;
 
 namespace W10Home.App.Shared
