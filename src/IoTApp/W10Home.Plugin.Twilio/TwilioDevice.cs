@@ -28,7 +28,7 @@ namespace W10Home.Plugin.Twilio
 			_channels.Add(new TwilioSmsChannel(_accountSid, _authToken, configuration.Properties["OutgoingPhone"], configuration.Properties["ReceiverPhone"]));
 		}
 
-		public override async Task Teardown()
+		public override async Task TeardownAsync()
 		{
 		}
 	}

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MetroLog;
 using Microsoft.Practices.ServiceLocation;
 using W10Home.Interfaces;
 using W10Home.Interfaces.Configuration;
@@ -15,8 +16,9 @@ namespace W10Home.Core.Configuration
 	{
 		private Dictionary<string, Type> _deviceTypes = new Dictionary<string, Type>();
 		private Dictionary<string, IDevice> _deviceList = new Dictionary<string, IDevice>();
+	    private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<DeviceRegistry>();
 
-		public void RegisterDeviceType<T>() where T : class, IDevice
+        public void RegisterDeviceType<T>() where T : class, IDevice
 		{
 			_deviceTypes.Add(typeof(T).Name, typeof(T));
 		}
@@ -33,8 +35,7 @@ namespace W10Home.Core.Configuration
 				}
 				catch (Exception ex)
 				{
-					Debug.WriteLine("Error while initializing plugin " + configuration.Name + ": " + ex.Message);
-					// TODO log
+					_log.Error("Error while initializing plugin " + configuration.Name, ex);
 				}
 			}
 		}
@@ -43,7 +44,7 @@ namespace W10Home.Core.Configuration
 		{
 			foreach (var device in _deviceList)
 			{
-				await device.Value.Teardown();
+				await device.Value.TeardownAsync();
 			}
 		}
 

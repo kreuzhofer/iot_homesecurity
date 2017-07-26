@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
 using MetroLog;
+using Microsoft.ApplicationInsights;
 using Microsoft.Practices.ServiceLocation;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
@@ -26,15 +27,26 @@ namespace W10Home.IoTCoreApp
             _deferral = taskInstance.GetDeferral();
 
             // configure logging first
-            GlobalCrashHandler.Configure();
+            var telemetryClient = new TelemetryClient();
+            telemetryClient.InstrumentationKey = "4e4ea96b-6b69-4aba-919b-558b4a4583ae";
+            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new ApplicationInsightsTarget(telemetryClient));
             _log = LogManagerFactory.DefaultLogManager.GetLogger<CoreApp>();
 
             _log.Trace("Launching CoreApp");
             _log.Trace("Local data folder: " + Windows.Storage.ApplicationData.Current.LocalFolder.Path);
-            _coreApp = new CoreApp();
-			await _coreApp.Run();
 
-			// The message Loop Worker runs in the background and checks for specific messages
+            try
+            {
+                _coreApp = new CoreApp();
+                await _coreApp.Run();
+            }
+            catch (Exception ex)
+            {
+                _log.Error("CoreApp Run crashed", ex);
+                throw;
+            }
+
+            // The message Loop Worker runs in the background and checks for specific messages
 			// which tell the CoreApp to either reboot the device or exit the app, which should
 			// restart of the app
             _log.Trace("Launching MessageLoopWorker");
@@ -83,8 +95,7 @@ namespace W10Home.IoTCoreApp
 					}
 					catch (Exception ex)
 					{
-						Debug.WriteLine(ex.Message);
-						//todo log
+                        _log.Error("MessageLoopWorker", ex);
 					}
 				}
 				await Task.Delay(250);

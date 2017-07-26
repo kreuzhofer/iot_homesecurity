@@ -101,6 +101,7 @@
     <None Include="W10Home.IoTCoreApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationInsightsTarget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartupTask.cs" />
   </ItemGroup>

@@ -41,10 +41,8 @@ namespace W10Home.App.Shared
 {
     internal class CoreApp
     {
-		private Timer _everySecondTimer;
-		private Timer _everyMinuteTimer;
 		private HttpServer _httpServer;
-        private ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<CoreApp>();
+        private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<CoreApp>();
 
 		public async Task Run()
 	    {
@@ -235,17 +233,7 @@ namespace W10Home.App.Shared
 			var httpServer = new HttpServer(configuration);
 			_httpServer = httpServer;
 
-			await httpServer.StartServerAsync();
+			await _httpServer.StartServerAsync();
 		}
-		//private async void EveryMinuteTimerCallbackAsync(object state)
-		//{
-		//	//var iotHub = ServiceLocator.Current.GetInstance<AzureIoTHubDevice>();
-		//	//await iotHub.SendLogMessageToIoTHubAsync("Debug", "EveryMinuteTimerCallbackAsync started");
-		//}
-
-		//private async void EverySecondTimerCallback(object state)
-		//{
-
-		//}
 	}
 }

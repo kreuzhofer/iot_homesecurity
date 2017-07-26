@@ -14,6 +14,6 @@ namespace W10Home.Core.Standard
 		{
 			return GetChannels().Single(c => c.Name == name);
 		}
-		public abstract Task Teardown();
+		public abstract Task TeardownAsync();
 	}
 }

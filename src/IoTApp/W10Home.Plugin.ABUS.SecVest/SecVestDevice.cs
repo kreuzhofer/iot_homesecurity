@@ -48,7 +48,7 @@ namespace W10Home.Plugin.ABUS.SecVest
 		    return _channels;
 	    }
 
-	    public override async Task Teardown()
+	    public override async Task TeardownAsync()
 	    {
 	    }
     }

@@ -77,7 +77,7 @@ namespace W10Home.MqttDevice
 			throw new NotImplementedException();
 		}
 
-		public override async Task Teardown()
+		public override async Task TeardownAsync()
 		{
 			if (_mqttclient != null)
 			{

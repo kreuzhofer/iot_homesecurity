@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MetroLog;
 using Microsoft.Practices.ServiceLocation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
@@ -17,6 +18,7 @@ namespace W10Home.App.Shared
 	internal class FunctionsEngine
     {
 		private readonly List<Timer> _timers = new List<Timer>();
+        private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<FunctionsEngine>();
 
 	    public void Initialize(RootConfiguration configuration)
 		{
@@ -41,8 +43,7 @@ namespace W10Home.App.Shared
 							}
 							catch (Exception ex)
 							{
-								Debug.WriteLine(ex.Message);
-								//todo log
+							    _log.Error("Error running function "+function.Name, ex);
 							}						}
 					}, null , function.Interval, function.Interval);
 					_timers.Add(timer);
@@ -65,9 +66,8 @@ namespace W10Home.App.Shared
 								}
 								catch (Exception ex)
 								{
-									Debug.WriteLine(ex.Message);
-									//todo log
-								}
+								    _log.Error("Error running function " + function.Name, ex);
+                                }
 							}
 						} while (true);
 					});
