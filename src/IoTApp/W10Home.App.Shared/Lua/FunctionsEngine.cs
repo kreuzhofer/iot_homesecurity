@@ -37,8 +37,9 @@ namespace W10Home.App.Shared
 					{
 						lock (script)
 						{
+						    _log.Trace("Running timer triggered function " + function.Name);
 							try
-							{
+                            {
 								script.Call(script.Globals["run"]);
 							}
 							catch (Exception ex)
@@ -59,6 +60,7 @@ namespace W10Home.App.Shared
 						{
 							if (queue.TryDeque(function.QueueName, out QueueMessage message))
 							{
+                                _log.Trace("Running message triggered function "+function.Name);
 								try
 								{
 									// call function
