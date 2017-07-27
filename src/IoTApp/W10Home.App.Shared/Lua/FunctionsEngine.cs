@@ -31,7 +31,7 @@ namespace W10Home.App.Shared
 			{
 				if (function.TriggerType == FunctionTriggerType.RecurringIntervalTimer)
 				{
-					var script = SetupNewScript();
+					var script = SetupNewScript(function.Name);
 					script.DoString(function.Code);
 					var timer = new Timer(state =>
 					{
@@ -50,9 +50,9 @@ namespace W10Home.App.Shared
 				}
 				else if (function.TriggerType == FunctionTriggerType.MessageQueue)
 				{
-					var script = SetupNewScript();
+					var script = SetupNewScript(function.Name);
 					script.DoString(function.Code);
-					var task = Task.Factory.StartNew(() =>
+					var task = Task.Factory.StartNew(async () =>
 					{
 						var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
 						do
@@ -69,13 +69,14 @@ namespace W10Home.App.Shared
 								    _log.Error("Error running function " + function.Name, ex);
                                 }
 							}
+						    await Task.Delay(1);
 						} while (true);
 					});
 				}
 			}
 		}
 
-	    private Script SetupNewScript()
+	    private Script SetupNewScript(string name)
 	    {
 		    var registry = ServiceLocator.Current.GetInstance<IDeviceRegistry>();
 		    var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
@@ -86,8 +87,11 @@ namespace W10Home.App.Shared
 		    script.Globals.Set("registry", registryDynValue);
 		    var messageQueueDynValue = UserData.Create(queue);
 		    script.Globals.Set("queue", messageQueueDynValue);
+	        var log = LogManagerFactory.DefaultLogManager.GetLogger("FunctionsEngine|" + name);
+	        var logDynValue = UserData.Create(log);
+            script.Globals.Set("log", logDynValue);
 
-		    script.Options.DebugPrint = s => { Debug.WriteLine(s); };
+		    script.Options.DebugPrint = s => { log.Debug(s); };
 			return script;
 	    }
     }

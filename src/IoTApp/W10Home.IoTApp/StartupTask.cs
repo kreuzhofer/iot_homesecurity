@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
 using MetroLog;
+using MetroLog.Targets;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.Practices.ServiceLocation;
@@ -31,6 +32,10 @@ namespace W10Home.IoTCoreApp
             // configure logging first
             var telemetryClient = new TelemetryClient();
             telemetryClient.InstrumentationKey = "4e4ea96b-6b69-4aba-919b-558b4a4583ae";
+            LogManagerFactory.DefaultConfiguration = new LoggingConfiguration();
+            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new EtwTarget());
+            var streamingFileTarget = new StreamingFileTarget() {KeepLogFilesOpenForWrite = false};
+            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, streamingFileTarget);
             LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new ApplicationInsightsTarget(telemetryClient));
             // init custom metrolog logger for iot hub
             LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new IotHubTarget());

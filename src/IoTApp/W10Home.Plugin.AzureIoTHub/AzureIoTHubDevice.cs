@@ -247,6 +247,7 @@ namespace W10Home.Plugin.AzureIoTHub
 	            {
                     _log.Error("MessageReceiverLoop", ex);
 	            }
+	            await Task.Delay(1, cancellationToken);
 	        } while (!cancellationToken.IsCancellationRequested);
             _log.Trace("Exit MessageReceiverLoop");
 	    }
