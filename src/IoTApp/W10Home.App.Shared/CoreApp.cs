@@ -44,8 +44,9 @@ namespace W10Home.App.Shared
     {
 		private HttpServer _httpServer;
         private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<CoreApp>();
+        private Timer _everyMinuteTimer;
 
-		public async Task Run()
+        public async Task Run()
 	    {
             _log.Trace("Run");
 
@@ -218,7 +219,7 @@ namespace W10Home.App.Shared
 			
 			// define cron timers
 			//_everySecondTimer = new Timer(EverySecondTimerCallback, null, 1000, 1000);
-			//_everyMinuteTimer = new Timer(EveryMinuteTimerCallbackAsync, null, 60 * 1000, 60 * 1000);
+			_everyMinuteTimer = new Timer(EveryMinuteTimerCallbackAsync, null, 60 * 1000, 60 * 1000);
 
 			// start local webserver
 			var authProvider = new BasicAuthorizationProvider("Login", new FixedCredentialsValidator());
@@ -236,5 +237,13 @@ namespace W10Home.App.Shared
 
 			await _httpServer.StartServerAsync();
 		}
-	}
+
+        private void EveryMinuteTimerCallbackAsync(object state)
+        {
+            // report memory usage every minute
+            var usageReport = MemoryManager.GetAppMemoryReport();
+            var messageQueue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+            messageQueue.Enqueue("iothub", "appmemory", JsonConvert.SerializeObject(usageReport), "json");
+        }
+    }
 }
