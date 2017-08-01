@@ -1,4 +1,5 @@
-﻿@model W10Home.NetCoreDevicePortal.Models.DeviceFunctionEntity
+﻿@using System.Web
+@model W10Home.NetCoreDevicePortal.Models.DeviceFunctionEntity
 
 @{
     ViewBag.Title = "Edit Function";
@@ -9,17 +10,17 @@
 
 <script language="javascript">
     require.config({ paths: { 'vs': '/lib/monaco-editor/min/vs' }});
-    require(['vs/editor/editor.main'], function() {
-        var editor = monaco.editor.create(document.getElementById('codecontainer'), {
-            value: "@Model.Script",
-            language: 'lua'
+    require(['vs/editor/editor.main'], function () {
+        var codeSnippet = '@HttpUtility.JavaScriptStringEncode(Model.Script)';
+        window.editor = monaco.editor.create(document.getElementById('codecontainer'), {
+            value: codeSnippet,
+            language: 'lua',
+            theme: "vs-dark",
         });
     });
 
     function copyCodeToHiddenField() {
-        var code = $('#codecontainer').text();
-        console.log(code);
-
+        var code = window.editor.getValue();
         $('#Script').val(code);
         $('form').submit();
     }
@@ -68,19 +69,20 @@
         
         @Html.HiddenFor(model => model.Script)
 
-        <div id="codecontainer" style="height: 400px;"></div>
         
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="button" value="Save" class="btn btn-default" onclick="copyCodeToHiddenField();" />
-            </div>
-        </div>
     </div>
 }
 
+<div id="codecontainer" style="height: 400px; width: 800px;"></div>
+
+<div class="form-group">
+    <div class="col-md-offset-2 col-md-10">
+        <input type="button" value="Save" class="btn btn-default" onclick="copyCodeToHiddenField();" />
+    </div>
+</div>
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to device details", "Details", new { id = Model.PartitionKey })
 </div>
 
 <environment include="Development">
