@@ -228,7 +228,16 @@ namespace W10Home.Plugin.AzureIoTHub
 	                    var reader = new StreamReader(message.BodyStream);
 	                    var bodyString = await reader.ReadToEndAsync();
 	                    Debug.WriteLine(bodyString);
-	                    dynamic messageObject = JsonConvert.DeserializeObject(bodyString); // try to deserialize into something json...
+	                    dynamic messageObject = null;
+	                    try
+	                    {
+	                        messageObject =
+	                            JsonConvert.DeserializeObject(bodyString); // try to deserialize into something json...
+	                    }
+	                    catch (Exception ex)
+	                    {
+	                        _log.Error("Could not deserialize message from iot hub", ex);
+	                    }
 	                    if (messageObject == null) // maybe a json incompatible message object -> throw away and continue
 	                    {
 	                        continue;
