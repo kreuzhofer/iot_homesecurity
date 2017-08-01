@@ -282,6 +282,23 @@ namespace W10Home.Plugin.AzureIoTHub
 			{
 				await DownloadConfigAndRestart(desiredProperties);
 			}
+		    if (desiredProperties.Contains("functions"))
+		    {
+		        if (desiredProperties["functions"].loadFunction != null)
+		        {
+
+
+		            var reportedProperties = new TwinCollection
+		            {
+		                ["functions"] = new
+		                {
+		                    loadFunction = desiredProperties["functions"].loadFunction,
+                            status = "success"
+                        }
+		            };
+		            await _deviceClient.UpdateReportedPropertiesAsync(reportedProperties);
+		        }
+            }
 		}
 
 		private async Task DownloadConfigAndRestart(TwinCollection desiredProperties)

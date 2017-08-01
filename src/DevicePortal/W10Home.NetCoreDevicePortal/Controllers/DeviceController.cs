@@ -115,6 +115,24 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                 deviceFunctionEntity.RowKey, deviceFunctionEntity.TriggerType, deviceFunctionEntity.Interval,
                 deviceFunctionEntity.QueueName, deviceFunctionEntity.Script);
 
+            // update device twin
+            var patch = new
+            {
+                properties = new
+                {
+                    desired = new
+                    {
+                        functions = new
+                        {
+                            loadFunction = deviceFunctionEntity.RowKey
+                        }
+                    }
+                }
+            };
+            var registryManager = _deviceManagementService.GlobalRegistryManager;
+            var twin = await registryManager.GetTwinAsync(deviceFunctionEntity.PartitionKey);
+            await registryManager.UpdateTwinAsync(deviceFunctionEntity.PartitionKey, JsonConvert.SerializeObject(patch), twin.ETag);
+
             return await EditFunction(deviceFunctionEntity.PartitionKey, deviceFunctionEntity.RowKey);
         }
 
