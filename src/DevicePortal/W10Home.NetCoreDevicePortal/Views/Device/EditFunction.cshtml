@@ -1,0 +1,93 @@
+﻿@model W10Home.NetCoreDevicePortal.Models.DeviceFunctionEntity
+
+@{
+    ViewBag.Title = "Edit Function";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/lib/monaco-editor/min/vs/loader.js"></script>
+
+<script language="javascript">
+    require.config({ paths: { 'vs': '/lib/monaco-editor/min/vs' }});
+    require(['vs/editor/editor.main'], function() {
+        var editor = monaco.editor.create(document.getElementById('codecontainer'), {
+            value: "@Model.Script",
+            language: 'lua'
+        });
+    });
+
+    function copyCodeToHiddenField() {
+        var code = $('#codecontainer').text();
+        console.log(code);
+
+        $('#Script').val(code);
+        $('form').submit();
+    }
+</script>
+
+<h2>Edit Device Function</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Device Function</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.PartitionKey)
+        @Html.HiddenFor(model => model.RowKey)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.RowKey, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.RowKey, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TriggerType, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TriggerType, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Interval, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Interval, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.QueueName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.QueueName, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+        
+        @Html.HiddenFor(model => model.Script)
+
+        <div id="codecontainer" style="height: 400px;"></div>
+        
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" value="Save" class="btn btn-default" onclick="copyCodeToHiddenField();" />
+            </div>
+        </div>
+    </div>
+}
+
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+<environment include="Development">
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+</environment>
+<environment exclude="Development">
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+</environment>
+
+

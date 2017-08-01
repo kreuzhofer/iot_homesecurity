@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Azure.Devices;
 using W10Home.DevicePortal.Models;
+using W10Home.NetCoreDevicePortal.Models;
 
 namespace W10Home.DevicePortal.IotHub
 {
@@ -31,7 +32,8 @@ namespace W10Home.DevicePortal.IotHub
 
 		// Additional properties
 		public string Configuration { get; set; }
-	    public IEnumerable<DeviceStateEntity> StatusList { get; set; }
+	    public List<DeviceStateEntity> StateList { get; set; }
+        public List<DeviceFunctionEntity> DeviceFunctions { get; set; }
 
 // Url for config file
 

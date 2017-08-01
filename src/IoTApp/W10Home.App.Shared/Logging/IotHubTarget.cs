@@ -23,7 +23,11 @@ namespace W10Home.App.Shared.Logging
         protected override void Write(LogWriteContext context, LogEventInfo entry)
         {
             if (ServiceLocator.IsLocationProviderSet)
-                ServiceLocator.Current.GetInstance<IMessageQueue>().Enqueue("iothublog", entry.Level.ToString(), JsonConvert.SerializeObject(entry), "json");
+            {
+                var entrySerialized = entry.ToJson();
+                ServiceLocator.Current.GetInstance<IMessageQueue>().Enqueue("iothublog", entry.Level.ToString(), entrySerialized
+                    , "json");
+            }
         }
     }
 }

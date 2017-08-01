@@ -84,20 +84,16 @@
 </p>
 
 <div>
-    <h4>DeviceStatus</h4>
+    <h4>DeviceState</h4>
     <hr />
     <table class="table">
         <tr>
             <th>Channel</th>
-        </tr>
-        <tr>
             <th>ChannelType</th>
-        </tr>
-        <tr>
             <th>Value</th>
         </tr>
         
-        @foreach (var item in Model.StatusList)
+        @foreach (var item in Model.StateList)
         {
             <tr>
                 <td>
@@ -111,6 +107,43 @@
                 </td>
             </tr>
         }
+    </table>
+</div>
 
+<div>
+    <h4>DeviceFunctions</h4>
+    <hr />
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>TriggerType</th>
+            <th>Interval</th>
+            <th>QueueName</th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.DeviceFunctions)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RowKey)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TriggerType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Interval)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.QueueName)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "EditFunction", new { deviceId = item.PartitionKey, functionName = item.RowKey })
+                </td>
+            </tr>
+        }
+        <tr>
+            <td>@Html.ActionLink("+", "Add")</td>
+        </tr>
     </table>
 </div>

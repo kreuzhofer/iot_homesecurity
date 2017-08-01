@@ -9,6 +9,7 @@ using W10Home.DevicePortal.DataAccess;
 using Newtonsoft.Json;
 using System.Text;
 using W10Home.NetCoreDevicePortal.DataAccess;
+using W10Home.NetCoreDevicePortal.Models;
 
 namespace W10Home.NetCoreDevicePortal.Controllers
 {
@@ -17,12 +18,15 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         private DeviceManagementService _deviceManagementService;
         private IDeviceStateService _deviceStateService;
         private IDeviceConfigurationService _deviceConfigurationService;
+        private IDeviceFunctionService _deviceFunctionService;
 
-        public DeviceController(DeviceManagementService deviceManagementService, IDeviceStateService deviceStateService, IDeviceConfigurationService deviceConfigurationService)
+        public DeviceController(DeviceManagementService deviceManagementService, IDeviceStateService deviceStateService, IDeviceConfigurationService deviceConfigurationService,
+            IDeviceFunctionService deviceFunctionService)
         {
             _deviceManagementService = deviceManagementService;
             _deviceStateService = deviceStateService;
             _deviceConfigurationService = deviceConfigurationService;
+            _deviceFunctionService = deviceFunctionService;
         }
 
         // GET: Device
@@ -50,7 +54,10 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                 deviceData.Configuration = configData.Configuration;
             }
             var deviceStatusList = await _deviceStateService.GetDeviceState(id);
-            deviceData.StatusList = deviceStatusList;
+            deviceData.StateList = deviceStatusList;
+
+            var deviceFunctions = await _deviceFunctionService.GetFunctionsAsync(id);
+            deviceData.DeviceFunctions = deviceFunctions;
 
             return View(deviceData);
         }
@@ -93,6 +100,22 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             await registryManager.UpdateTwinAsync(data.Id, JsonConvert.SerializeObject(patch), twin.ETag);
 
             return await Edit(data.Id);
+        }
+
+        public async Task<IActionResult> EditFunction(string deviceId, string functionName)
+        {
+            var function = await _deviceFunctionService.GetFunctionAsync(deviceId, functionName);
+            return View(function);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditFunction(DeviceFunctionEntity deviceFunctionEntity)
+        {
+            await _deviceFunctionService.SaveFunctionAsync(deviceFunctionEntity.PartitionKey,
+                deviceFunctionEntity.RowKey, deviceFunctionEntity.TriggerType, deviceFunctionEntity.Interval,
+                deviceFunctionEntity.QueueName, deviceFunctionEntity.Script);
+
+            return await EditFunction(deviceFunctionEntity.PartitionKey, deviceFunctionEntity.RowKey);
         }
 
         [HttpPost]

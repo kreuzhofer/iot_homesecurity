@@ -35,7 +35,7 @@ namespace W10Home.Plugin.AzureIoTHub
 	    private Timer _clientTimeoutTimer;
 	    private CancellationTokenSource _threadCancellation;
 	    private string _connectionString;
-	    private const int CLIENT_TIMEOUT = 60;
+	    private const int CLIENT_TIMEOUT = 59;
 	    private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<AzureIoTHubDevice>();
 
 
@@ -193,7 +193,7 @@ namespace W10Home.Plugin.AzureIoTHub
 	        await _deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
 	        await _deviceClient.SetDesiredPropertyUpdateCallback(DesiredPropertyUpdateCallback, null);
 
-	        _clientTimeoutTimer = new Timer(ClientTimeoutTimerCallback, null, TimeSpan.FromMinutes(59), TimeSpan.Zero);
+	        _clientTimeoutTimer = new Timer(ClientTimeoutTimerCallback, null, TimeSpan.FromMinutes(CLIENT_TIMEOUT), TimeSpan.Zero);
         }
 
 
@@ -221,6 +221,10 @@ namespace W10Home.Plugin.AzureIoTHub
 	                }
 
                     // check iot hub incoming messages for processing
+	                if (cancellationToken.IsCancellationRequested)
+	                {
+	                    break;
+	                }
                     var message = await _deviceClient.ReceiveAsync(TimeSpan.FromMilliseconds(250));
 	                if (message != null)
 	                {
@@ -256,7 +260,10 @@ namespace W10Home.Plugin.AzureIoTHub
 	            {
                     _log.Error("MessageReceiverLoop", ex);
 	            }
-	            await Task.Delay(1, cancellationToken);
+	            if (!cancellationToken.IsCancellationRequested)
+	            {
+	                await Task.Delay(1, cancellationToken);
+	            }
 	        } while (!cancellationToken.IsCancellationRequested);
             _log.Trace("Exit MessageReceiverLoop");
 	    }

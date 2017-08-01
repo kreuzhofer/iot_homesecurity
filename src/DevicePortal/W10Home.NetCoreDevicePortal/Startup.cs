@@ -29,6 +29,7 @@ namespace W10Home.NetCoreDevicePortal
             services.AddSingleton<DeviceManagementService, DeviceManagementService>();
             services.AddTransient<IDeviceStateService, DeviceStateService>();
             services.AddTransient<IDeviceConfigurationService, DeviceConfigurationService>();
+            services.AddTransient<IDeviceFunctionService, DeviceFunctionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
