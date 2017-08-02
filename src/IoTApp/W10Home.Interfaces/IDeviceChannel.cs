@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace W10Home.Interfaces
 {
@@ -11,7 +13,8 @@ namespace W10Home.Interfaces
 		string Name { get; }
 		bool IsRead { get; }
 		bool IsWrite { get; }
-		ChannelType ChannelType { get; }
+	    [JsonConverter(typeof(StringEnumConverter))]
+        ChannelType ChannelType { get; }
 		object Read();
 		void Write(object value);
 	}

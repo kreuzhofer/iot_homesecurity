@@ -389,12 +389,7 @@ namespace W10Home.Plugin.AzureIoTHub
 
 	    private async Task<MethodResponse> HandleGetDevicesMethod(MethodRequest methodrequest, object usercontext)
 	    {
-	        var jsonObj = new
-	        {
-	            devices = _deviceRegistry.GetDevices().ToList()
-	        };
-
-            var json = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(_deviceRegistry.GetDevices().ToList(), Formatting.Indented);
 	        var bytes = Encoding.UTF8.GetBytes(json);
 	        return new MethodResponse(bytes, 0);
 	    }

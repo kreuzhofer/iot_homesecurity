@@ -12,7 +12,10 @@ namespace W10Home.Core.Standard
 	    public abstract string Type { get; }
 	    public abstract Task InitializeAsync(IDeviceConfiguration configuration);
 		public abstract IEnumerable<IDeviceChannel> GetChannels();
-		public IDeviceChannel GetChannel(string name)
+
+	    public IEnumerable<IDeviceChannel> Channels => GetChannels();
+
+	    public IDeviceChannel GetChannel(string name)
 		{
 			return GetChannels().Single(c => c.Name == name);
 		}
