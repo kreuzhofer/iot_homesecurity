@@ -310,8 +310,6 @@ namespace W10Home.Plugin.AzureIoTHub
 		    {
 		        if (desiredProperties["functions"].loadFunction != null)
 		        {
-
-
 		            var reportedProperties = new TwinCollection
 		            {
 		                ["functions"] = new
