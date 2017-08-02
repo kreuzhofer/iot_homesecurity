@@ -108,6 +108,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureIoTHubDevice.cs" />
+    <Compile Include="IotHubLogChannel.cs" />
+    <Compile Include="IotHubDeviceChannel.cs" />
     <Compile Include="IotHubChannelMessage.cs" />
     <Compile Include="IotHubLogMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

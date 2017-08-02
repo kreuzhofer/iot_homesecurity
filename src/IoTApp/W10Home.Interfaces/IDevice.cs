@@ -10,6 +10,8 @@ namespace W10Home.Interfaces
 {
 	public interface IDevice
 	{
+        string Name { get; }
+        string Type { get; }
 		Task InitializeAsync(IDeviceConfiguration configuration);
 		IEnumerable<IDeviceChannel> GetChannels();
 		IDeviceChannel GetChannel(string name);

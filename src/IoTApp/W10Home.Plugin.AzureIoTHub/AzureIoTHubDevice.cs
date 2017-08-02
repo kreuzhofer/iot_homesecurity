@@ -37,7 +37,27 @@ namespace W10Home.Plugin.AzureIoTHub
 	    private string _connectionString;
 	    private const int CLIENT_TIMEOUT = 59;
 	    private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<AzureIoTHubDevice>();
+	    private List<IDeviceChannel> _channels = new List<IDeviceChannel>();
+	    private IDeviceRegistry _deviceRegistry;
+	    private string _name;
+	    private string _type;
 
+	    public override string Name
+	    {
+	        get { return _name; }
+	    }
+
+	    public override string Type
+	    {
+	        get { return _type; }
+	    }
+
+        public AzureIoTHubDevice(IMessageQueue messageQueue, IDeviceRegistry deviceRegistry)
+	    {
+	        _channels.Add(new IotHubDeviceChannel(messageQueue));
+            _channels.Add(new IotHubLogChannel(messageQueue));
+	        _deviceRegistry = deviceRegistry;
+	    }
 
 #if USE_TPM
 		private class AuthenticationProvider : IAuthenticationMethod
@@ -124,8 +144,12 @@ namespace W10Home.Plugin.AzureIoTHub
 			}
 		}
 
-		public override async Task InitializeAsync(IDeviceConfiguration configuration)
-		{
+
+	    public override async Task InitializeAsync(IDeviceConfiguration configuration)
+	    {
+	        _name = configuration.Name;
+	        _type = configuration.Type;
+
 			try
 			{
 				if (configuration.Properties.ContainsKey("ConnectionString"))
@@ -191,13 +215,13 @@ namespace W10Home.Plugin.AzureIoTHub
 	        await SendLogMessageToIoTHubAsync("Info", "Device connection established");
 
 	        await _deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
+	        await _deviceClient.SetMethodHandlerAsync("getdevices", HandleGetDevicesMethod, null);
 	        await _deviceClient.SetDesiredPropertyUpdateCallback(DesiredPropertyUpdateCallback, null);
 
 	        _clientTimeoutTimer = new Timer(ClientTimeoutTimerCallback, null, TimeSpan.FromMinutes(CLIENT_TIMEOUT), TimeSpan.Zero);
         }
 
-
-        private async void MessageReceiverLoop(CancellationToken cancellationToken)
+	    private async void MessageReceiverLoop(CancellationToken cancellationToken)
 	    {
 	        do
 	        {
@@ -355,15 +379,32 @@ namespace W10Home.Plugin.AzureIoTHub
 	        }
 	    }
 #endif
+
+#region DeviceMethods
         private async Task<MethodResponse> HandleConfigureMethod(MethodRequest methodRequest, object userContext)
 		{
 			Debug.WriteLine("HandleConfigureMethod called");
 			return new MethodResponse(0);
 		}
 
-		public override IEnumerable<IDeviceChannel> GetChannels()
+	    private async Task<MethodResponse> HandleGetDevicesMethod(MethodRequest methodrequest, object usercontext)
+	    {
+	        var jsonObj = new
+	        {
+	            devices = _deviceRegistry.GetDevices().ToList()
+	        };
+
+            var json = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+	        var bytes = Encoding.UTF8.GetBytes(json);
+	        return new MethodResponse(bytes, 0);
+	    }
+#endregion
+
+
+
+        public override IEnumerable<IDeviceChannel> GetChannels()
 		{
-			throw new NotImplementedException();
+		    return _channels.AsEnumerable();
 		}
 
 		public override async Task TeardownAsync()

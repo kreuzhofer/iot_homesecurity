@@ -10,6 +10,8 @@ namespace W10Home.Interfaces
 	{
         None,
 		Notification,
-		Temperature
+		Temperature,
+        Message,
+        Log
 	}
 }

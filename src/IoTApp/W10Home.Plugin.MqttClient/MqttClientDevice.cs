@@ -16,8 +16,20 @@ namespace W10Home.MqttDevice
 	    private MqttClient _mqttclient;
 	    private string _deviceid;
 	    private Dictionary<string, Func<string, KeyValuePair<int, string>>> _methodRegistrations = new Dictionary<string, Func<string, KeyValuePair<int, string>>>();
+        private string _name;
+        private string _type;
 
-	    public async Task SendMessageToIoTHubAsync(string deviceId, string location, string key, object value)
+        public override string Name
+        {
+            get { return _name; }
+        }
+
+        public override string Type
+        {
+            get { return _type; }
+        }
+
+        public async Task SendMessageToIoTHubAsync(string deviceId, string location, string key, object value)
         {
             try
             {
@@ -44,8 +56,10 @@ namespace W10Home.MqttDevice
             }
         }
 
-		public override async Task InitializeAsync(IDeviceConfiguration configuration)
-		{
+        public override async Task InitializeAsync(IDeviceConfiguration configuration)
+        {
+            _name = configuration.Name;
+            _type = configuration.Type;
 			try
 			{
 				_deviceid = configuration.Properties["DeviceId"];

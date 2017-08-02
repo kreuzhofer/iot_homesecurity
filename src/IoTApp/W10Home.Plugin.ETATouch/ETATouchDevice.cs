@@ -19,9 +19,23 @@ namespace W10Home.Plugin.ETATouch
         private string _etatouchUrl;
 		private List<TreeItem> _menustructure;
 		private List<IDeviceChannel> _channels;
+        private string _name;
+        private string _type;
 
-		public override async Task InitializeAsync(IDeviceConfiguration configuration)
-		{
+        public override string Name
+        {
+            get { return _name; }
+        }
+
+        public override string Type
+        {
+            get { return _type; }
+        }
+
+        public override async Task InitializeAsync(IDeviceConfiguration configuration)
+        {
+            _name = configuration.Name;
+            _type = configuration.Type;
 			_etatouchUrl = configuration.Properties["ConnectionString"];
 			_menustructure = await GetMenuStructureFromEtaAsync();
 			_channels = new List<IDeviceChannel>();

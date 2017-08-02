@@ -8,7 +8,9 @@ namespace W10Home.Core.Standard
 {
 	public abstract class DeviceBase : IDevice
 	{
-		public abstract Task InitializeAsync(IDeviceConfiguration configuration);
+	    public abstract string Name { get; }
+	    public abstract string Type { get; }
+	    public abstract Task InitializeAsync(IDeviceConfiguration configuration);
 		public abstract IEnumerable<IDeviceChannel> GetChannels();
 		public IDeviceChannel GetChannel(string name)
 		{

@@ -20,14 +20,28 @@ namespace W10Home.Plugin.ABUS.SecVest
     {
 		private HttpClient _httpClient;
 		private List<IDeviceChannel> _channels = new List<IDeviceChannel>();
+        private string _name;
+        private string _type;
 
-	    public SecVestDevice()
+        public SecVestDevice()
 	    {
 		    Debug.WriteLine("SecVestDevice Instance created.");
 	    }
 
-		public override async Task InitializeAsync(IDeviceConfiguration configuration)
-	    {
+        public override string Name
+        {
+            get { return _name; }
+        }
+
+        public override string Type
+        {
+            get { return _type; }
+        }
+
+        public override async Task InitializeAsync(IDeviceConfiguration configuration)
+        {
+            _name = configuration.Name;
+            _type = configuration.Type;
 			var connectionString = configuration.Properties["ConnectionString"];
 			var username = configuration.Properties["Username"];
 			var password = configuration.Properties["Password"];

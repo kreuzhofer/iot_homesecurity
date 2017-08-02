@@ -48,6 +48,11 @@ namespace W10Home.Core.Configuration
 			}
 		}
 
+	    public IEnumerable<IDevice> GetDevices()
+	    {
+	        return _deviceList.Values.AsEnumerable();
+	    }
+
 		public IEnumerable<T> GetDevices<T>() where T : class, IDevice
 		{
 			return _deviceList.Select(d => d.Value).Where(d => (d as T) != null).Select(d=>d as T);
