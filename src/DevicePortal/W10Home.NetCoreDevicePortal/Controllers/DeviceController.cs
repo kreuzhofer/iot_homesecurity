@@ -8,11 +8,13 @@ using W10Home.DevicePortal.IotHub;
 using W10Home.DevicePortal.DataAccess;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using W10Home.NetCoreDevicePortal.DataAccess;
 using W10Home.NetCoreDevicePortal.Models;
 
 namespace W10Home.NetCoreDevicePortal.Controllers
 {
+    [Authorize]
     public class DeviceController : Controller
     {
         private DeviceManagementService _deviceManagementService;
