@@ -8,10 +8,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Security.Authentication.Web.Provider;
+using Windows.Security.Cryptography.Certificates;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System;
 using Windows.Web.Http;
+using Windows.Web.Http.Filters;
 using MetroLog;
 using Microsoft.Azure.Devices.Shared;
 using Newtonsoft.Json;
@@ -179,7 +181,7 @@ namespace W10Home.Plugin.AzureIoTHub
 
 			    if (configuration.Properties.ContainsKey("TryLoadConfiguration"))
 				{
-					var twin = await _deviceClient.GetTwinAsync(); // get configuration from server
+					var twin = await _deviceClient.GetTwinAsync(); // get device twin from server
 					if (twin.Properties.Desired.Contains("configurationUrl"))
 					{
 						await DownloadConfigAndRestart(twin.Properties.Desired);
@@ -310,6 +312,21 @@ namespace W10Home.Plugin.AzureIoTHub
 		    {
 		        if (desiredProperties["functions"].loadFunction != null)
 		        {
+                    // download function code from webserver
+		            var aHBPF = new HttpBaseProtocolFilter();
+		            // I purposefully have an expired cert to show setting multiple Ignorable Errors
+		            aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Expired);
+		            // Untrused because this is a self signed cert that is not installed
+		            aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Untrusted);
+		            aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
+                    var client =
+		                await new HttpClient(aHBPF).GetStringAsync(
+		                    new Uri("https://192.168.178.38:45455/api/DeviceFunction/homecontroller/" +
+		                            desiredProperties["functions"].loadFunction));
+		            dynamic obj = JsonConvert.DeserializeObject(client);
+
+                    // todo refresh function after loading it from server
+
 		            var reportedProperties = new TwinCollection
 		            {
 		                ["functions"] = new
@@ -326,17 +343,18 @@ namespace W10Home.Plugin.AzureIoTHub
 		private async Task DownloadConfigAndRestart(TwinCollection desiredProperties)
 		{
 			// download file
-			var fileToDownload = desiredProperties["configurationUrl"].ToString();
+			var baseUri = desiredProperties["configurationUrl"].ToString();
+		    var configUri = baseUri + "api/DeviceConfiguration/" + _deviceId;
 			var httpClient = new HttpClient();
-			var configFileContent = await httpClient.GetStringAsync(new Uri(fileToDownload));
+			var configFileContent = await httpClient.GetStringAsync(new Uri(configUri));
 
-			// save to disk
+			// save config file to disk
 			var localStorage = ApplicationData.Current.LocalFolder;
 			var file = await localStorage.CreateFileAsync("configuration.json", CreationCollisionOption.ReplaceExisting);
 			await FileIO.WriteTextAsync(file, configFileContent);
 
 			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-			queue.Enqueue("management", "reboot", null, null); // restart the app, StartupTask takes care of this
+			queue.Enqueue("management", "reboot", null, null); // restart the device, StartupTask takes care of this
 		}
 
 

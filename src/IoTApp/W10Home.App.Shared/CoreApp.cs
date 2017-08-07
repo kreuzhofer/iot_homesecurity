@@ -190,6 +190,7 @@ namespace W10Home.App.Shared
 
 			// init IoC
 			var container = new UnityContainer();
+	        container.RegisterInstance<RootConfiguration>(configurationObject);
 			container.RegisterInstance<IMessageQueue>(new MessageQueue());
 			container.RegisterInstance<IDeviceRegistry>(deviceRegistry);
 			container.RegisterInstance(functionsEngine);

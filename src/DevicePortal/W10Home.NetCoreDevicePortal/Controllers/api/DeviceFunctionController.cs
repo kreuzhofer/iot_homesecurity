@@ -21,29 +21,19 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
         }
 
         // GET: api/DeviceFunction/DeviceId
-        [HttpGet("{deviceId}", Name = "Get")]
+        [HttpGet("{deviceId}")]
         public async Task<List<DeviceFunctionEntity>> Get(string deviceId)
         {
             var result = await _deviceFunctionService.GetFunctionsAsync(deviceId);
             return result;
         }
-        
-        // POST: api/Script
-        [HttpPost]
-        public void Post([FromBody]string value)
+
+        // GET: api/DeviceFunction/DeviceId/FunctionId
+        [HttpGet("{deviceId}/{functionId}")]
+        public async Task<DeviceFunctionEntity> GetSingle(string deviceId, string functionId)
         {
-        }
-        
-        // PUT: api/Script/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-        
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var result = await _deviceFunctionService.GetFunctionAsync(deviceId, functionId);
+            return result;
         }
     }
 }

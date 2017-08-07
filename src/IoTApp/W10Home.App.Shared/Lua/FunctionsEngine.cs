@@ -32,7 +32,7 @@ namespace W10Home.App.Shared
 				if (function.TriggerType == FunctionTriggerType.RecurringIntervalTimer)
 				{
 					var script = SetupNewScript(function.Name);
-					script.DoString(function.Code);
+					script.DoString(function.Script);
 					var timer = new Timer(state =>
 					{
 						lock (script)
@@ -52,7 +52,7 @@ namespace W10Home.App.Shared
 				else if (function.TriggerType == FunctionTriggerType.MessageQueue)
 				{
 					var script = SetupNewScript(function.Name);
-					script.DoString(function.Code);
+					script.DoString(function.Script);
 					var task = Task.Factory.StartNew(async () =>
 					{
 						var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();

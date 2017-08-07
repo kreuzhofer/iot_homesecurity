@@ -22,16 +22,17 @@ namespace W10Home.NetCoreDevicePortal.DataAccess
             _scriptTableRef.CreateIfNotExistsAsync();
         }
 
-        public async Task SaveFunctionAsync(string deviceId, string functionName, string triggerType, int interval, string queueName, string scriptContent)
+        public async Task SaveFunctionAsync(string deviceId, string functionId, string functionName, string triggerType, int interval, string queueName, string scriptContent)
         {
             DeviceFunctionEntity entity;
-            entity = await GetFunctionAsync(deviceId, functionName);
+            entity = await GetFunctionAsync(deviceId, functionId);
             if (entity == null)
             {
                 entity = new DeviceFunctionEntity();
             }
+            entity.Name = functionName;
             entity.PartitionKey = deviceId;
-            entity.RowKey = functionName;
+            entity.RowKey = functionId;
             entity.Language = "Lua";
             entity.Script = scriptContent;
             entity.Interval = interval;
@@ -41,9 +42,9 @@ namespace W10Home.NetCoreDevicePortal.DataAccess
             var result = await _scriptTableRef.ExecuteAsync(operation);
         }
 
-        public async Task<DeviceFunctionEntity> GetFunctionAsync(string deviceId, string functionName)
+        public async Task<DeviceFunctionEntity> GetFunctionAsync(string deviceId, string functionId)
         {
-            var operation = TableOperation.Retrieve<DeviceFunctionEntity>(deviceId, functionName);
+            var operation = TableOperation.Retrieve<DeviceFunctionEntity>(deviceId, functionId);
             var result = await _scriptTableRef.ExecuteAsync(operation);
             return result.Result as DeviceFunctionEntity;
         }
@@ -55,9 +56,9 @@ namespace W10Home.NetCoreDevicePortal.DataAccess
             return result.Results;
         }
 
-        public async Task DeleteFunctionAsync(string deviceId, string functionName)
+        public async Task DeleteFunctionAsync(string deviceId, string functionId)
         {
-            var entity = await GetFunctionAsync(deviceId, functionName);
+            var entity = await GetFunctionAsync(deviceId, functionId);
             if (entity != null)
             {
                 var operation = TableOperation.Delete(entity);

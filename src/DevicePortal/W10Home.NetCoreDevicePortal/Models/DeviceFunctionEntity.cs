@@ -4,6 +4,7 @@ namespace W10Home.NetCoreDevicePortal.Models
 {
     public class DeviceFunctionEntity : TableEntity
     {
+        public string Name { get; set; }
         public string TriggerType { get; set; }
         public string QueueName { get; set; }
         public int Interval { get; set; }

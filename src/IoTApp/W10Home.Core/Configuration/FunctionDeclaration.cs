@@ -6,7 +6,8 @@ namespace W10Home.Core.Configuration
 	{
 		public FunctionTriggerType TriggerType { get; set; }
 		public string Name { get; set; }
-		public string Code { get; set; }
+		public string Script { get; set; }
+	    public string Language { get; set; }
 
 		#region QeueFunction
 		/// <summary>

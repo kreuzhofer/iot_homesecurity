@@ -9,26 +9,28 @@ using W10Home.DevicePortal.DataAccess;
 using Newtonsoft.Json;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 using W10Home.NetCoreDevicePortal.DataAccess;
 using W10Home.NetCoreDevicePortal.Models;
 
 namespace W10Home.NetCoreDevicePortal.Controllers
 {
-    [Authorize]
     public class DeviceController : Controller
     {
         private DeviceManagementService _deviceManagementService;
         private IDeviceStateService _deviceStateService;
         private IDeviceConfigurationService _deviceConfigurationService;
         private IDeviceFunctionService _deviceFunctionService;
+        private IConfiguration _configuration;
 
-        public DeviceController(DeviceManagementService deviceManagementService, IDeviceStateService deviceStateService, IDeviceConfigurationService deviceConfigurationService,
+        public DeviceController(IConfiguration configuration, DeviceManagementService deviceManagementService, IDeviceStateService deviceStateService, IDeviceConfigurationService deviceConfigurationService,
             IDeviceFunctionService deviceFunctionService)
         {
             _deviceManagementService = deviceManagementService;
             _deviceStateService = deviceStateService;
             _deviceConfigurationService = deviceConfigurationService;
             _deviceFunctionService = deviceFunctionService;
+            _configuration = configuration;
         }
 
         // GET: Device
@@ -91,7 +93,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                 {
                     desired = new
                     {
-                        configurationUrl = data.Configuration,
+                        configurationUrl = _configuration["ExternalBaseUrl"]
                     }
                 }
             };
@@ -114,7 +116,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         public async Task<IActionResult> EditFunction(DeviceFunctionEntity deviceFunctionEntity)
         {
             await _deviceFunctionService.SaveFunctionAsync(deviceFunctionEntity.PartitionKey,
-                deviceFunctionEntity.RowKey, deviceFunctionEntity.TriggerType, deviceFunctionEntity.Interval,
+                deviceFunctionEntity.RowKey, deviceFunctionEntity.Name, deviceFunctionEntity.TriggerType, deviceFunctionEntity.Interval,
                 deviceFunctionEntity.QueueName, deviceFunctionEntity.Script);
 
             // update device twin
