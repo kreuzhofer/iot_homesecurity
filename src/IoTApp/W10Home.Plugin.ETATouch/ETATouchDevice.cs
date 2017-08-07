@@ -6,11 +6,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml;
 using W10Home.Core.Channels;
-using W10Home.Core.Configuration;
-using W10Home.Interfaces;
 using Windows.Data.Xml.Dom;
+using IoTHs.Devices.Interfaces;
 using W10Home.Core.Standard;
-using W10Home.Interfaces.Configuration;
+using IoTHs.Api.Shared;
 
 namespace W10Home.Plugin.ETATouch
 {
@@ -32,7 +31,7 @@ namespace W10Home.Plugin.ETATouch
             get { return _type; }
         }
 
-        public override async Task InitializeAsync(IDeviceConfiguration configuration)
+        public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
         {
             _name = configuration.Name;
             _type = configuration.Type;

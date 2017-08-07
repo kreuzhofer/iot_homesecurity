@@ -1,7 +1,7 @@
-﻿using System;
+﻿using IoTHs.Devices.Interfaces;
+using System;
 using System.Threading.Tasks;
 using W10Home.Core.Channels;
-using W10Home.Interfaces;
 
 namespace W10Home.Plugin.ETATouch
 {

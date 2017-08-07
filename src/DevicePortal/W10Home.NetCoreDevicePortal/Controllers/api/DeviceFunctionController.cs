@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using W10Home.NetCoreDevicePortal.DataAccess;
 using W10Home.NetCoreDevicePortal.DataAccess.Entities;
 using W10Home.NetCoreDevicePortal.Models;
+using IoTHs.Api.Shared;
 
 namespace W10Home.NetCoreDevicePortal.Controllers.api
 {
@@ -23,18 +24,18 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
 
         // GET: api/DeviceFunction/DeviceId
         [HttpGet("{deviceId}")]
-        public async Task<List<DeviceFunctionEntity>> Get(string deviceId)
+        public async Task<List<DeviceFunctionModel>> Get(string deviceId)
         {
             var result = await _deviceFunctionService.GetFunctionsAsync(deviceId);
-            return result;
+            return result.Select(a=>a.ToDeviceFunctionModel()).ToList();
         }
 
         // GET: api/DeviceFunction/DeviceId/FunctionId
         [HttpGet("{deviceId}/{functionId}")]
-        public async Task<DeviceFunctionEntity> GetSingle(string deviceId, string functionId)
+        public async Task<DeviceFunctionModel> GetSingle(string deviceId, string functionId)
         {
             var result = await _deviceFunctionService.GetFunctionAsync(deviceId, functionId);
-            return result;
+            return result.ToDeviceFunctionModel();
         }
     }
 }

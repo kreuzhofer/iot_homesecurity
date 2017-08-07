@@ -17,7 +17,6 @@ using Windows.Web.Http.Filters;
 using MetroLog;
 using Microsoft.Azure.Devices.Shared;
 using Newtonsoft.Json;
-using W10Home.Core.Configuration;
 using W10Home.Core.Queing;
 using W10Home.Interfaces;
 #if USE_TPM
@@ -26,6 +25,8 @@ using Microsoft.Devices.Tpm;
 using Microsoft.Practices.ServiceLocation;
 using W10Home.Core.Standard;
 using W10Home.Interfaces.Configuration;
+using IoTHs.Api.Shared;
+using IoTHs.Devices.Interfaces;
 
 namespace W10Home.Plugin.AzureIoTHub
 {
@@ -147,7 +148,7 @@ namespace W10Home.Plugin.AzureIoTHub
 		}
 
 
-	    public override async Task InitializeAsync(IDeviceConfiguration configuration)
+	    public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
 	    {
 	        _name = configuration.Name;
 	        _type = configuration.Type;
@@ -323,7 +324,7 @@ namespace W10Home.Plugin.AzureIoTHub
 		                await new HttpClient(aHBPF).GetStringAsync(
 		                    new Uri("https://192.168.178.38:45455/api/DeviceFunction/homecontroller/" +
 		                            desiredProperties["functions"].loadFunction));
-		            dynamic obj = JsonConvert.DeserializeObject(client);
+		            var obj = JsonConvert.DeserializeObject<DeviceFunctionModel>(client);
 
                     // todo refresh function after loading it from server
 
@@ -342,16 +343,36 @@ namespace W10Home.Plugin.AzureIoTHub
 
 		private async Task DownloadConfigAndRestart(TwinCollection desiredProperties)
 		{
-			// download file
-			var baseUri = desiredProperties["configurationUrl"].ToString();
+            // create http base protocol filter to be able to download from untrusted https address in internal network
+		    var aHBPF = new HttpBaseProtocolFilter();
+		    // I purposefully have an expired cert to show setting multiple Ignorable Errors
+		    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Expired);
+		    // Untrused because this is a self signed cert that is not installed
+		    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Untrusted);
+		    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
+
+            // download file
+            var baseUri = desiredProperties["configurationUrl"].ToString();
 		    var configUri = baseUri + "api/DeviceConfiguration/" + _deviceId;
-			var httpClient = new HttpClient();
+			var httpClient = new HttpClient(aHBPF);
 			var configFileContent = await httpClient.GetStringAsync(new Uri(configUri));
 
 			// save config file to disk
 			var localStorage = ApplicationData.Current.LocalFolder;
 			var file = await localStorage.CreateFileAsync("configuration.json", CreationCollisionOption.ReplaceExisting);
 			await FileIO.WriteTextAsync(file, configFileContent);
+
+            // deserialize configuration object and download functions to seperate files
+		    var configuration = JsonConvert.DeserializeObject<DeviceConfigurationModel>(configFileContent);
+		    foreach (var functionId in configuration.DeviceFunctionIds)
+		    {
+		        var functionUri = baseUri + "api/DeviceFunction/" + _deviceId + "/" + functionId;
+                httpClient = new HttpClient(aHBPF);
+		        var functionContent = await httpClient.GetStringAsync(new Uri(functionUri));
+                // store function file to disk
+		        file = await localStorage.CreateFileAsync("function_"+functionId+".json", CreationCollisionOption.ReplaceExisting);
+		        await FileIO.WriteTextAsync(file, functionContent);
+            }
 
 			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
 			queue.Enqueue("management", "reboot", null, null); // restart the device, StartupTask takes care of this

@@ -37,6 +37,8 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using W10Home.App.Shared.Logging;
 using W10Home.Interfaces.Configuration;
+using IoTHs.Api.Shared;
+using IoTHs.Devices.Interfaces;
 
 namespace W10Home.App.Shared
 {
@@ -51,7 +53,7 @@ namespace W10Home.App.Shared
             _log.Trace("Run");
 
             // Build configuration object to configure all devices
-			RootConfiguration configurationObject = new RootConfiguration();
+			DeviceConfigurationModel configurationObject = new DeviceConfigurationModel();
 
 			// first try to load the configuration file from the LocalFolder
 			var localStorage = ApplicationData.Current.LocalFolder;
@@ -60,14 +62,14 @@ namespace W10Home.App.Shared
 		    {
 			    // local file content
 			    var configFileContent = await FileIO.ReadTextAsync((IStorageFile) file);
-			    configurationObject = JsonConvert.DeserializeObject<RootConfiguration>(configFileContent);
+			    configurationObject = JsonConvert.DeserializeObject<DeviceConfigurationModel>(configFileContent);
 		    }
 		    else // there is not yet a configuration file, tell AzureIoTHubDevice to load it from the cloud and then restart
 		    {
-			    configurationObject.DeviceConfigurations = new List<DeviceConfiguration>(new[]
+			    configurationObject.DevicePluginConfigurations = new List<DevicePluginConfigurationModel>(new[]
 			    {
 				    // by default iot hub configuration now uses TPM chip
-				    new DeviceConfiguration
+				    new DevicePluginConfigurationModel()
 				    {
 					    Name = "iothub",
 					    Type = "AzureIoTHubDevice",
@@ -190,7 +192,7 @@ namespace W10Home.App.Shared
 
 			// init IoC
 			var container = new UnityContainer();
-	        container.RegisterInstance<RootConfiguration>(configurationObject);
+	        container.RegisterInstance<DeviceConfigurationModel>(configurationObject);
 			container.RegisterInstance<IMessageQueue>(new MessageQueue());
 			container.RegisterInstance<IDeviceRegistry>(deviceRegistry);
 			container.RegisterInstance(functionsEngine);

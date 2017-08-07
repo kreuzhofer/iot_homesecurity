@@ -1,12 +1,11 @@
-﻿using System;
+﻿using IoTHs.Api.Shared;
+using IoTHs.Devices.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using W10Home.Core.Configuration;
 using W10Home.Core.Standard;
-using W10Home.Interfaces;
-using W10Home.Interfaces.Configuration;
 
 namespace W10Home.Plugin.Twilio
 {
@@ -33,7 +32,7 @@ namespace W10Home.Plugin.Twilio
 	        get { return _type; }
 	    }
 
-	    public override async Task InitializeAsync(IDeviceConfiguration configuration)
+	    public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
 	    {
 	        _name = configuration.Name;
 	        _type = configuration.Type;

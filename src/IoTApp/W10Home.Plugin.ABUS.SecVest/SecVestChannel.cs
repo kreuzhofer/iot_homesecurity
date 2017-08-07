@@ -1,4 +1,5 @@
 ﻿using Windows.Web.Http;
+using IoTHs.Devices.Interfaces;
 using W10Home.Interfaces;
 
 namespace W10Home.Plugin.ABUS.SecVest

@@ -12,6 +12,10 @@ using W10Home.Core.Configuration;
 using W10Home.Core.Queing;
 using W10Home.Interfaces;
 using W10Home.Interfaces.Configuration;
+using IoTHs.Api.Shared;
+using IoTHs.Devices.Interfaces;
+using Windows.Storage;
+using Newtonsoft.Json;
 
 namespace W10Home.App.Shared
 {
@@ -20,20 +24,41 @@ namespace W10Home.App.Shared
 		private readonly List<Timer> _timers = new List<Timer>();
         private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<FunctionsEngine>();
 
-	    public void Initialize(RootConfiguration configuration)
+	    public async void Initialize(DeviceConfigurationModel configuration)
 		{
-			if (configuration.Functions == null)
+			if (configuration.DeviceFunctionIds == null)
 			{
 				return;
 			}
 			UserData.RegistrationPolicy = InteropRegistrationPolicy.Automatic;
-			foreach (var function in configuration.Functions)
+			foreach (var functionId in configuration.DeviceFunctionIds)
 			{
-				if (function.TriggerType == FunctionTriggerType.RecurringIntervalTimer)
+                // load function definition from disk
+			    // first try to load the configuration file from the LocalFolder
+			    var localStorage = ApplicationData.Current.LocalFolder;
+			    var file = await localStorage.TryGetItemAsync("function_"+functionId+".json");
+			    DeviceFunctionModel function = null;
+			    if (file != null) // file exists, continue to deserialize into actual configuration object
+			    {
+			        // local file content
+			        var configFileContent = await FileIO.ReadTextAsync((IStorageFile)file);
+			        function = JsonConvert.DeserializeObject<DeviceFunctionModel>(configFileContent);
+			    }
+
+                if (function.TriggerType == FunctionTriggerType.RecurringIntervalTimer)
 				{
-					var script = SetupNewScript(function.Name);
-					script.DoString(function.Script);
-					var timer = new Timer(state =>
+					var script = SetupNewLuaScript(function.Name);
+                    // try to compile script
+				    try
+				    {
+				        script.DoString(function.Script);
+				    }
+				    catch (Exception ex)
+				    {
+				        _log.Error("Error compiling script " + function.Name, ex);
+				        continue; // todo set twin property to report compilation error
+				    }
+				    var timer = new Timer(state =>
 					{
 						lock (script)
 						{
@@ -51,7 +76,7 @@ namespace W10Home.App.Shared
 				}
 				else if (function.TriggerType == FunctionTriggerType.MessageQueue)
 				{
-					var script = SetupNewScript(function.Name);
+					var script = SetupNewLuaScript(function.Name);
 					script.DoString(function.Script);
 					var task = Task.Factory.StartNew(async () =>
 					{
@@ -78,7 +103,7 @@ namespace W10Home.App.Shared
 			}
 		}
 
-	    private Script SetupNewScript(string name)
+	    private Script SetupNewLuaScript(string name)
 	    {
 		    var registry = ServiceLocator.Current.GetInstance<IDeviceRegistry>();
 		    var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();

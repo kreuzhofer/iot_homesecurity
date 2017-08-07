@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Web.Http;
+using IoTHs.Devices.Interfaces;
 using Newtonsoft.Json;
 using W10Home.Interfaces;
 using W10Home.Plugin.ABUS.SecVest.Models;

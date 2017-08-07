@@ -131,13 +131,17 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\DevicePortal\IoTHs.Api.Shared\IoTHs.Api.Shared.csproj">
+      <Project>{5BA69DBC-184E-451B-AFC7-90C6A7A0D0C4}</Project>
+      <Name>IoTHs.Api.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Devices.Interfaces\IoTHs.Devices.Interfaces.csproj">
+      <Project>{000c0e13-fbe4-4815-b30b-35ade072e45f}</Project>
+      <Name>IoTHs.Devices.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
       <Project>{C3C103FF-8993-420D-8F50-979ECA9C7D73}</Project>
       <Name>W10Home.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\W10Home.Interfaces\W10Home.Interfaces.csproj">
-      <Project>{b5026c36-9a23-46c9-8140-1e26ba08845d}</Project>
-      <Name>W10Home.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\W10Home.Plugin.ABUS.SecVest\W10Home.Plugin.ABUS.SecVest.csproj">
       <Project>{0acaf795-9493-4251-ae48-2a11edc483ba}</Project>

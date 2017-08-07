@@ -10,9 +10,9 @@ using Windows.Web.Http;
 using Windows.Web.Http.Filters;
 using Windows.Web.Http.Headers;
 using W10Home.Core.Standard;
-using W10Home.Interfaces;
-using W10Home.Interfaces.Configuration;
 using W10Home.Plugin.ABUS.SecVest.Utils;
+using IoTHs.Api.Shared;
+using IoTHs.Devices.Interfaces;
 
 namespace W10Home.Plugin.ABUS.SecVest
 {
@@ -38,7 +38,7 @@ namespace W10Home.Plugin.ABUS.SecVest
             get { return _type; }
         }
 
-        public override async Task InitializeAsync(IDeviceConfiguration configuration)
+        public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
         {
             _name = configuration.Name;
             _type = configuration.Type;

@@ -172,13 +172,17 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\DevicePortal\IoTHs.Api.Shared\IoTHs.Api.Shared.csproj">
+      <Project>{5ba69dbc-184e-451b-afc7-90c6a7a0d0c4}</Project>
+      <Name>IoTHs.Api.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Devices.Interfaces\IoTHs.Devices.Interfaces.csproj">
+      <Project>{000c0e13-fbe4-4815-b30b-35ade072e45f}</Project>
+      <Name>IoTHs.Devices.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
       <Project>{c3c103ff-8993-420d-8f50-979eca9c7d73}</Project>
       <Name>W10Home.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\W10Home.Interfaces\W10Home.Interfaces.csproj">
-      <Project>{B5026C36-9A23-46C9-8140-1E26BA08845D}</Project>
-      <Name>W10Home.Interfaces</Name>
     </ProjectReference>
     <ProjectReference Include="..\W10Home.Plugin.AzureIoTHub\W10Home.Plugin.AzureIoTHub.csproj">
       <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>

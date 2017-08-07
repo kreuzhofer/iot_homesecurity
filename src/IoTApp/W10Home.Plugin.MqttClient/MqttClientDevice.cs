@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using uPLibrary.Networking.M2Mqtt;
 using W10Home.Core.Standard;
-using W10Home.Interfaces;
-using W10Home.Interfaces.Configuration;
+using IoTHs.Api.Shared;
+using IoTHs.Devices.Interfaces;
 
 namespace W10Home.MqttDevice
 {
@@ -56,7 +56,7 @@ namespace W10Home.MqttDevice
             }
         }
 
-        public override async Task InitializeAsync(IDeviceConfiguration configuration)
+        public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
         {
             _name = configuration.Name;
             _type = configuration.Type;

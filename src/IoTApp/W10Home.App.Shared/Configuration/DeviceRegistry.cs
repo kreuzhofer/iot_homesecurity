@@ -5,10 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using IoTHs.Api.Shared;
 using MetroLog;
 using Microsoft.Practices.ServiceLocation;
 using W10Home.Interfaces;
 using W10Home.Interfaces.Configuration;
+using IoTHs.Devices.Interfaces;
 
 namespace W10Home.Core.Configuration
 {
@@ -23,9 +25,9 @@ namespace W10Home.Core.Configuration
 			_deviceTypes.Add(typeof(T).Name, typeof(T));
 		}
 
-		public async Task InitializeDevicesAsync(RootConfiguration configurationObject)
+		public async Task InitializeDevicesAsync(DeviceConfigurationModel configurationObject)
 		{
-			foreach (var configuration in configurationObject.DeviceConfigurations)
+			foreach (var configuration in configurationObject.DevicePluginConfigurations)
 			{
 				try
 				{

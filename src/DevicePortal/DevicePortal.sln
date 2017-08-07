@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26730.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W10Home.NetCoreDevicePortal", "W10Home.NetCoreDevicePortal\W10Home.NetCoreDevicePortal.csproj", "{3C30E567-6402-4E39-A965-7038DFF79B7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTHs.Api.Models", "IoTHs.Api.Models\IoTHs.Api.Models.csproj", "{2857379B-6B48-4450-8791-5C22834F2DD0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTHs.Api.Shared", "IoTHs.Api.Shared\IoTHs.Api.Shared.csproj", "{FE337D3A-9253-474C-A257-AE53D59F184C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{3C30E567-6402-4E39-A965-7038DFF79B7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C30E567-6402-4E39-A965-7038DFF79B7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C30E567-6402-4E39-A965-7038DFF79B7B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2857379B-6B48-4450-8791-5C22834F2DD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2857379B-6B48-4450-8791-5C22834F2DD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2857379B-6B48-4450-8791-5C22834F2DD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2857379B-6B48-4450-8791-5C22834F2DD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE337D3A-9253-474C-A257-AE53D59F184C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE337D3A-9253-474C-A257-AE53D59F184C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE337D3A-9253-474C-A257-AE53D59F184C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE337D3A-9253-474C-A257-AE53D59F184C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

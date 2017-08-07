@@ -1,4 +1,5 @@
 ﻿using System;
+using IoTHs.Devices.Interfaces;
 using W10Home.Core.Queing;
 using W10Home.Interfaces;
 

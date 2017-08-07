@@ -116,13 +116,17 @@
     <EmbeddedResource Include="Properties\W10Home.Plugin.ETATouch.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\DevicePortal\IoTHs.Api.Shared\IoTHs.Api.Shared.csproj">
+      <Project>{5BA69DBC-184E-451B-AFC7-90C6A7A0D0C4}</Project>
+      <Name>IoTHs.Api.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Devices.Interfaces\IoTHs.Devices.Interfaces.csproj">
+      <Project>{000C0E13-FBE4-4815-B30B-35ADE072E45F}</Project>
+      <Name>IoTHs.Devices.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
       <Project>{C3C103FF-8993-420D-8F50-979ECA9C7D73}</Project>
       <Name>W10Home.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\W10Home.Interfaces\W10Home.Interfaces.csproj">
-      <Project>{B5026C36-9A23-46C9-8140-1E26BA08845D}</Project>
-      <Name>W10Home.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
