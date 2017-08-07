@@ -58,8 +58,8 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             {
                 deviceData.Configuration = configData.Configuration;
             }
-            var deviceStatusList = await _deviceStateService.GetDeviceState(id);
-            deviceData.StateList = deviceStatusList;
+            var deviceStateList = await _deviceStateService.GetDeviceState(id);
+            deviceData.StateList = deviceStateList;
 
             var deviceFunctions = await _deviceFunctionService.GetFunctionsAsync(id);
             deviceData.DeviceFunctions = deviceFunctions;
