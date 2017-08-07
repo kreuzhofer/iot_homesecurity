@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using W10Home.NetCoreDevicePortal.DataAccess;
+using W10Home.NetCoreDevicePortal.DataAccess.Entities;
 using W10Home.NetCoreDevicePortal.Models;
 
 namespace W10Home.NetCoreDevicePortal.Controllers.api

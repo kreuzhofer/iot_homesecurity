@@ -11,6 +11,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using W10Home.NetCoreDevicePortal.DataAccess;
+using W10Home.NetCoreDevicePortal.DataAccess.Entities;
 using W10Home.NetCoreDevicePortal.Models;
 
 namespace W10Home.NetCoreDevicePortal.Controllers

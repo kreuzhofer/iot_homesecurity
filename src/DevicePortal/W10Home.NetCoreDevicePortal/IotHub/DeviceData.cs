@@ -14,7 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Azure.Devices;
-using W10Home.DevicePortal.Models;
+using W10Home.NetCoreDevicePortal.DataAccess.Entities;
 using W10Home.NetCoreDevicePortal.Models;
 
 namespace W10Home.DevicePortal.IotHub

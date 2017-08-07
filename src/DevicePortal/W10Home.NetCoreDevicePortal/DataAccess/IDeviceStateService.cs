@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using W10Home.DevicePortal.Models;
+using W10Home.NetCoreDevicePortal.DataAccess.Entities;
 
 namespace W10Home.NetCoreDevicePortal.DataAccess
 {

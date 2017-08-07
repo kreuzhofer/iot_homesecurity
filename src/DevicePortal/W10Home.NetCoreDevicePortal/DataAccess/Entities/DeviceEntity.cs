@@ -1,6 +1,6 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
 
-namespace W10Home.NetCoreDevicePortal.Models
+namespace W10Home.NetCoreDevicePortal.DataAccess.Entities
 {
     public class DeviceEntity : TableEntity
     {
