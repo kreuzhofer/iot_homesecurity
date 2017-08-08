@@ -7,8 +7,8 @@
     <ProjectGuid>{B500EB85-8A90-45BC-AA6E-448DABB187CC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>W10Home.Plugin.HomeMatic</RootNamespace>
-    <AssemblyName>W10Home.Plugin.HomeMatic</AssemblyName>
+    <RootNamespace>IoTHs.Plugin.HomeMatic</RootNamespace>
+    <AssemblyName>IoTHs.Plugin.HomeMatic</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.14393.0</TargetPlatformVersion>
