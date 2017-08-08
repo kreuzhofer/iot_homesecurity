@@ -129,7 +129,8 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                     {
                         functions = new
                         {
-                            loadFunction = deviceFunctionEntity.RowKey
+                            loadFunction = deviceFunctionEntity.RowKey,
+                            baseUrl = _configuration["ExternalBaseUrl"]
                         }
                     }
                 }

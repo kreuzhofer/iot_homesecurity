@@ -311,28 +311,29 @@ namespace W10Home.Plugin.AzureIoTHub
 			}
 		    if (desiredProperties.Contains("functions"))
 		    {
-		        if (desiredProperties["functions"].loadFunction != null)
+		        var functionId = desiredProperties["functions"].loadFunction.ToString();
+		        var baseUrl = desiredProperties["functions"].baseUrl.ToString();
+                if (!String.IsNullOrEmpty(functionId))
 		        {
                     // download function code from webserver
 		            var aHBPF = new HttpBaseProtocolFilter();
-		            // I purposefully have an expired cert to show setting multiple Ignorable Errors
 		            aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Expired);
-		            // Untrused because this is a self signed cert that is not installed
 		            aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Untrusted);
 		            aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
-                    var client =
-		                await new HttpClient(aHBPF).GetStringAsync(
-		                    new Uri("https://192.168.178.38:45455/api/DeviceFunction/homecontroller/" +
-		                            desiredProperties["functions"].loadFunction));
-		            var obj = JsonConvert.DeserializeObject<DeviceFunctionModel>(client);
+                    var functionContent = await new HttpClient(aHBPF).GetStringAsync(new Uri(baseUrl+"api/DeviceFunction/"+_deviceId+"/" + functionId));
+                    // store function file to disk
+		            var localStorage = ApplicationData.Current.LocalFolder;
+		            string filename = "function_" + functionId + ".json";
+                    var file = await localStorage.CreateFileAsync(filename, CreationCollisionOption.ReplaceExisting);
+		            await FileIO.WriteTextAsync(file, functionContent);
 
                     // todo refresh function after loading it from server
 
-		            var reportedProperties = new TwinCollection
+                    var reportedProperties = new TwinCollection
 		            {
 		                ["functions"] = new
 		                {
-		                    loadFunction = desiredProperties["functions"].loadFunction,
+		                    loadFunction = functionId,
                             status = "success"
                         }
 		            };
@@ -345,9 +346,7 @@ namespace W10Home.Plugin.AzureIoTHub
 		{
             // create http base protocol filter to be able to download from untrusted https address in internal network
 		    var aHBPF = new HttpBaseProtocolFilter();
-		    // I purposefully have an expired cert to show setting multiple Ignorable Errors
 		    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Expired);
-		    // Untrused because this is a self signed cert that is not installed
 		    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Untrusted);
 		    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
 

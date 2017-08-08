@@ -43,6 +43,16 @@ namespace W10Home.App.Shared
 			        // local file content
 			        var configFileContent = await FileIO.ReadTextAsync((IStorageFile)file);
 			        function = JsonConvert.DeserializeObject<DeviceFunctionModel>(configFileContent);
+			        if (function == null)
+			        {
+			            _log.Error("Invalid function file for function " + functionId);
+                        continue;
+			        }
+			    }
+			    else
+			    {
+			        _log.Error("Function file not found for function " + functionId);
+			        continue;
 			    }
 
                 if (function.TriggerType == FunctionTriggerType.RecurringIntervalTimer)
@@ -77,8 +87,17 @@ namespace W10Home.App.Shared
 				else if (function.TriggerType == FunctionTriggerType.MessageQueue)
 				{
 					var script = SetupNewLuaScript(function.Name);
-					script.DoString(function.Script);
-					var task = Task.Factory.StartNew(async () =>
+				    // try to compile script
+				    try
+				    {
+				        script.DoString(function.Script);
+				    }
+				    catch (Exception ex)
+				    {
+				        _log.Error("Error compiling script " + function.Name, ex);
+				        continue; // todo set twin property to report compilation error
+				    }
+                    var task = Task.Factory.StartNew(async () =>
 					{
 						var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
 						do
