@@ -12,6 +12,7 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Entities
         public int Interval { get; set; }
         public string Script { get; set; }
         public string Language { get; set; }
+        public bool Enabled { get; set; }
 
         public DeviceFunctionModel ToDeviceFunctionModel()
         {
@@ -26,7 +27,8 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Entities
                 Name = Name,
                 QueueName = QueueName,
                 Script = Script,
-                TriggerType = enumTriggerType
+                TriggerType = enumTriggerType,
+                Enabled = Enabled
             };
         }
     }

@@ -19,7 +19,7 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Services
             _scriptTableRef.CreateIfNotExistsAsync();
         }
 
-        public async Task SaveFunctionAsync(string deviceId, string functionId, string functionName, string triggerType, int interval, string queueName, string scriptContent)
+        public async Task SaveFunctionAsync(string deviceId, string functionId, string functionName, string triggerType, int interval, string queueName, bool enabled, string scriptContent)
         {
             DeviceFunctionEntity entity;
             entity = await GetFunctionAsync(deviceId, functionId);
@@ -35,6 +35,7 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Services
             entity.Interval = interval;
             entity.QueueName = queueName;
             entity.TriggerType = triggerType;
+            entity.Enabled = enabled;
             var operation = TableOperation.InsertOrReplace(entity);
             var result = await _scriptTableRef.ExecuteAsync(operation);
         }

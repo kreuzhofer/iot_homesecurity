@@ -124,7 +124,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         {
             await _deviceFunctionService.SaveFunctionAsync(deviceFunctionEntity.PartitionKey,
                 deviceFunctionEntity.RowKey, deviceFunctionEntity.Name, deviceFunctionEntity.TriggerType, deviceFunctionEntity.Interval,
-                deviceFunctionEntity.QueueName, deviceFunctionEntity.Script);
+                deviceFunctionEntity.QueueName, deviceFunctionEntity.Enabled, deviceFunctionEntity.Script);
 
             // update device twin
             var patch = new

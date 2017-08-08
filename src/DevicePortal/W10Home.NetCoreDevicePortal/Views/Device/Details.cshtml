@@ -147,6 +147,7 @@
             <th>TriggerType</th>
             <th>Interval</th>
             <th>QueueName</th>
+            <th>Enabled</th>
             <th></th>
         </tr>
 
@@ -164,6 +165,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.QueueName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Enabled)
                 </td>
                 <td>
                     @Html.ActionLink("Edit", "EditFunction", new { deviceId = item.PartitionKey, functionName = item.RowKey })

@@ -74,6 +74,11 @@ namespace W10Home.App.Shared
                 return null;
             }
 
+            if (!function.Enabled)
+            {
+                return null;
+            }
+
             if (function.TriggerType == FunctionTriggerType.RecurringIntervalTimer)
             {
                 var script = SetupNewLuaScript(function.Name);

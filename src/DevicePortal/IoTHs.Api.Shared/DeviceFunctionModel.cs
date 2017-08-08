@@ -15,5 +15,6 @@ namespace IoTHs.Api.Shared
         public int Interval { get; set; }
         public string Script { get; set; }
         public string Language { get; set; }
+        public bool Enabled { get; set; }
     }
 }
