@@ -218,7 +218,7 @@ namespace W10Home.App.Shared
 			await deviceRegistry.InitializeDevicesAsync(configurationObject);
 
 			// start lua engine
-			functionsEngine.Initialize(configurationObject);
+			functionsEngine.Initialize(configurationObject, CancellationToken.None);
 			
 			// define cron timers
 			//_everySecondTimer = new Timer(EverySecondTimerCallback, null, 1000, 1000);

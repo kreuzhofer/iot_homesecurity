@@ -327,7 +327,8 @@ namespace W10Home.Plugin.AzureIoTHub
                     var file = await localStorage.CreateFileAsync(filename, CreationCollisionOption.ReplaceExisting);
 		            await FileIO.WriteTextAsync(file, functionContent);
 
-                    // todo refresh function after loading it from server
+		            var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+		            queue.Enqueue("functionsengine", "reloadfunction", functionId); // restart the device, StartupTask takes care of this
 
                     var reportedProperties = new TwinCollection
 		            {

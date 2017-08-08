@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\QueueController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreApp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\IotHubTarget.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lua\FunctionInstance.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lua\FunctionsEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketForwardingWorker.cs" />
   </ItemGroup>
@@ -40,8 +41,5 @@
     <Content Include="$(MSBuildThisFileDirectory)Web\js\bootstrap.min.js" />
     <Content Include="$(MSBuildThisFileDirectory)Web\js\main.js" />
     <Content Include="$(MSBuildThisFileDirectory)Web\js\npm.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Lua\" />
   </ItemGroup>
 </Project>
