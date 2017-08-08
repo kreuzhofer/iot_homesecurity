@@ -1,15 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.WindowsAzure.Storage;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.Extensions.Configuration;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using W10Home.NetCoreDevicePortal.DataAccess.Entities;
-using W10Home.NetCoreDevicePortal.Models;
 
-namespace W10Home.NetCoreDevicePortal.DataAccess
+namespace W10Home.NetCoreDevicePortal.DataAccess.Services
 {
     public class DeviceFunctionService : IDeviceFunctionService
     {
@@ -39,7 +35,7 @@ namespace W10Home.NetCoreDevicePortal.DataAccess
             entity.Interval = interval;
             entity.QueueName = queueName;
             entity.TriggerType = triggerType;
-            var operation = TableOperation.Replace(entity);
+            var operation = TableOperation.InsertOrReplace(entity);
             var result = await _scriptTableRef.ExecuteAsync(operation);
         }
 

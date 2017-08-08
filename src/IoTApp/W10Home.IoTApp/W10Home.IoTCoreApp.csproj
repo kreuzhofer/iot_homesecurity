@@ -192,6 +192,10 @@
       <Project>{7f92bd3f-114b-431a-9b00-48aa60d22ead}</Project>
       <Name>W10Home.Plugin.ETATouch</Name>
     </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.HomeMatic\IoTHs.Plugin.HomeMatic.csproj">
+      <Project>{B500EB85-8A90-45BC-AA6E-448DABB187CC}</Project>
+      <Name>IoTHs.Plugin.HomeMatic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\W10Home.Plugin.MqttClient\W10Home.Plugin.MqttClient.csproj">
       <Project>{174a9f97-1dd6-4d50-8cd4-2052c525ef5a}</Project>
       <Name>W10Home.Plugin.MqttClient</Name>

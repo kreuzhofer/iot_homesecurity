@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using W10Home.NetCoreDevicePortal.DataAccess.Entities;
 
-namespace W10Home.NetCoreDevicePortal.DataAccess
+namespace W10Home.NetCoreDevicePortal.DataAccess.Services
 {
 	public class DeviceStateService : IDeviceStateService
 	{

@@ -8,7 +8,7 @@
 <h2>Details - @Model.Id</h2>
 
 <div>
-    <h4>DeviceData</h4>
+    <h4>Device Data</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -83,8 +83,36 @@
     @Html.ActionLink("Back to List", "Index")
 </p>
 
+
 <div>
-    <h4>DeviceState</h4>
+    <h4>Device Plugins</h4>
+    <hr />
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Enabled</th>
+        </tr>
+
+        @foreach (var item in Model.DevicePlugins)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Enabled)
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+<div>
+    <h4>Device Channel State</h4>
     <hr />
     <table class="table">
         <tr>
@@ -111,7 +139,7 @@
 </div>
 
 <div>
-    <h4>DeviceFunctions</h4>
+    <h4>Device Functions</h4>
     <hr />
     <table class="table">
         <tr>

@@ -39,6 +39,7 @@ using W10Home.App.Shared.Logging;
 using W10Home.Interfaces.Configuration;
 using IoTHs.Api.Shared;
 using IoTHs.Devices.Interfaces;
+using IoTHs.Plugin.HomeMatic;
 
 namespace W10Home.App.Shared
 {
@@ -186,6 +187,7 @@ namespace W10Home.App.Shared
 #if TWILIO
             deviceRegistry.RegisterDeviceType<TwilioDevice>();
 #endif
+            deviceRegistry.RegisterDeviceType<HomeMaticDevice>();
 
 			// add functions engine
 			var functionsEngine = new FunctionsEngine();
@@ -210,6 +212,8 @@ namespace W10Home.App.Shared
 #if TWILIO
             container.RegisterType<TwilioDevice>(new ContainerControlledLifetimeManager());
 #endif
+	        container.RegisterType<HomeMaticDevice>(new ContainerControlledLifetimeManager());
+
 			// make Unity container available to ServiceLocator
 			var locator = new UnityServiceLocator(container);
 			ServiceLocator.SetLocatorProvider(() => locator);

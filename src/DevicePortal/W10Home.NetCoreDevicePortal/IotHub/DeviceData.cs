@@ -22,6 +22,7 @@ namespace W10Home.DevicePortal.IotHub
 		public string Configuration { get; set; }
 	    public List<DeviceStateEntity> StateList { get; set; }
         public List<DeviceFunctionEntity> DeviceFunctions { get; set; }
+        public List<DevicePluginEntity> DevicePlugins { get; set; }
 
 // Url for config file
 

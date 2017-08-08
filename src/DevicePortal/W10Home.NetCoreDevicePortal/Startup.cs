@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using W10Home.DevicePortal.DataAccess;
 using W10Home.DevicePortal.IotHub;
 using W10Home.NetCoreDevicePortal.DataAccess;
+using W10Home.NetCoreDevicePortal.DataAccess.Services;
 
 namespace W10Home.NetCoreDevicePortal
 {
@@ -32,6 +33,8 @@ namespace W10Home.NetCoreDevicePortal
             services.AddTransient<IDeviceConfigurationService, DeviceConfigurationService>();
             services.AddTransient<IDeviceFunctionService, DeviceFunctionService>();
             services.AddTransient<IDeviceService, DeviceService>();
+            services.AddTransient<DevicePluginService>();
+            services.AddTransient<DevicePluginPropertyService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

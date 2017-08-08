@@ -1,6 +1,8 @@
 ﻿{
   "dependencies": {
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.3"
+    "MetroLog": "1.0.1",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.3",
+    "Unity": "4.0.1"
   },
   "frameworks": {
     "uap10.0": {}

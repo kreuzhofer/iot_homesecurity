@@ -92,10 +92,12 @@ namespace W10Home.IoTCoreApp
 					{
 						if (message.Key == "reboot")
 						{
+                            _log.Info("Rebooting");
 							ShutdownManager.BeginShutdown(ShutdownKind.Restart, TimeSpan.Zero);
 						}
 						else if (message.Key == "exit")
 						{
+                            _log.Info("Exiting");
 							if (_deferral != null)
 							{
 								_deferral.Complete();

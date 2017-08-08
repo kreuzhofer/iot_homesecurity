@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using W10Home.NetCoreDevicePortal.DataAccess;
 using W10Home.NetCoreDevicePortal.DataAccess.Entities;
+using W10Home.NetCoreDevicePortal.DataAccess.Services;
 using W10Home.NetCoreDevicePortal.Models;
 
 namespace W10Home.NetCoreDevicePortal.Controllers
@@ -23,15 +24,17 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         private IDeviceConfigurationService _deviceConfigurationService;
         private IDeviceFunctionService _deviceFunctionService;
         private IConfiguration _configuration;
+        private DevicePluginService _devicePluginService;
 
-        public DeviceController(IConfiguration configuration, DeviceManagementService deviceManagementService, IDeviceStateService deviceStateService, IDeviceConfigurationService deviceConfigurationService,
-            IDeviceFunctionService deviceFunctionService)
+        public DeviceController(IConfiguration configuration, DeviceManagementService deviceManagementService, IDeviceStateService deviceStateService, 
+            IDeviceConfigurationService deviceConfigurationService, IDeviceFunctionService deviceFunctionService, DevicePluginService devicePluginService)
         {
             _deviceManagementService = deviceManagementService;
             _deviceStateService = deviceStateService;
             _deviceConfigurationService = deviceConfigurationService;
             _deviceFunctionService = deviceFunctionService;
             _configuration = configuration;
+            _devicePluginService = devicePluginService;
         }
 
         // GET: Device
@@ -63,6 +66,9 @@ namespace W10Home.NetCoreDevicePortal.Controllers
 
             var deviceFunctions = await _deviceFunctionService.GetFunctionsAsync(id);
             deviceData.DeviceFunctions = deviceFunctions;
+
+            var devicePlugins = await _devicePluginService.GetAsync(id);
+            deviceData.DevicePlugins = devicePlugins;
 
             return View(deviceData);
         }
