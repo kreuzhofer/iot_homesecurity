@@ -252,7 +252,19 @@ namespace W10Home.Plugin.AzureIoTHub
 	                {
 	                    break;
 	                }
-                    var message = await _deviceClient.ReceiveAsync(TimeSpan.FromMilliseconds(250));
+	                Message message = null;
+	                try
+	                {
+	                    message = await _deviceClient.ReceiveAsync(TimeSpan.FromMilliseconds(250));
+	                }
+	                catch (TaskCanceledException)
+	                {
+	                    if (cancellationToken.IsCancellationRequested)
+	                    {
+	                        return;
+	                    }
+	                }
+
 	                if (message != null)
 	                {
 	                    await _deviceClient.CompleteAsync(message);
@@ -277,10 +289,6 @@ namespace W10Home.Plugin.AzureIoTHub
 	                    string key = messageObject.key;
 	                    string value = messageObject.value;
 	                    queue.Enqueue(queueName, key, value, "");
-	                    //if (messageObject.Key == "configure")
-	                    //{
-
-	                    //}
 	                }
 	            }
 	            catch (Exception ex)

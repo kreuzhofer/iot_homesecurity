@@ -155,6 +155,10 @@
       <Project>{7f92bd3f-114b-431a-9b00-48aa60d22ead}</Project>
       <Name>W10Home.Plugin.ETATouch</Name>
     </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.HomeMatic\IoTHs.Plugin.HomeMatic.csproj">
+      <Project>{b500eb85-8a90-45bc-aa6e-448dabb187cc}</Project>
+      <Name>IoTHs.Plugin.HomeMatic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\W10Home.Plugin.Twilio\W10Home.Plugin.Twilio.csproj">
       <Project>{106b0c81-2fd4-45ec-a72c-2e5e6679a576}</Project>
       <Name>W10Home.Plugin.Twilio</Name>
