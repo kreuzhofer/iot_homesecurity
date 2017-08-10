@@ -1,0 +1,1 @@
+schtasks /Create /TN "IoTHomesecurity" /SC MINUTE /MO 1 /TR "c:\deploy\checkapp.cmd > c:\deploy\checkapp.log" /RU SYSTEM

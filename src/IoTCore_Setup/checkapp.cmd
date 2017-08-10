@@ -1,0 +1,1 @@
+powershell "c:\deploy\IoT_CheckAppRunningAndRestart.ps1"
