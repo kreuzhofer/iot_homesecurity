@@ -455,7 +455,7 @@ namespace W10Home.Plugin.AzureIoTHub
 		    if (_threadCancellation != null)
 		    {
 		        _threadCancellation.Cancel();
-		        _messageLoopTerminationEvent.WaitOne(2000);
+		        _messageLoopTerminationEvent?.WaitOne(2000);
 		        _threadCancellation = null;
 		    }
 		    if (_clientTimeoutTimer != null)
