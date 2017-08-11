@@ -44,6 +44,7 @@ namespace W10Home.Plugin.AzureIoTHub
 	    private IDeviceRegistry _deviceRegistry;
 	    private string _name;
 	    private string _type;
+	    private AutoResetEvent _messageLoopTerminationEvent;
 
 	    public override string Name
 	    {
@@ -226,6 +227,7 @@ namespace W10Home.Plugin.AzureIoTHub
 
 	    private async void MessageReceiverLoop(CancellationToken cancellationToken)
 	    {
+            _messageLoopTerminationEvent = new AutoResetEvent(false);
 	        do
 	        {
 	            try
@@ -261,7 +263,7 @@ namespace W10Home.Plugin.AzureIoTHub
 	                {
 	                    if (cancellationToken.IsCancellationRequested)
 	                    {
-	                        return;
+	                        break;
 	                    }
 	                }
 
@@ -301,6 +303,7 @@ namespace W10Home.Plugin.AzureIoTHub
 	            }
 	        } while (!cancellationToken.IsCancellationRequested);
             _log.Trace("Exit MessageReceiverLoop");
+	        _messageLoopTerminationEvent.Set();
 	    }
 
         private async void ClientTimeoutTimerCallback(object state)
@@ -452,6 +455,7 @@ namespace W10Home.Plugin.AzureIoTHub
 		    if (_threadCancellation != null)
 		    {
 		        _threadCancellation.Cancel();
+		        _messageLoopTerminationEvent.WaitOne(2000);
 		        _threadCancellation = null;
 		    }
 		    if (_clientTimeoutTimer != null)
