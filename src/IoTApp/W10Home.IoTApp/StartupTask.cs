@@ -28,6 +28,7 @@ namespace W10Home.IoTCoreApp
             // come some day, see that this method is not active anymore and the local variable
             // should be removed. Which results in the application being closed.
             _deferral = taskInstance.GetDeferral();
+            taskInstance.Canceled += TaskInstance_Canceled;
 
             // configure logging first
             var telemetryClient = new TelemetryClient();
@@ -37,9 +38,9 @@ namespace W10Home.IoTCoreApp
             LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new EtwTarget());
             var streamingFileTarget = new StreamingFileTarget() {KeepLogFilesOpenForWrite = false};
             LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, streamingFileTarget);
-            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new ApplicationInsightsTarget(telemetryClient));
+            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Info, LogLevel.Fatal, new ApplicationInsightsTarget(telemetryClient));
             // init custom metrolog logger for iot hub
-            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new IotHubTarget());
+            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Info, LogLevel.Fatal, new IotHubTarget());
 
             _log = LogManagerFactory.DefaultLogManager.GetLogger<CoreApp>();
 
@@ -66,7 +67,27 @@ namespace W10Home.IoTCoreApp
 	        // Dont release deferral, otherwise app will stop
         }
 
-		private async void MessageLoopWorker()
+        private void TaskInstance_Canceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
+        {
+            _log.Info("StartupTask terminated for reason "+reason.ToString());
+            //a few reasons that you may be interested in.
+            switch (reason)
+            {
+                case BackgroundTaskCancellationReason.Abort:
+                    //app unregistered background task (amoung other reasons).
+                    break;
+                case BackgroundTaskCancellationReason.Terminating:
+                    //system shutdown
+                    break;
+                case BackgroundTaskCancellationReason.ConditionLoss:
+                    break;
+                case BackgroundTaskCancellationReason.SystemPolicy:
+                    break;
+            }
+            _deferral.Complete();
+        }
+
+        private async void MessageLoopWorker()
 		{
             _log.Trace("MessageLoopWorker");
 			IMessageQueue queue = null;

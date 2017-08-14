@@ -1,4 +1,5 @@
-﻿using Microsoft.Practices.ServiceLocation;
+﻿using MetroLog;
+using Microsoft.Practices.ServiceLocation;
 using Restup.Webserver.Attributes;
 using Restup.Webserver.Models.Contracts;
 using Restup.Webserver.Models.Schemas;
@@ -17,11 +18,13 @@ namespace W10Home.IoTCoreApp.Controllers
     [RestController(InstanceCreationType.Singleton)]
     internal class QueueController
     {
+        private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<QueueController>();
+
         [UriFormat("/queue/{queuename}")]
         public IPostResponse PostMessage(string queuename, [FromContent] QueueMessage message)
         {
 			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-			Debug.WriteLine("Queue: " + queuename + "|Message: " + message.ToString());
+			_log.Trace("Queue: " + queuename + "|Message: " + message.ToString());
 			queue.Enqueue(queuename, message);
 			return new PostResponse(PostResponse.ResponseStatus.Created);
         }

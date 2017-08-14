@@ -161,25 +161,9 @@ namespace W10Home.Plugin.AzureIoTHub
 					_connectionString = configuration.Properties["ConnectionString"];
 					_deviceId = _connectionString.Split(';').Single(c => c.ToLower().StartsWith("deviceid")).Split('=')[1];
 				}
-#if USE_TPM
-				else
-				{
-					// check tpm next
-					TpmDevice myDevice = new TpmDevice(0); // Use logical device 0 on the TPM by default
-					string hubUri = myDevice.GetHostName();
-					_deviceId = myDevice.GetDeviceId();
 
-				}
-#endif
-#if USE_LIMPET
-				else
-				{
-				    _connectionString = await GetConnectionStringFromTpmAsync();
-				    _deviceId = _connectionString.Split(';').Single(c => c.ToLower().StartsWith("deviceid")).Split('=')[1];
-                }
-#endif
 
-			    await StartupAsync();
+                await StartupAsync();
 
 			    if (configuration.Properties.ContainsKey("TryLoadConfiguration"))
 				{
@@ -206,21 +190,34 @@ namespace W10Home.Plugin.AzureIoTHub
 
         private async Task CreateDeviceClientAsync()
 	    {
+            _log.Trace("CreateDeviceClientAsync");
+
+#if USE_TPM
+// check tpm next
+			TpmDevice myDevice = new TpmDevice(0); // Use logical device 0 on the TPM by default
+			string hubUri = myDevice.GetHostName();
+			_deviceId = myDevice.GetDeviceId();
+#else
+#if USE_LIMPET
+	        _connectionString = await GetConnectionStringFromTpmAsync();
+	        _deviceId = _connectionString.Split(';').Single(c => c.ToLower().StartsWith("deviceid")).Split('=')[1];
+#endif
+#endif
+
 #if USE_TPM
                 _deviceClient = DeviceClient.Create(
 						hubUri,
 						new AuthenticationProvider(),
 						TransportType.Mqtt);
 #else
-	        // Instantiate the Azure IoT Hub device client
-	        _deviceClient = DeviceClient.CreateFromConnectionString(_connectionString, TransportType.Mqtt);
+            // Instantiate the Azure IoT Hub device client
+            _deviceClient = DeviceClient.CreateFromConnectionString(_connectionString, TransportType.Mqtt);
 #endif
-
-	        await SendLogMessageToIoTHubAsync("Info", "Device connection established");
+	        _log.Trace("Device connection established");
 
 	        await _deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
 	        await _deviceClient.SetMethodHandlerAsync("getdevices", HandleGetDevicesMethod, null);
-	        await _deviceClient.SetDesiredPropertyUpdateCallback(DesiredPropertyUpdateCallback, null);
+	        await _deviceClient.SetDesiredPropertyUpdateCallbackAsync(DesiredPropertyUpdateCallback, null);
 
 	        _clientTimeoutTimer = new Timer(ClientTimeoutTimerCallback, null, TimeSpan.FromMinutes(CLIENT_TIMEOUT), TimeSpan.Zero);
         }
@@ -308,9 +305,16 @@ namespace W10Home.Plugin.AzureIoTHub
 
         private async void ClientTimeoutTimerCallback(object state)
         {
-            _log.Trace("Recreating device client");
-            await TeardownAsync();
-            await StartupAsync();
+            try
+            {
+                _log.Trace("Recreating device client");
+                await TeardownAsync();
+                await StartupAsync();
+            }
+            catch(Exception ex)
+            {
+                _log.Error("ClientTimeoutTimerCallback|Error while recreating IoTHub client", ex);
+            }
         }
 
 	    private async Task DesiredPropertyUpdateCallback(TwinCollection desiredProperties, object userContext)
