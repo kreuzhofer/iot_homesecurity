@@ -23,6 +23,7 @@ namespace IoTHs.Plugin.HomeMatic
         private List<IDeviceChannel> _channels = new List<IDeviceChannel>();
         private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<HomeMaticDevice>();
         private string _connectionString;
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public override string Name => _name;
         public override string Type => _type;
@@ -33,7 +34,7 @@ namespace IoTHs.Plugin.HomeMatic
             _name = configuration.Name;
             _type = this.GetType().Name;
 
-            MessageReceiverLoop(CancellationToken.None);
+            MessageReceiverLoop(_cancellationTokenSource.Token);
         }
 
         public override IEnumerable<IDeviceChannel> GetChannels()
@@ -43,7 +44,7 @@ namespace IoTHs.Plugin.HomeMatic
 
         public override async Task TeardownAsync()
         {
-            
+            _cancellationTokenSource.Cancel();
         }
 
         private async void MessageReceiverLoop(CancellationToken cancellationToken)

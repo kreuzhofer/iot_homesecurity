@@ -42,7 +42,7 @@ namespace W10Home.IoTCoreApp
             // init custom metrolog logger for iot hub
             LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Info, LogLevel.Fatal, new IotHubTarget());
 
-            _log = LogManagerFactory.DefaultLogManager.GetLogger<CoreApp>();
+            _log = LogManagerFactory.DefaultLogManager.GetLogger<StartupTask>();
 
             _log.Trace("Launching CoreApp");
             _log.Trace("Local data folder: " + Windows.Storage.ApplicationData.Current.LocalFolder.Path);

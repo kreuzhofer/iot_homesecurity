@@ -28,7 +28,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\ARM\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;AZUREIOTHUB;ETATOUCH</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;AZUREIOTHUB;ETATOUCH;TWILIO;CODE_ANALYSIS</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>ARM</PlatformTarget>
@@ -179,6 +179,10 @@
     <ProjectReference Include="..\IoTHs.Devices.Interfaces\IoTHs.Devices.Interfaces.csproj">
       <Project>{000c0e13-fbe4-4815-b30b-35ade072e45f}</Project>
       <Name>IoTHs.Devices.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.Twilio\IoTHs.Plugin.Twilio.csproj">
+      <Project>{213D13F8-91BF-4EEF-AC5E-53F37B631810}</Project>
+      <Name>IoTHs.Plugin.Twilio</Name>
     </ProjectReference>
     <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
       <Project>{c3c103ff-8993-420d-8f50-979eca9c7d73}</Project>

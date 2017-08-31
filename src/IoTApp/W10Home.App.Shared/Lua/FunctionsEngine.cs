@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Security.Cryptography.Certificates;
 using MetroLog;
 using Microsoft.Practices.ServiceLocation;
 using MoonSharp.Interpreter;
@@ -16,6 +17,9 @@ using W10Home.Interfaces.Configuration;
 using IoTHs.Api.Shared;
 using IoTHs.Devices.Interfaces;
 using Windows.Storage;
+using Windows.Web.Http;
+using Windows.Web.Http.Filters;
+using Microsoft.Azure.Devices.Shared;
 using Newtonsoft.Json;
 using W10Home.App.Shared.Lua;
 
@@ -53,24 +57,9 @@ namespace W10Home.App.Shared
                 };
 
             // load function definition from disk
-            // first try to load the configuration file from the LocalFolder
-            var localStorage = ApplicationData.Current.LocalFolder;
-            var file = await localStorage.TryGetItemAsync("function_" + functionId + ".json");
-            DeviceFunctionModel function = null;
-            if (file != null) // file exists, continue to deserialize into actual configuration object
+            var function = await LoadFunctionFromStorageAsync(functionId);
+            if (function == null)
             {
-                // local file content
-                var configFileContent = await FileIO.ReadTextAsync((IStorageFile) file);
-                function = JsonConvert.DeserializeObject<DeviceFunctionModel>(configFileContent);
-                if (function == null)
-                {
-                    _log.Error("Invalid function file for function " + functionId);
-                    return null;
-                }
-            }
-            else
-            {
-                _log.Error("Function file not found for function " + functionId);
                 return null;
             }
 
@@ -149,6 +138,31 @@ namespace W10Home.App.Shared
             return functionInstance;
         }
 
+        private async Task<DeviceFunctionModel> LoadFunctionFromStorageAsync(string functionId)
+        {
+            // first try to load the function file from the LocalFolder
+            var localStorage = ApplicationData.Current.LocalFolder;
+            var file = await localStorage.TryGetItemAsync("function_" + functionId + ".json");
+            DeviceFunctionModel function = null;
+            if (file != null) // file exists, continue to deserialize into actual object
+            {
+                // local file content
+                var configFileContent = await FileIO.ReadTextAsync((IStorageFile) file);
+                function = JsonConvert.DeserializeObject<DeviceFunctionModel>(configFileContent);
+                if (function == null)
+                {
+                    _log.Error("Invalid function file for function " + functionId);
+                    return function;
+                }
+            }
+            else
+            {
+                _log.Error("Function file not found for function " + functionId);
+                return function;
+            }
+            return function;
+        }
+
         private Script SetupNewLuaScript(string name)
 	    {
 		    var registry = ServiceLocator.Current.GetInstance<IDeviceRegistry>();
@@ -208,6 +222,10 @@ namespace W10Home.App.Shared
                         {
                             await ReloadFunction(queuemessage.Value);
                         }
+                        if (queuemessage.Key == "checkversionsandupdate")
+                        {
+                            await CheckVersionsAndUpdateAsync(queuemessage.Value);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -220,6 +238,39 @@ namespace W10Home.App.Shared
                 }
             } while (!cancellationToken.IsCancellationRequested);
             _log.Trace("Exit MessageReceiverLoop");
+        }
+
+        private async Task CheckVersionsAndUpdateAsync(string functionsAndVersions)
+        {
+            string[] functionVersionPairs = functionsAndVersions.Split(',');
+            var configuration = ServiceLocator.Current.GetInstance<DeviceConfigurationModel>();
+            var baseUrl = configuration.ServiceBaseUrl;
+            var deviceId = configuration.DeviceId;
+
+            foreach (var functionVersionPair in functionVersionPairs)
+            {
+                var functionId = functionVersionPair.Split(':')[0];
+                var functionVersion = int.Parse(functionVersionPair.Split(':')[1]);
+
+                var localFunctionVersion = await LoadFunctionFromStorageAsync(functionId);
+                if (localFunctionVersion == null || (localFunctionVersion.Version<functionVersion))
+                {
+                    // download function code from webserver
+                    var aHBPF = new HttpBaseProtocolFilter();
+                    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Expired);
+                    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Untrusted);
+                    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
+                    var functionContent = await new HttpClient(aHBPF).GetStringAsync(new Uri(baseUrl + "api/DeviceFunction/" + deviceId + "/" + functionId));
+                    // store function file to disk
+                    var localStorage = ApplicationData.Current.LocalFolder;
+                    string filename = "function_" + functionId + ".json";
+                    var file = await localStorage.CreateFileAsync(filename, CreationCollisionOption.ReplaceExisting);
+                    await FileIO.WriteTextAsync(file, functionContent);
+
+                    // (re)load function
+                    await ReloadFunction(functionId);
+                }
+            }
         }
     }
 }

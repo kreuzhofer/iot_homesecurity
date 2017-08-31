@@ -16,5 +16,6 @@ namespace IoTHs.Api.Shared
         public string Script { get; set; }
         public string Language { get; set; }
         public bool Enabled { get; set; }
+        public int Version { get; set; }
     }
 }

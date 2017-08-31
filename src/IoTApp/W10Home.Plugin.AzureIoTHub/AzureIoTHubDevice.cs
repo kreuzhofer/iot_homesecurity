@@ -27,6 +27,7 @@ using W10Home.Core.Standard;
 using W10Home.Interfaces.Configuration;
 using IoTHs.Api.Shared;
 using IoTHs.Devices.Interfaces;
+using W10Home.Core.Channels;
 
 namespace W10Home.Plugin.AzureIoTHub
 {
@@ -38,7 +39,7 @@ namespace W10Home.Plugin.AzureIoTHub
 	    private Timer _clientTimeoutTimer;
 	    private CancellationTokenSource _threadCancellation;
 	    private string _connectionString;
-	    private const int CLIENT_TIMEOUT = 59;
+	    private const int CLIENT_TIMEOUT = 59; // timeout in minutes before the iot hub client gets renewed (max 60 minutes)
 	    private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<AzureIoTHubDevice>();
 	    private List<IDeviceChannel> _channels = new List<IDeviceChannel>();
 	    private IDeviceRegistry _deviceRegistry;
@@ -118,6 +119,9 @@ namespace W10Home.Plugin.AzureIoTHub
 					ChannelValue = strvalue,
 					LocalTimestamp = $"{DateTime.Now.ToUniversalTime():O}"
 				};
+
+                // cache last value
+			    ServiceLocator.Current.GetInstance<ChannelValueCache>().Set(key, strvalue);
 
 				return await SendMessageToIoTHubAsync(message, "Channel");
 			}
@@ -215,7 +219,6 @@ namespace W10Home.Plugin.AzureIoTHub
 #endif
 	        _log.Trace("Device connection established");
 
-	        await _deviceClient.SetMethodHandlerAsync("configure", HandleConfigureMethod, null);
 	        await _deviceClient.SetMethodHandlerAsync("getdevices", HandleGetDevicesMethod, null);
 	        await _deviceClient.SetDesiredPropertyUpdateCallbackAsync(DesiredPropertyUpdateCallback, null);
 
@@ -326,35 +329,9 @@ namespace W10Home.Plugin.AzureIoTHub
 			}
 		    if (desiredProperties.Contains("functions"))
 		    {
-		        var functionId = desiredProperties["functions"].loadFunction.ToString();
-		        var baseUrl = desiredProperties["functions"].baseUrl.ToString();
-                if (!String.IsNullOrEmpty(functionId))
-		        {
-                    // download function code from webserver
-		            var aHBPF = new HttpBaseProtocolFilter();
-		            aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Expired);
-		            aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Untrusted);
-		            aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
-                    var functionContent = await new HttpClient(aHBPF).GetStringAsync(new Uri(baseUrl+"api/DeviceFunction/"+_deviceId+"/" + functionId));
-                    // store function file to disk
-		            var localStorage = ApplicationData.Current.LocalFolder;
-		            string filename = "function_" + functionId + ".json";
-                    var file = await localStorage.CreateFileAsync(filename, CreationCollisionOption.ReplaceExisting);
-		            await FileIO.WriteTextAsync(file, functionContent);
-
-		            var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-		            queue.Enqueue("functionsengine", "reloadfunction", functionId); // restart the device, StartupTask takes care of this
-
-                    var reportedProperties = new TwinCollection
-		            {
-		                ["functions"] = new
-		                {
-		                    loadFunction = functionId,
-                            status = "success"
-                        }
-		            };
-		            await _deviceClient.UpdateReportedPropertiesAsync(reportedProperties);
-		        }
+		        string functionsAndVersions = desiredProperties["functions"].versions.ToString();
+		        var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+		        queue.Enqueue("functionsengine", "checkversionsandupdate", functionsAndVersions); // restart the device, StartupTask takes care of this
             }
 		}
 
@@ -390,7 +367,7 @@ namespace W10Home.Plugin.AzureIoTHub
             }
 
 			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-			queue.Enqueue("management", "reboot", null, null); // restart the device, StartupTask takes care of this
+			queue.Enqueue("management", "exit", null, null); // restart the app, StartupTask takes care of this. External check to restart the app must be in place.
 		}
 
 
@@ -433,12 +410,6 @@ namespace W10Home.Plugin.AzureIoTHub
 #endif
 
 #region DeviceMethods
-        private async Task<MethodResponse> HandleConfigureMethod(MethodRequest methodRequest, object userContext)
-		{
-			Debug.WriteLine("HandleConfigureMethod called");
-			return new MethodResponse(0);
-		}
-
 	    private async Task<MethodResponse> HandleGetDevicesMethod(MethodRequest methodrequest, object usercontext)
 	    {
             var json = JsonConvert.SerializeObject(_deviceRegistry.GetDevices().ToList(), Formatting.Indented);

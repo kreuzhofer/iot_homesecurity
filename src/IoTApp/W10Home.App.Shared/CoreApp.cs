@@ -27,7 +27,7 @@ using W10Home.Plugin.AzureIoTHub;
 using W10Home.Plugin.ETATouch;
 #endif
 #if TWILIO
-using W10Home.Plugin.Twilio;
+using IoTHs.Plugin.Twilio;
 #endif
 using System.Linq;
 using Windows.Storage;
@@ -40,6 +40,8 @@ using W10Home.Interfaces.Configuration;
 using IoTHs.Api.Shared;
 using IoTHs.Devices.Interfaces;
 using IoTHs.Plugin.HomeMatic;
+using W10Home.Core.Channels;
+
 
 namespace W10Home.App.Shared
 {
@@ -196,6 +198,7 @@ namespace W10Home.App.Shared
 			var container = new UnityContainer();
 	        container.RegisterInstance<DeviceConfigurationModel>(configurationObject);
 			container.RegisterInstance<IMessageQueue>(new MessageQueue());
+	        container.RegisterType<ChannelValueCache>(new ContainerControlledLifetimeManager());
 			container.RegisterInstance<IDeviceRegistry>(deviceRegistry);
 			container.RegisterInstance(functionsEngine);
 

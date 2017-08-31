@@ -126,6 +126,14 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                 deviceFunctionEntity.RowKey, deviceFunctionEntity.Name, deviceFunctionEntity.TriggerType, deviceFunctionEntity.Interval,
                 deviceFunctionEntity.QueueName, deviceFunctionEntity.Enabled, deviceFunctionEntity.Script);
 
+            var functions = await _deviceFunctionService.GetFunctionsAsync(deviceFunctionEntity.PartitionKey);
+            string functionsAndVersions = "";
+            foreach (var function in functions)
+            {
+                functionsAndVersions += function.RowKey + ":" + function.Version + ",";
+            }
+            functionsAndVersions = functionsAndVersions.TrimEnd(',');
+
             // update device twin
             var patch = new
             {
@@ -135,7 +143,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                     {
                         functions = new
                         {
-                            loadFunction = deviceFunctionEntity.RowKey,
+                            versions = functionsAndVersions,
                             baseUrl = _configuration["ExternalBaseUrl"]
                         }
                     }

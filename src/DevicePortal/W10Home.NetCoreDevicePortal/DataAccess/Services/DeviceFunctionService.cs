@@ -36,6 +36,7 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Services
             entity.QueueName = queueName;
             entity.TriggerType = triggerType;
             entity.Enabled = enabled;
+            entity.Version++;
             var operation = TableOperation.InsertOrReplace(entity);
             var result = await _scriptTableRef.ExecuteAsync(operation);
         }

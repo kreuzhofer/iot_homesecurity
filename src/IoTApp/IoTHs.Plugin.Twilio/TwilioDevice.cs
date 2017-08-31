@@ -1,13 +1,11 @@
-﻿using IoTHs.Api.Shared;
-using IoTHs.Devices.Interfaces;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using IoTHs.Api.Shared;
+using IoTHs.Devices.Interfaces;
 using W10Home.Core.Standard;
 
-namespace W10Home.Plugin.Twilio
+namespace IoTHs.Plugin.Twilio
 {
 	public class TwilioDevice : DeviceBase
 	{

@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
 using W10Home.Core.Channels;
 
-namespace W10Home.Plugin.Twilio
+namespace IoTHs.Plugin.Twilio
 {
 	public class TwilioSmsChannel : NotificationChannel
 	{
@@ -37,7 +34,7 @@ namespace W10Home.Plugin.Twilio
 
 			var message = await MessageResource.CreateAsync(
 				to: new PhoneNumber(_receiverPhoneNumber),
-				from: new PhoneNumber(_outgoingPhoneNumber),
+				@from: new PhoneNumber(_outgoingPhoneNumber),
 				body: messageBody);
 
 			return true;

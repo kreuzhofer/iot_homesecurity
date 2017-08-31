@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using IoTHs.Api.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using W10Home.NetCoreDevicePortal.DataAccess;
 using W10Home.NetCoreDevicePortal.DataAccess.Services;
 
@@ -17,12 +18,15 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
         private readonly IDeviceFunctionService _deviceFunctionService;
         private DevicePluginService _devicePluginService;
         private DevicePluginPropertyService _devicePluginPropertyService;
+        private IConfiguration _configuration;
 
-        public DeviceConfigurationController(IDeviceFunctionService deviceFunctionService, DevicePluginService devicePluginService, DevicePluginPropertyService devicePluginPropertyService)
+        public DeviceConfigurationController(IDeviceFunctionService deviceFunctionService, DevicePluginService devicePluginService, DevicePluginPropertyService devicePluginPropertyService,
+            IConfiguration configuration)
         {
             _deviceFunctionService = deviceFunctionService;
             _devicePluginService = devicePluginService;
             _devicePluginPropertyService = devicePluginPropertyService;
+            _configuration = configuration;
         }
 
         // GET: api/DeviceConfiguration/{deviceId}
@@ -34,6 +38,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
             var result = new DeviceConfigurationModel
             {
                 DeviceId = deviceId,
+                ServiceBaseUrl = _configuration["ExternalBaseUrl"],
                 DevicePluginConfigurations = new List<DevicePluginConfigurationModel>
                 {
                     new DevicePluginConfigurationModel // default iot hub configuration for tpm
