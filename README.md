@@ -19,6 +19,8 @@ The approach of the iot_homesecurity framework is to have a local broker device 
 
 - ABUS Security camera plugin - Planned
 
+- Twilio SMS sending plugin - Working, Twilio account needed
+
 ## Solutions
 - IoTApp - The device gateway. Runs in the local network of the user's home and talks to his local devices like the Homematic central, ETA heating system or ABUS alert panel or ABUS security camera.
 
