@@ -136,13 +136,13 @@ namespace W10Home.Plugin.AzureIoTHub
 		{
 			try
 			{
-				var payload = JsonConvert.SerializeObject(message);
+				var payload = JsonConvert.SerializeObject(message, Formatting.Indented);
 
 				var msg = new Message(Encoding.UTF8.GetBytes(payload));
 				msg.Properties.Add("MessageType", messageType);
 
 				await _deviceClient.SendEventAsync(msg);
-				Debug.WriteLine(payload);
+				_log.Trace(_name + ":"+payload);
 				return true;
 			}
 			catch (Exception ex)
@@ -177,6 +177,12 @@ namespace W10Home.Plugin.AzureIoTHub
 						await DownloadConfigAndRestart(twin.Properties.Desired);
 					}
 				}
+
+                // send package version to iot hub for tracking device software version
+			    var package = Windows.ApplicationModel.Package.Current;
+			    var packageId = package.Id;
+			    var version = packageId.Version;
+			    await SendChannelMessageToIoTHubAsync("packageversion", version, ChannelType.None.ToString());
 			}
 			catch (Exception ex)
 			{
@@ -186,6 +192,7 @@ namespace W10Home.Plugin.AzureIoTHub
 
 	    private async Task StartupAsync()
 	    {
+            _log.Trace("StartupAsync");
 	        await CreateDeviceClientAsync();
 
 	        _threadCancellation = new CancellationTokenSource();
@@ -331,7 +338,7 @@ namespace W10Home.Plugin.AzureIoTHub
 		    {
 		        string functionsAndVersions = desiredProperties["functions"].versions.ToString();
 		        var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-		        queue.Enqueue("functionsengine", "checkversionsandupdate", functionsAndVersions); // restart the device, StartupTask takes care of this
+		        queue.Enqueue("functionsengine", "checkversionsandupdate", functionsAndVersions);
             }
 		}
 
@@ -427,6 +434,7 @@ namespace W10Home.Plugin.AzureIoTHub
 
 		public override async Task TeardownAsync()
 		{
+            _log.Trace("TeardownAsync");
 		    if (_threadCancellation != null)
 		    {
 		        _threadCancellation.Cancel();
