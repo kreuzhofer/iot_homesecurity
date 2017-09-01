@@ -43,6 +43,7 @@ namespace W10Home.IoTCoreApp
             LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Info, LogLevel.Fatal, new IotHubTarget());
 
             _log = LogManagerFactory.DefaultLogManager.GetLogger<StartupTask>();
+            _log.Info("Starting");
 
             _log.Trace("Launching CoreApp");
             _log.Trace("Local data folder: " + Windows.Storage.ApplicationData.Current.LocalFolder.Path);
