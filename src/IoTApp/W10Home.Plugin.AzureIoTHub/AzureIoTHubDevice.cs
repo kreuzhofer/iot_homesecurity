@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Networking.Connectivity;
 using Windows.Security.Authentication.Web.Provider;
 using Windows.Security.Cryptography.Certificates;
 using Windows.Storage;
@@ -46,6 +47,7 @@ namespace W10Home.Plugin.AzureIoTHub
 	    private string _name;
 	    private string _type;
 	    private AutoResetEvent _messageLoopTerminationEvent;
+	    private Task _messageReceiverTask;
 
 	    public override string Name
 	    {
@@ -136,6 +138,11 @@ namespace W10Home.Plugin.AzureIoTHub
 		{
 			try
 			{
+			    if (!IsInternetConnected())
+			    {
+			        return false;
+			    }
+
 				var payload = JsonConvert.SerializeObject(message, Formatting.Indented);
 
 				var msg = new Message(Encoding.UTF8.GetBytes(payload));
@@ -196,7 +203,7 @@ namespace W10Home.Plugin.AzureIoTHub
 	        await CreateDeviceClientAsync();
 
 	        _threadCancellation = new CancellationTokenSource();
-	        MessageReceiverLoop(_threadCancellation.Token); // launch message loop in the background
+	        _messageReceiverTask = MessageReceiverLoop(_threadCancellation.Token); // launch message loop in the background
         }
 
         private async Task CreateDeviceClientAsync()
@@ -232,78 +239,81 @@ namespace W10Home.Plugin.AzureIoTHub
 	        _clientTimeoutTimer = new Timer(ClientTimeoutTimerCallback, null, TimeSpan.FromMinutes(CLIENT_TIMEOUT), TimeSpan.Zero);
         }
 
-	    private async void MessageReceiverLoop(CancellationToken cancellationToken)
+	    private async Task MessageReceiverLoop(CancellationToken cancellationToken)
 	    {
             _messageLoopTerminationEvent = new AutoResetEvent(false);
 	        do
 	        {
-	            try
-	            {
-	                // check internal message queue for iot hub messages to be forwarded
-	                var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-	                if (queue.TryPeek("iothub", out QueueMessage queuemessage))
-	                {
-	                    if (await SendChannelMessageToIoTHubAsync(queuemessage.Key, queuemessage.Value, queuemessage.Tag))
-	                    {
-	                        queue.TryDeque("iothub", out QueueMessage pop);
-	                    };
-	                }
-	                if (queue.TryPeek("iothublog", out QueueMessage logmessage))
-	                {
-	                    if (await SendLogMessageToIoTHubAsync(logmessage.Key, logmessage.Value))
-	                    {
-	                        queue.TryDeque("iothublog", out QueueMessage pop);
-	                    };
-	                }
+                if (IsInternetConnected())
+                {
+                    try
+                    {
+                        // check internal message queue for iot hub messages to be forwarded
+                        var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+                        if (queue.TryPeek("iothub", out QueueMessage queuemessage))
+                        {
+                            if (await SendChannelMessageToIoTHubAsync(queuemessage.Key, queuemessage.Value, queuemessage.Tag))
+                            {
+                                queue.TryDeque("iothub", out QueueMessage pop);
+                            };
+                        }
+                        if (queue.TryPeek("iothublog", out QueueMessage logmessage))
+                        {
+                            if (await SendLogMessageToIoTHubAsync(logmessage.Key, logmessage.Value))
+                            {
+                                queue.TryDeque("iothublog", out QueueMessage pop);
+                            };
+                        }
 
-                    // check iot hub incoming messages for processing
-	                if (cancellationToken.IsCancellationRequested)
-	                {
-	                    break;
-	                }
-	                Message message = null;
-	                try
-	                {
-	                    message = await _deviceClient.ReceiveAsync(TimeSpan.FromMilliseconds(250));
-	                }
-	                catch (TaskCanceledException)
-	                {
-	                    if (cancellationToken.IsCancellationRequested)
-	                    {
-	                        break;
-	                    }
-	                }
+                        // check iot hub incoming messages for processing
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            break;
+                        }
+                        Message message = null;
+                        try
+                        {
+                            message = await _deviceClient.ReceiveAsync(TimeSpan.FromMilliseconds(250));
+                        }
+                        catch (TaskCanceledException)
+                        {
+                            if (cancellationToken.IsCancellationRequested)
+                            {
+                                break;
+                            }
+                        }
 
-	                if (message != null)
-	                {
-	                    await _deviceClient.CompleteAsync(message);
-	                    var reader = new StreamReader(message.BodyStream);
-	                    var bodyString = await reader.ReadToEndAsync();
-	                    Debug.WriteLine(bodyString);
-	                    dynamic messageObject = null;
-	                    try
-	                    {
-	                        messageObject =
-	                            JsonConvert.DeserializeObject(bodyString); // try to deserialize into something json...
-	                    }
-	                    catch (Exception ex)
-	                    {
-	                        _log.Error("Could not deserialize message from iot hub", ex);
-	                    }
-	                    if (messageObject == null) // maybe a json incompatible message object -> throw away and continue
-	                    {
-	                        continue;
-	                    }
-	                    string queueName = messageObject.queue;
-	                    string key = messageObject.key;
-	                    string value = messageObject.value;
-	                    queue.Enqueue(queueName, key, value, "");
-	                }
-	            }
-	            catch (Exception ex)
-	            {
-                    _log.Error("MessageReceiverLoop", ex);
-	            }
+                        if (message != null)
+                        {
+                            await _deviceClient.CompleteAsync(message);
+                            var reader = new StreamReader(message.BodyStream);
+                            var bodyString = await reader.ReadToEndAsync();
+                            Debug.WriteLine(bodyString);
+                            dynamic messageObject = null;
+                            try
+                            {
+                                messageObject =
+                                    JsonConvert.DeserializeObject(bodyString); // try to deserialize into something json...
+                            }
+                            catch (Exception ex)
+                            {
+                                _log.Error("Could not deserialize message from iot hub", ex);
+                            }
+                            if (messageObject == null) // maybe a json incompatible message object -> throw away and continue
+                            {
+                                continue;
+                            }
+                            string queueName = messageObject.queue;
+                            string key = messageObject.key;
+                            string value = messageObject.value;
+                            queue.Enqueue(queueName, key, value, "");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _log.Error("MessageReceiverLoop", ex);
+                    } 
+                }
 	            if (!cancellationToken.IsCancellationRequested)
 	            {
 	                await Task.Delay(1, cancellationToken);
@@ -439,6 +449,8 @@ namespace W10Home.Plugin.AzureIoTHub
 		    {
 		        _threadCancellation.Cancel();
 		        _messageLoopTerminationEvent?.WaitOne(2000);
+		        _messageReceiverTask.Wait();
+		        _messageReceiverTask = null;
 		        _threadCancellation = null;
 		    }
 		    if (_clientTimeoutTimer != null)
@@ -453,5 +465,12 @@ namespace W10Home.Plugin.AzureIoTHub
 				_deviceClient = null;
 			}
 		}
-	}
+
+	    private bool IsInternetConnected()
+	    {
+	        ConnectionProfile connections = NetworkInformation.GetInternetConnectionProfile();
+	        bool internet = connections != null && connections.GetNetworkConnectivityLevel() == NetworkConnectivityLevel.InternetAccess;
+	        return internet;
+	    }
+    }
 }

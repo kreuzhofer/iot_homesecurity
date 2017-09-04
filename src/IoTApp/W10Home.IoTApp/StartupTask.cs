@@ -29,6 +29,9 @@ namespace W10Home.IoTCoreApp
             // should be removed. Which results in the application being closed.
             _deferral = taskInstance.GetDeferral();
             taskInstance.Canceled += TaskInstance_Canceled;
+            
+            // this is one way to handle unobserved task exceptions but not the best
+            //TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
             // configure logging first
             var telemetryClient = new TelemetryClient();
@@ -41,6 +44,7 @@ namespace W10Home.IoTCoreApp
             LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Info, LogLevel.Fatal, new ApplicationInsightsTarget(telemetryClient));
             // init custom metrolog logger for iot hub
             LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Info, LogLevel.Fatal, new IotHubTarget());
+
 
             _log = LogManagerFactory.DefaultLogManager.GetLogger<StartupTask>();
             _log.Info("Starting");
@@ -67,6 +71,12 @@ namespace W10Home.IoTCoreApp
 
 	        // Dont release deferral, otherwise app will stop
         }
+
+        //private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        //{
+        //    Debug.WriteLine("Unobserved exception handled: "+e.Exception.Flatten().ToString());
+        //    e.SetObserved();
+        //}
 
         private void TaskInstance_Canceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
         {
