@@ -325,19 +325,27 @@ namespace W10Home.Plugin.AzureIoTHub
 
         private async void ClientTimeoutTimerCallback(object state)
         {
+            _log.Trace("Recreating device client");
             try
             {
-                _log.Trace("Recreating device client");
                 await TeardownAsync();
-                await StartupAsync();
             }
             catch(Exception ex)
             {
+                _log.Error("ClientTimeoutTimerCallback|Error while shutting down IoTHub client and message loop", ex);
+            }
+            try
+            {
+                await StartupAsync();
+            }
+            catch (Exception ex)
+            {
                 _log.Error("ClientTimeoutTimerCallback|Error while recreating IoTHub client", ex);
             }
+
         }
 
-	    private async Task DesiredPropertyUpdateCallback(TwinCollection desiredProperties, object userContext)
+        private async Task DesiredPropertyUpdateCallback(TwinCollection desiredProperties, object userContext)
 		{
 			Debug.WriteLine(desiredProperties.ToString());
 			if (desiredProperties.Contains("configurationUrl"))
@@ -396,33 +404,41 @@ namespace W10Home.Plugin.AzureIoTHub
         /// <returns></returns>
         private async Task<string> GetConnectionStringFromTpmAsync()
 	    {
-	        var processLauncherOptions = new ProcessLauncherOptions();
-	        var standardOutput = new InMemoryRandomAccessStream();
+            try
+            {
+                var processLauncherOptions = new ProcessLauncherOptions();
+                var standardOutput = new InMemoryRandomAccessStream();
 
-	        processLauncherOptions.StandardOutput = standardOutput;
-	        processLauncherOptions.StandardError = null;
-	        processLauncherOptions.StandardInput = null;
+                processLauncherOptions.StandardOutput = standardOutput;
+                processLauncherOptions.StandardError = null;
+                processLauncherOptions.StandardInput = null;
 
-	        var processLauncherResult = await ProcessLauncher.RunToCompletionAsync(@"c:\windows\system32\limpet.exe", "0 -ast", processLauncherOptions);
-	        if (processLauncherResult.ExitCode == 0)
-	        {
-	            using (var outStreamRedirect = standardOutput.GetInputStreamAt(0))
-	            {
-	                var size = standardOutput.Size;
-	                using (var dataReader = new DataReader(outStreamRedirect))
-	                {
-	                    var bytesLoaded = await dataReader.LoadAsync((uint)size);
-	                    var stringRead = dataReader.ReadString(bytesLoaded);
-	                    var result = stringRead.Trim();
-	                    return result;
-	                }
-	            }
-	        }
-	        else
-	        {
-                _log.Error("GetConnectionStringFromTpmAsync. Cannot get connection string");
-	            throw new Exception("Cannot get connection string");
-	        }
+                var processLauncherResult = await ProcessLauncher.RunToCompletionAsync(@"c:\windows\system32\limpet.exe", "0 -ast", processLauncherOptions);
+                if (processLauncherResult.ExitCode == 0)
+                {
+                    using (var outStreamRedirect = standardOutput.GetInputStreamAt(0))
+                    {
+                        var size = standardOutput.Size;
+                        using (var dataReader = new DataReader(outStreamRedirect))
+                        {
+                            var bytesLoaded = await dataReader.LoadAsync((uint)size);
+                            var stringRead = dataReader.ReadString(bytesLoaded);
+                            var result = stringRead.Trim();
+                            return result;
+                        }
+                    }
+                }
+                else
+                {
+                    _log.Error("GetConnectionStringFromTpmAsync. Cannot get connection string");
+                    throw new Exception("Cannot get connection string");
+                }
+            }
+            catch (System.UnauthorizedAccessException)
+            {
+                _log.Fatal("Could not launch limpet.exe. Permissions are missing. See https://github.com/Azure/azure-iot-hub-vs-cs/issues/9");
+                throw;
+            }
 	    }
 #endif
 
@@ -447,22 +463,43 @@ namespace W10Home.Plugin.AzureIoTHub
             _log.Trace("TeardownAsync");
 		    if (_threadCancellation != null)
 		    {
-		        _threadCancellation.Cancel();
-		        _messageLoopTerminationEvent?.WaitOne(2000);
-		        _messageReceiverTask.Wait();
-		        _messageReceiverTask = null;
-		        _threadCancellation = null;
+                try
+                {
+                    _threadCancellation.Cancel();
+                    _messageLoopTerminationEvent?.WaitOne(2000);
+                    _messageReceiverTask.Wait();
+                }
+                finally
+                {
+                    _messageReceiverTask = null;
+                    _threadCancellation = null;
+                    _messageLoopTerminationEvent = null;
+
+                }
 		    }
 		    if (_clientTimeoutTimer != null)
 		    {
-		        _clientTimeoutTimer.Dispose();
-		        _clientTimeoutTimer = null;
+                try
+                {
+                    _clientTimeoutTimer.Dispose();
+                }
+                finally
+                {
+                    _clientTimeoutTimer = null;
+                }
+
 		    }
 			if (_deviceClient != null)
 			{
-				await _deviceClient.CloseAsync();
-				_deviceClient.Dispose();
-				_deviceClient = null;
+                try
+                {
+                    await _deviceClient.CloseAsync();
+                    _deviceClient.Dispose();
+                }
+                finally
+                {
+                    _deviceClient = null;
+                }
 			}
 		}
 

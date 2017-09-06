@@ -48,6 +48,11 @@ namespace W10Home.IoTCoreApp
 
             _log = LogManagerFactory.DefaultLogManager.GetLogger<StartupTask>();
             _log.Info("Starting");
+            // send package version to iot hub for tracking device software version
+            var package = Windows.ApplicationModel.Package.Current;
+            var packageId = package.Id;
+            var version = packageId.Version;
+            _log.Info("Package version: "+version.Major+"."+version.Minor+"."+version.Build);
 
             _log.Trace("Launching CoreApp");
             _log.Trace("Local data folder: " + Windows.Storage.ApplicationData.Current.LocalFolder.Path);
