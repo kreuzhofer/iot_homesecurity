@@ -7,6 +7,8 @@ One of the main issues with home automation devices today is that they are mostl
 Since I personally use Homematic for home automation in combination with an ETA heating system and other self-made sensors based on ESP8266 chipsets I needed a solution to interconnect these different devices and make them talk to each other.
 In the meanwhile I had another PoC with ABUS devices (Secvest alert panel and some security cameras), which are now also available as devices in the solution.
 
+Please find the official ABUS PoC documentation here [https://microsoft.github.io/techcasestudies/iot/azure%20app%20service/2017/09/01/ABUS.html](https://microsoft.github.io/techcasestudies/iot/azure%20app%20service/2017/09/01/ABUS.html)
+
 ## Technical approach
 The approach of the iot_homesecurity framework is to have a local broker device which has several device adapters to connect to the individual proprietary device interfaces, a local message bus and dynamic LUA functions to handle the different device messages, creating rules and make decisions as well as trigger device methods to react upon those messages.
 
@@ -14,8 +16,11 @@ The approach of the iot_homesecurity framework is to have a local broker device 
 - ETA heating systems - Read only access to the heating system's variables available. Still a bit rough.
 
 - Homematic plugin - In development
+    - Starting Homematic CCU programs is now supported
 
 - ABUS SecVest plugin - In development
+    - Reading alert loop state is now supported
+    - Toggling external switches/relais is now supported
 
 - ABUS Security camera plugin - Planned
 
