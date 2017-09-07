@@ -355,6 +355,7 @@ namespace W10Home.Plugin.AzureIoTHub
 		    if (desiredProperties.Contains("functions"))
 		    {
 		        string functionsAndVersions = desiredProperties["functions"].versions.ToString();
+		        _log.Trace("DesiredPropertyUpdateCallback|Updating functions: "+functionsAndVersions);
 		        var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
 		        queue.Enqueue("functionsengine", "checkversionsandupdate", functionsAndVersions);
             }
