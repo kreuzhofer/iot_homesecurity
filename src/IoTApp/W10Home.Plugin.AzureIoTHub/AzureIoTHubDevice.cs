@@ -347,7 +347,7 @@ namespace W10Home.Plugin.AzureIoTHub
 
         private async Task DesiredPropertyUpdateCallback(TwinCollection desiredProperties, object userContext)
 		{
-			Debug.WriteLine(desiredProperties.ToString());
+		    _log.Trace(desiredProperties.ToString());
 			if (desiredProperties.Contains("configurationUrl"))
 			{
 				await DownloadConfigAndRestart(desiredProperties);
