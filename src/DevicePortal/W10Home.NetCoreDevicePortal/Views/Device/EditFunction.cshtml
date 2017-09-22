@@ -10,14 +10,23 @@
 <script src="~/lib/monaco-editor/min/vs/loader.js"></script>
 
 <script language="javascript">
-    require.config({ paths: { 'vs': '/lib/monaco-editor/min/vs' }});
-    require(['vs/editor/editor.main'], function () {
-        var codeSnippet = '@HttpUtility.JavaScriptStringEncode(Model.Script)';
-        window.editor = monaco.editor.create(document.getElementById('codecontainer'), {
-            value: codeSnippet,
-            language: 'lua',
-            theme: "vs-dark",
+    require.config({ paths: { 'vs': '/lib/monaco-editor/min/vs' } });
+    require(['vs/editor/editor.main'], function() {
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: '/api/DeviceFunction/@Model.PartitionKey/@Model.RowKey',
+            success: function(data) {
+                var codeSnippet = data.script;
+                window.editor = monaco.editor.create(document.getElementById('codecontainer'), {
+                    value: codeSnippet,
+                    language: 'lua',
+                    theme: "vs-dark",
+                });
+            }
         });
+
+
     });
 
     function copyCodeToHiddenField() {
