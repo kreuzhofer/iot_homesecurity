@@ -17,6 +17,7 @@ using W10Home.NetCoreDevicePortal.Models;
 
 namespace W10Home.NetCoreDevicePortal.Controllers
 {
+    [Authorize]
     public class DeviceController : Controller
     {
         private DeviceManagementService _deviceManagementService;

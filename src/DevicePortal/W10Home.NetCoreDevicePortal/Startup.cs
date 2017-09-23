@@ -11,6 +11,12 @@ using W10Home.DevicePortal.DataAccess;
 using W10Home.DevicePortal.IotHub;
 using W10Home.NetCoreDevicePortal.DataAccess;
 using W10Home.NetCoreDevicePortal.DataAccess.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
+using WebApp_OpenIDConnect_DotNet;
 
 namespace W10Home.NetCoreDevicePortal
 {
@@ -26,7 +32,25 @@ namespace W10Home.NetCoreDevicePortal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddAuthentication(sharedOptions =>
+            {
+                sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddAzureAdB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
+            .AddCookie();
+
             services.AddMvc();
+
+            // Adds a default in-memory implementation of IDistributedCache.
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromHours(1);
+                options.CookieHttpOnly = true;
+            });
 
             services.AddSingleton<DeviceManagementService, DeviceManagementService>();
             services.AddTransient<IDeviceStateService, DeviceStateService>();
@@ -43,6 +67,7 @@ namespace W10Home.NetCoreDevicePortal
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseBrowserLink();
             }
             else
             {
@@ -50,6 +75,10 @@ namespace W10Home.NetCoreDevicePortal
             }
 
             app.UseStaticFiles();
+
+            app.UseSession();
+
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
