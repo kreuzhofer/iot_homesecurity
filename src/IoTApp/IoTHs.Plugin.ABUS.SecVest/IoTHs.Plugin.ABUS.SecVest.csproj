@@ -7,8 +7,8 @@
     <ProjectGuid>{0ACAF795-9493-4251-AE48-2A11EDC483BA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>W10Home.Plugin.ABUS.SecVest</RootNamespace>
-    <AssemblyName>W10Home.Plugin.ABUS.SecVest</AssemblyName>
+    <RootNamespace>IoTHs.Plugin.ABUS.SecVest</RootNamespace>
+    <AssemblyName>IoTHs.Plugin.ABUS.SecVest</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>

@@ -18,7 +18,7 @@ using W10Home.IoTCoreApp;
 using W10Home.IoTCoreApp.Auth;
 using W10Home.IoTCoreApp.Controllers;
 #if SECVEST
-using W10Home.Plugin.ABUS.SecVest;
+using IoTHs.Plugin.ABUS.SecVest;
 #endif
 #if AZUREIOTHUB
 using W10Home.Plugin.AzureIoTHub;

@@ -139,13 +139,13 @@
       <Project>{000c0e13-fbe4-4815-b30b-35ade072e45f}</Project>
       <Name>IoTHs.Devices.Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.ABUS.SecVest\IoTHs.Plugin.ABUS.SecVest.csproj">
+      <Project>{0acaf795-9493-4251-ae48-2a11edc483ba}</Project>
+      <Name>IoTHs.Plugin.ABUS.SecVest</Name>
+    </ProjectReference>
     <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
       <Project>{C3C103FF-8993-420D-8F50-979ECA9C7D73}</Project>
       <Name>W10Home.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\W10Home.Plugin.ABUS.SecVest\W10Home.Plugin.ABUS.SecVest.csproj">
-      <Project>{0acaf795-9493-4251-ae48-2a11edc483ba}</Project>
-      <Name>W10Home.Plugin.ABUS.SecVest</Name>
     </ProjectReference>
     <ProjectReference Include="..\W10Home.Plugin.AzureIoTHub\W10Home.Plugin.AzureIoTHub.csproj">
       <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
@@ -158,6 +158,10 @@
     <ProjectReference Include="..\W10Home.Plugin.HomeMatic\IoTHs.Plugin.HomeMatic.csproj">
       <Project>{b500eb85-8a90-45bc-aa6e-448dabb187cc}</Project>
       <Name>IoTHs.Plugin.HomeMatic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\W10Home.Plugin.MqttClient\W10Home.Plugin.MqttClient.csproj">
+      <Project>{174a9f97-1dd6-4d50-8cd4-2052c525ef5a}</Project>
+      <Name>W10Home.Plugin.MqttClient</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

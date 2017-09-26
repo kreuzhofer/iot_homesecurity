@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("W10Home.Plugin.ABUS.SecVest")]
+[assembly: AssemblyTitle("IoTHs.Plugin.ABUS.SecVest")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("W10Home.Plugin.ABUS.SecVest")]
+[assembly: AssemblyProduct("IoTHs.Plugin.ABUS.SecVest")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

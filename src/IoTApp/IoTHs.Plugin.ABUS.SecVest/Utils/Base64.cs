@@ -1,4 +1,4 @@
-﻿namespace W10Home.Plugin.ABUS.SecVest.Utils
+﻿namespace IoTHs.Plugin.ABUS.SecVest.Utils
 {
 	public static class Base64
 	{

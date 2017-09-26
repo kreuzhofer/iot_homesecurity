@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using W10Home.Plugin.ABUS.SecVest.Models;
+using IoTHs.Plugin.ABUS.SecVest.Models;
 
-namespace W10Home.Plugin.ABUS.SecVest
+namespace IoTHs.Plugin.ABUS.SecVest
 {
 	public class SecVestStatus
 	{

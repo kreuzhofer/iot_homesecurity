@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Web.Http;
 using IoTHs.Devices.Interfaces;
+using IoTHs.Plugin.ABUS.SecVest.Models;
 using Newtonsoft.Json;
-using W10Home.Interfaces;
-using W10Home.Plugin.ABUS.SecVest.Models;
-using W10Home.Plugin.ABUS.SecVest.Utils;
 
-namespace W10Home.Plugin.ABUS.SecVest
+namespace IoTHs.Plugin.ABUS.SecVest
 {
 	public class SecVestStatusChannel : SecVestChannel
 	{

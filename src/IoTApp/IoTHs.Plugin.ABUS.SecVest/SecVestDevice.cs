@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Security.Cryptography.Certificates;
-using Windows.UI.Core;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
 using Windows.Web.Http.Headers;
-using W10Home.Core.Standard;
-using W10Home.Plugin.ABUS.SecVest.Utils;
 using IoTHs.Api.Shared;
 using IoTHs.Devices.Interfaces;
+using IoTHs.Plugin.ABUS.SecVest.Utils;
+using W10Home.Core.Standard;
 
-namespace W10Home.Plugin.ABUS.SecVest
+namespace IoTHs.Plugin.ABUS.SecVest
 {
     public class SecVestDevice : DeviceBase
     {

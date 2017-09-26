@@ -1,8 +1,7 @@
 ﻿using Windows.Web.Http;
 using IoTHs.Devices.Interfaces;
-using W10Home.Interfaces;
 
-namespace W10Home.Plugin.ABUS.SecVest
+namespace IoTHs.Plugin.ABUS.SecVest
 {
 	public abstract class SecVestChannel : IDeviceChannel
 	{

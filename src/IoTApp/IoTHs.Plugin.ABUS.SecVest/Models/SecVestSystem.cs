@@ -1,4 +1,4 @@
-﻿namespace W10Home.Plugin.ABUS.SecVest.Models
+﻿namespace IoTHs.Plugin.ABUS.SecVest.Models
 {
 	public class SecVestSystem
 	{
