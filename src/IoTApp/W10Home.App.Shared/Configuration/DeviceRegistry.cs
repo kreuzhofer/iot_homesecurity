@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using IoTHs.Api.Shared;
-using MetroLog;
 using Microsoft.Practices.ServiceLocation;
 using W10Home.Interfaces;
 using W10Home.Interfaces.Configuration;
 using IoTHs.Devices.Interfaces;
+using NLog;
 
 namespace W10Home.Core.Configuration
 {
@@ -18,7 +18,7 @@ namespace W10Home.Core.Configuration
 	{
 		private Dictionary<string, Type> _deviceTypes = new Dictionary<string, Type>();
 		private Dictionary<string, IDevice> _deviceList = new Dictionary<string, IDevice>();
-	    private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<DeviceRegistry>();
+	    private readonly ILogger _log = LogManager.GetCurrentClassLogger();
 
         public void RegisterDeviceType<T>() where T : class, IDevice
 		{

@@ -11,8 +11,8 @@ using Windows.UI.Xaml.Automation;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
 using Microsoft.Practices.ServiceLocation;
+using NLog;
 using W10Home.Core.Queing;
-using MetroLog;
 
 namespace IoTHs.Plugin.HomeMatic
 {
@@ -21,7 +21,7 @@ namespace IoTHs.Plugin.HomeMatic
         private string _name;
         private string _type;
         private List<IDeviceChannel> _channels = new List<IDeviceChannel>();
-        private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<HomeMaticDevice>();
+        private readonly ILogger _log = LogManager.GetCurrentClassLogger();
         private string _connectionString;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 

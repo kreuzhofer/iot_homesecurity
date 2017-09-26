@@ -31,7 +31,6 @@ using IoTHs.Plugin.Twilio;
 using System.Linq;
 using Windows.Storage;
 using Windows.System;
-using MetroLog;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using W10Home.App.Shared.Logging;
@@ -41,14 +40,14 @@ using IoTHs.Devices.Interfaces;
 using IoTHs.Plugin.ETATouch;
 using IoTHs.Plugin.HomeMatic;
 using W10Home.Core.Channels;
-
+using NLog;
 
 namespace W10Home.App.Shared
 {
     internal class CoreApp
     {
 		private HttpServer _httpServer;
-        private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<CoreApp>();
+        private readonly ILogger _log = LogManager.GetCurrentClassLogger();
         private Timer _everyMinuteTimer;
 
         public async Task Run()

@@ -5,11 +5,14 @@ using W10Home.App.Shared;
 using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
-using MetroLog;
-using MetroLog.Targets;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.Practices.ServiceLocation;
+using NLog;
+using NLog.Config;
+using NLog.Layouts;
+using NLog.Targets;
+using NLog.Targets.Wrappers;
 using W10Home.App.Shared.Logging;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
@@ -34,19 +37,32 @@ namespace W10Home.IoTCoreApp
             //TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
             // configure logging first
+            Target.Register<CustomDebuggerTarget>("CustomDebugger");
+
+            var logConfig = new LoggingConfiguration();
+            var debugTarget = new CustomDebuggerTarget();
+            debugTarget.Layout = @"${date:format=HH\:mm\:ss} ${logger} ${message}";
+            logConfig.AddTarget("debug", debugTarget);
+
+            var rule1 = new LoggingRule("*", LogLevel.Trace, debugTarget);
+            logConfig.LoggingRules.Add(rule1);
+
+            LogManager.Configuration = logConfig;
+
+            
             var telemetryClient = new TelemetryClient();
             telemetryClient.InstrumentationKey = "4e4ea96b-6b69-4aba-919b-558b4a4583ae";
-            LogManagerFactory.DefaultConfiguration = new LoggingConfiguration();
-            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new DebugTarget());
-            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new EtwTarget());
-            var streamingFileTarget = new StreamingFileTarget() {KeepLogFilesOpenForWrite = false};
-            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, streamingFileTarget);
-            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Info, LogLevel.Fatal, new ApplicationInsightsTarget(telemetryClient));
-            // init custom metrolog logger for iot hub
-            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Info, LogLevel.Fatal, new IotHubTarget());
+            //LogManagerFactory.DefaultConfiguration = new LoggingConfiguration();
+            //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new DebugTarget());
+            //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new EtwTarget());
+            //var streamingFileTarget = new StreamingFileTarget() {KeepLogFilesOpenForWrite = false};
+            //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, streamingFileTarget);
+            //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Info, LogLevel.Fatal, new ApplicationInsightsTarget(telemetryClient));
+            //// init custom metrolog logger for iot hub
+            //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Info, LogLevel.Fatal, new IotHubTarget());
 
 
-            _log = LogManagerFactory.DefaultLogManager.GetLogger<StartupTask>();
+            _log = LogManager.GetCurrentClassLogger();
             _log.Info("Starting");
             // send package version to iot hub for tracking device software version
             var package = Windows.ApplicationModel.Package.Current;

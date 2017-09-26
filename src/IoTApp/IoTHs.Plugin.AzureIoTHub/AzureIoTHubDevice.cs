@@ -9,15 +9,17 @@ using System.Threading.Tasks;
 using Windows.Networking.Connectivity;
 using Windows.Security.Cryptography.Certificates;
 using Windows.Storage;
+using Windows.Storage.Streams;
+using Windows.System;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
 using IoTHs.Api.Shared;
 using IoTHs.Devices.Interfaces;
-using MetroLog;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.Practices.ServiceLocation;
 using Newtonsoft.Json;
+using NLog;
 using W10Home.Core.Channels;
 using W10Home.Core.Queing;
 using W10Home.Core.Standard;
@@ -36,7 +38,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 	    private CancellationTokenSource _threadCancellation;
 	    private string _connectionString;
 	    private const int CLIENT_TIMEOUT = 59; // timeout in minutes before the iot hub client gets renewed (max 60 minutes)
-	    private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<AzureIoTHubDevice>();
+	    private readonly ILogger _log = LogManager.GetCurrentClassLogger();
 	    private List<IDeviceChannel> _channels = new List<IDeviceChannel>();
 	    private IDeviceRegistry _deviceRegistry;
 	    private string _name;

@@ -1,31 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MetroLog;
-using MetroLog.Layouts;
-using MetroLog.Targets;
 using Microsoft.Practices.ServiceLocation;
 using Newtonsoft.Json;
 using W10Home.Core.Queing;
+using NLog.Targets;
+using NLog;
 
 namespace W10Home.App.Shared.Logging
 {
-    internal class IotHubTarget : SyncTarget
+    internal class IotHubTarget : TargetWithLayout
     {
-        public IotHubTarget(Layout layout) : base(layout)
+        public IotHubTarget()
         {
         }
 
-        public IotHubTarget() : base(new SingleLineLayout())
-        {
-        }
-
-        protected override void Write(LogWriteContext context, LogEventInfo entry)
+        protected override void Write(LogEventInfo logEvent)
         {
             if (ServiceLocator.IsLocationProviderSet)
             {
-                var entrySerialized = entry.ToJson();
-                ServiceLocator.Current.GetInstance<IMessageQueue>().Enqueue("iothublog", entry.Level.ToString(), entrySerialized
+                var entrySerialized = JsonConvert.SerializeObject(logEvent);
+                ServiceLocator.Current.GetInstance<IMessageQueue>().Enqueue("iothublog", logEvent.Level.Name, entrySerialized
                     , "json");
             }
         }
