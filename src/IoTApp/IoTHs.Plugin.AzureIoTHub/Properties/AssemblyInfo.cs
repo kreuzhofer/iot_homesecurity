@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("W10Home.Plugin.AzureIoTHub")]
+[assembly: AssemblyTitle("IoTHs.Plugin.AzureIoTHub")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("W10Home.Plugin.AzureIoTHub")]
+[assembly: AssemblyProduct("IoTHs.Plugin.AzureIoTHub")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

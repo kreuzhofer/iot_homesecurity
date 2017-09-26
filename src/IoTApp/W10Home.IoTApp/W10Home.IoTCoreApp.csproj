@@ -184,6 +184,10 @@
       <Project>{0acaf795-9493-4251-ae48-2a11edc483ba}</Project>
       <Name>IoTHs.Plugin.ABUS.SecVest</Name>
     </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.AzureIoTHub\IoTHs.Plugin.AzureIoTHub.csproj">
+      <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
+      <Name>IoTHs.Plugin.AzureIoTHub</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IoTHs.Plugin.Twilio\IoTHs.Plugin.Twilio.csproj">
       <Project>{213D13F8-91BF-4EEF-AC5E-53F37B631810}</Project>
       <Name>IoTHs.Plugin.Twilio</Name>
@@ -191,10 +195,6 @@
     <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
       <Project>{c3c103ff-8993-420d-8f50-979eca9c7d73}</Project>
       <Name>W10Home.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\W10Home.Plugin.AzureIoTHub\W10Home.Plugin.AzureIoTHub.csproj">
-      <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
-      <Name>W10Home.Plugin.AzureIoTHub</Name>
     </ProjectReference>
     <ProjectReference Include="..\W10Home.Plugin.ETATouch\W10Home.Plugin.ETATouch.csproj">
       <Project>{7f92bd3f-114b-431a-9b00-48aa60d22ead}</Project>
@@ -227,6 +227,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\libs\Restup.Webserver.Models.winmd</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="..\W10Home.App.Shared\W10Home.App.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

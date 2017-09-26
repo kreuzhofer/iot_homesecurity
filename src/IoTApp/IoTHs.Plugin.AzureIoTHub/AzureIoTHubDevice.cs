@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Devices.Client;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -8,29 +7,25 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.Connectivity;
-using Windows.Security.Authentication.Web.Provider;
 using Windows.Security.Cryptography.Certificates;
 using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.System;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
+using IoTHs.Api.Shared;
+using IoTHs.Devices.Interfaces;
 using MetroLog;
+using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Shared;
+using Microsoft.Practices.ServiceLocation;
 using Newtonsoft.Json;
+using W10Home.Core.Channels;
 using W10Home.Core.Queing;
-using W10Home.Interfaces;
+using W10Home.Core.Standard;
 #if USE_TPM
 using Microsoft.Devices.Tpm;
 #endif
-using Microsoft.Practices.ServiceLocation;
-using W10Home.Core.Standard;
-using W10Home.Interfaces.Configuration;
-using IoTHs.Api.Shared;
-using IoTHs.Devices.Interfaces;
-using W10Home.Core.Channels;
 
-namespace W10Home.Plugin.AzureIoTHub
+namespace IoTHs.Plugin.AzureIoTHub
 {
 	public class AzureIoTHubDevice : DeviceBase
 	{

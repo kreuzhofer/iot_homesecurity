@@ -1,4 +1,4 @@
-﻿namespace W10Home.Plugin.AzureIoTHub
+﻿namespace IoTHs.Plugin.AzureIoTHub
 {
 	public class IotHubLogMessage
 	{

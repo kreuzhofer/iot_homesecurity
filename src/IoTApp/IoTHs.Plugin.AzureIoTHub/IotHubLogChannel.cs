@@ -1,9 +1,8 @@
 ﻿using System;
 using IoTHs.Devices.Interfaces;
 using W10Home.Core.Queing;
-using W10Home.Interfaces;
 
-namespace W10Home.Plugin.AzureIoTHub
+namespace IoTHs.Plugin.AzureIoTHub
 {
     public class IotHubLogChannel : IDeviceChannel
     {

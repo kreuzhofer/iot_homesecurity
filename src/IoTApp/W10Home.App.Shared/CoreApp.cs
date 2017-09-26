@@ -21,7 +21,7 @@ using W10Home.IoTCoreApp.Controllers;
 using IoTHs.Plugin.ABUS.SecVest;
 #endif
 #if AZUREIOTHUB
-using W10Home.Plugin.AzureIoTHub;
+using IoTHs.Plugin.AzureIoTHub;
 #endif
 #if ETATOUCH
 using W10Home.Plugin.ETATouch;
