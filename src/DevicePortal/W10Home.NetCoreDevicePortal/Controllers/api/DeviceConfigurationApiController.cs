@@ -13,14 +13,14 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
 {
     [Produces("application/json")]
     [Route("api/DeviceConfiguration")]
-    public class DeviceConfigurationController : Controller
+    public class DeviceConfigurationApiController : Controller
     {
         private readonly IDeviceFunctionService _deviceFunctionService;
         private DevicePluginService _devicePluginService;
         private DevicePluginPropertyService _devicePluginPropertyService;
         private IConfiguration _configuration;
 
-        public DeviceConfigurationController(IDeviceFunctionService deviceFunctionService, DevicePluginService devicePluginService, DevicePluginPropertyService devicePluginPropertyService,
+        public DeviceConfigurationApiController(IDeviceFunctionService deviceFunctionService, DevicePluginService devicePluginService, DevicePluginPropertyService devicePluginPropertyService,
             IConfiguration configuration)
         {
             _deviceFunctionService = deviceFunctionService;

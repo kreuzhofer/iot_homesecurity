@@ -14,11 +14,11 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
     [Produces("application/json")]
     [Route("api/DeviceFunction")]
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-    public class DeviceFunctionController : Controller
+    public class DeviceFunctionApiController : Controller
     {
         private IDeviceFunctionService _deviceFunctionService;
 
-        public DeviceFunctionController(IDeviceFunctionService deviceFunctionService)
+        public DeviceFunctionApiController(IDeviceFunctionService deviceFunctionService)
         {
             _deviceFunctionService = deviceFunctionService;
         }
