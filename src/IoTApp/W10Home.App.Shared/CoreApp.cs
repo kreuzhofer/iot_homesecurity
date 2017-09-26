@@ -184,7 +184,7 @@ namespace W10Home.App.Shared
             deviceRegistry.RegisterDeviceType<SecVestDevice>();
 #endif
 #if ETATOUCH
-            deviceRegistry.RegisterDeviceType<ETATouchDevice>();
+            deviceRegistry.RegisterDeviceType<EtaTouchDevice>();
 #endif
 #if TWILIO
             deviceRegistry.RegisterDeviceType<TwilioDevice>();
@@ -210,7 +210,7 @@ namespace W10Home.App.Shared
             container.RegisterType<SecVestDevice>(new ContainerControlledLifetimeManager());
 #endif
 #if ETATOUCH
-            container.RegisterType<ETATouchDevice>(new ContainerControlledLifetimeManager());
+            container.RegisterType<EtaTouchDevice>(new ContainerControlledLifetimeManager());
 #endif
 #if TWILIO
             container.RegisterType<TwilioDevice>(new ContainerControlledLifetimeManager());

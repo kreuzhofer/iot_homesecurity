@@ -13,7 +13,7 @@ using IoTHs.Api.Shared;
 
 namespace W10Home.Plugin.ETATouch
 {
-	public class ETATouchDevice : DeviceBase
+	public class EtaTouchDevice : DeviceBase
     {
         private string _etatouchUrl;
 		private List<TreeItem> _menustructure;

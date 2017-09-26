@@ -108,7 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EtaChannel.cs" />
-    <Compile Include="ETATouchDevice.cs" />
+    <Compile Include="EtaTouchDevice.cs" />
     <Compile Include="EtaValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringExtensions.cs" />
