@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using IoTHs.Api.Shared;
+using IoTHs.Devices.Interfaces;
 using Newtonsoft.Json;
 using uPLibrary.Networking.M2Mqtt;
 using W10Home.Core.Standard;
-using IoTHs.Api.Shared;
-using IoTHs.Devices.Interfaces;
 
-namespace W10Home.MqttDevice
+namespace IoTHs.Plugin.MqttClient
 {
     public class MqttClientDevice : DeviceBase
     {
-	    private MqttClient _mqttclient;
+	    private uPLibrary.Networking.M2Mqtt.MqttClient _mqttclient;
 	    private string _deviceid;
 	    private Dictionary<string, Func<string, KeyValuePair<int, string>>> _methodRegistrations = new Dictionary<string, Func<string, KeyValuePair<int, string>>>();
         private string _name;
@@ -68,7 +68,7 @@ namespace W10Home.MqttDevice
 				int iotHubPort = Int32.Parse(configuration.Properties["IotHubPort"]);
 
 				// init mqtt client
-				_mqttclient = new MqttClient(iotHubAddress, iotHubPort, true, MqttSslProtocols.TLSv1_2);
+				_mqttclient = new uPLibrary.Networking.M2Mqtt.MqttClient(iotHubAddress, iotHubPort, true, MqttSslProtocols.TLSv1_2);
 				_mqttclient.ConnectionClosed += MqttclientOnConnectionClosed;
 				_mqttclient.Connect(_deviceid, $"{iotHubAddress}/{_deviceid}/api-version=2016-11-14", deviceSas);
 				_mqttclient.Subscribe(new[] {$"devices/{_deviceid}/messages/devicebound/#"}, new byte[] {0});

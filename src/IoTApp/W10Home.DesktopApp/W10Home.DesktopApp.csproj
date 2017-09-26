@@ -151,6 +151,14 @@
       <Project>{7f92bd3f-114b-431a-9b00-48aa60d22ead}</Project>
       <Name>IoTHs.Plugin.ETATouch</Name>
     </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.MqttClient\IoTHs.Plugin.MqttClient.csproj">
+      <Project>{174a9f97-1dd6-4d50-8cd4-2052c525ef5a}</Project>
+      <Name>IoTHs.Plugin.MqttClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.Twilio\IoTHs.Plugin.Twilio.csproj">
+      <Project>{213d13f8-91bf-4eef-ac5e-53f37b631810}</Project>
+      <Name>IoTHs.Plugin.Twilio</Name>
+    </ProjectReference>
     <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
       <Project>{C3C103FF-8993-420D-8F50-979ECA9C7D73}</Project>
       <Name>W10Home.Core</Name>
@@ -158,10 +166,6 @@
     <ProjectReference Include="..\W10Home.Plugin.HomeMatic\IoTHs.Plugin.HomeMatic.csproj">
       <Project>{b500eb85-8a90-45bc-aa6e-448dabb187cc}</Project>
       <Name>IoTHs.Plugin.HomeMatic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\W10Home.Plugin.MqttClient\W10Home.Plugin.MqttClient.csproj">
-      <Project>{174a9f97-1dd6-4d50-8cd4-2052c525ef5a}</Project>
-      <Name>W10Home.Plugin.MqttClient</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
