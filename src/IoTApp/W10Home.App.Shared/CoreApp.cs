@@ -18,13 +18,12 @@ using W10Home.IoTCoreApp;
 using W10Home.IoTCoreApp.Auth;
 using W10Home.IoTCoreApp.Controllers;
 #if SECVEST
-using W10Home.Plugin.ABUS.SecVest;
+using IoTHs.Plugin.ABUS.SecVest;
 #endif
 #if AZUREIOTHUB
-using W10Home.Plugin.AzureIoTHub;
+using IoTHs.Plugin.AzureIoTHub;
 #endif
 #if ETATOUCH
-using W10Home.Plugin.ETATouch;
 #endif
 #if TWILIO
 using IoTHs.Plugin.Twilio;
@@ -32,23 +31,23 @@ using IoTHs.Plugin.Twilio;
 using System.Linq;
 using Windows.Storage;
 using Windows.System;
-using MetroLog;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using W10Home.App.Shared.Logging;
 using W10Home.Interfaces.Configuration;
 using IoTHs.Api.Shared;
 using IoTHs.Devices.Interfaces;
+using IoTHs.Plugin.ETATouch;
 using IoTHs.Plugin.HomeMatic;
 using W10Home.Core.Channels;
-
+using NLog;
 
 namespace W10Home.App.Shared
 {
     internal class CoreApp
     {
 		private HttpServer _httpServer;
-        private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<CoreApp>();
+        private readonly ILogger _log = LogManager.GetCurrentClassLogger();
         private Timer _everyMinuteTimer;
 
         public async Task Run()
@@ -184,7 +183,7 @@ namespace W10Home.App.Shared
             deviceRegistry.RegisterDeviceType<SecVestDevice>();
 #endif
 #if ETATOUCH
-            deviceRegistry.RegisterDeviceType<ETATouchDevice>();
+            deviceRegistry.RegisterDeviceType<EtaTouchDevice>();
 #endif
 #if TWILIO
             deviceRegistry.RegisterDeviceType<TwilioDevice>();
@@ -210,7 +209,7 @@ namespace W10Home.App.Shared
             container.RegisterType<SecVestDevice>(new ContainerControlledLifetimeManager());
 #endif
 #if ETATOUCH
-            container.RegisterType<ETATouchDevice>(new ContainerControlledLifetimeManager());
+            container.RegisterType<EtaTouchDevice>(new ContainerControlledLifetimeManager());
 #endif
 #if TWILIO
             container.RegisterType<TwilioDevice>(new ContainerControlledLifetimeManager());

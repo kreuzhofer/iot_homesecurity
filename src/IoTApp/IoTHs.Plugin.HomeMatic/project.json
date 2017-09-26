@@ -1,12 +1,7 @@
 ﻿{
   "dependencies": {
-    "Microsoft.ApplicationInsights": "2.4.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.4.0",
-    "MoonSharp": "1.8.0",
-    "Newtonsoft.Json": "10.0.3",
-    "NLog": "5.0.0-beta10",
-    "Unity": "4.0.1",
-    "Unity.ServiceLocator": "2.0.0"
+    "Unity": "4.0.1"
   },
   "frameworks": {
     "uap10.0.14393": {}

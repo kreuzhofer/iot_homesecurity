@@ -3,25 +3,41 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{7B1D6F05-331A-4A91-9EA3-AB4125AAAC5E}</ProjectGuid>
-    <OutputType>AppContainerExe</OutputType>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B500EB85-8A90-45BC-AA6E-448DABB187CC}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>W10Home.DesktopApp</RootNamespace>
-    <AssemblyName>W10Home.DesktopApp</AssemblyName>
+    <RootNamespace>IoTHs.Plugin.HomeMatic</RootNamespace>
+    <AssemblyName>IoTHs.Plugin.HomeMatic</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.14393.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
-    <PackageCertificateKeyFile>W10Home.DesktopApp_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <HockeyAppResourceId>190306ba9b774a43969df424ec3a4953</HockeyAppResourceId>
-    <PackageCertificateThumbprint>36D9FE487F1A5E68EF64DFD219CD93447F55C8C7</PackageCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
@@ -30,9 +46,9 @@
     <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Release\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <Optimize>true</Optimize>
@@ -41,10 +57,9 @@
     <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\ARM\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
@@ -53,9 +68,9 @@
     <PlatformTarget>ARM</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
     <OutputPath>bin\ARM\Release\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <Optimize>true</Optimize>
@@ -64,10 +79,9 @@
     <PlatformTarget>ARM</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
@@ -76,9 +90,9 @@
     <PlatformTarget>x64</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\x64\Release\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <Optimize>true</Optimize>
@@ -87,48 +101,15 @@
     <PlatformTarget>x64</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <None Include="Connected Services\HockeyApp\ConnectedService.json" />
     <None Include="project.json" />
-    <None Include="W10Home.DesktopApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="HomeMaticDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <AppxManifest Include="Package.appxmanifest">
-      <SubType>Designer</SubType>
-    </AppxManifest>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Properties\Default.rd.xml" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
-    <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Page Include="MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
+    <EmbeddedResource Include="Properties\W10Home.Plugin.HomeMatic.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DevicePortal\IoTHs.Api.Shared\IoTHs.Api.Shared.csproj">
@@ -136,32 +117,8 @@
       <Name>IoTHs.Api.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\IoTHs.Devices.Interfaces\IoTHs.Devices.Interfaces.csproj">
-      <Project>{000c0e13-fbe4-4815-b30b-35ade072e45f}</Project>
+      <Project>{000C0E13-FBE4-4815-B30B-35ADE072E45F}</Project>
       <Name>IoTHs.Devices.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IoTHs.Plugin.ABUS.SecVest\IoTHs.Plugin.ABUS.SecVest.csproj">
-      <Project>{0acaf795-9493-4251-ae48-2a11edc483ba}</Project>
-      <Name>IoTHs.Plugin.ABUS.SecVest</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IoTHs.Plugin.AzureIoTHub\IoTHs.Plugin.AzureIoTHub.csproj">
-      <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
-      <Name>IoTHs.Plugin.AzureIoTHub</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IoTHs.Plugin.ETATouch\IoTHs.Plugin.ETATouch.csproj">
-      <Project>{7f92bd3f-114b-431a-9b00-48aa60d22ead}</Project>
-      <Name>IoTHs.Plugin.ETATouch</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IoTHs.Plugin.HomeMatic\IoTHs.Plugin.HomeMatic.csproj">
-      <Project>{b500eb85-8a90-45bc-aa6e-448dabb187cc}</Project>
-      <Name>IoTHs.Plugin.HomeMatic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IoTHs.Plugin.MqttClient\IoTHs.Plugin.MqttClient.csproj">
-      <Project>{174a9f97-1dd6-4d50-8cd4-2052c525ef5a}</Project>
-      <Name>IoTHs.Plugin.MqttClient</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IoTHs.Plugin.Twilio\IoTHs.Plugin.Twilio.csproj">
-      <Project>{213d13f8-91bf-4eef-ac5e-53f37b631810}</Project>
-      <Name>IoTHs.Plugin.Twilio</Name>
     </ProjectReference>
     <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
       <Project>{C3C103FF-8993-420D-8F50-979ECA9C7D73}</Project>
@@ -169,23 +126,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Restup.WebServer, Version=1.0.6249.23386, Culture=neutral, PublicKeyToken=64b98b5a45f1b6f4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\libs\Restup.WebServer.dll</HintPath>
-    </Reference>
-    <Reference Include="Restup.WebServer.Logging, Version=1.0.0.0, Culture=neutral, PublicKeyToken=64b98b5a45f1b6f4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\libs\Restup.WebServer.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Restup.Webserver.Models, Version=1.0.0.0, Culture=neutral, PublicKeyToken=64b98b5a45f1b6f4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\libs\Restup.Webserver.Models.winmd</HintPath>
+    <Reference Include="NLog">
+      <HintPath>C:\Users\daniel\.nuget\packages\NLog\5.0.0-beta10\lib\uap10.0\NLog.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="..\W10Home.App.Shared\W10Home.App.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

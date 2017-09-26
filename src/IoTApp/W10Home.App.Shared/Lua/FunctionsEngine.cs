@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Security.Cryptography.Certificates;
-using MetroLog;
 using Microsoft.Practices.ServiceLocation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
@@ -22,12 +21,13 @@ using Windows.Web.Http.Filters;
 using Microsoft.Azure.Devices.Shared;
 using Newtonsoft.Json;
 using W10Home.App.Shared.Lua;
+using NLog;
 
 namespace W10Home.App.Shared
 {
 	internal class FunctionsEngine
     {
-        private readonly ILogger _log = LogManagerFactory.DefaultLogManager.GetLogger<FunctionsEngine>();
+        private readonly ILogger _log = LogManager.GetCurrentClassLogger();
         private readonly List<FunctionInstance> _functions = new List<FunctionInstance>();
 	    public async void Initialize(DeviceConfigurationModel configuration, CancellationToken cancellationToken)
 		{
@@ -174,7 +174,7 @@ namespace W10Home.App.Shared
 		    script.Globals.Set("registry", registryDynValue);
 		    var messageQueueDynValue = UserData.Create(queue);
 		    script.Globals.Set("queue", messageQueueDynValue);
-	        var log = LogManagerFactory.DefaultLogManager.GetLogger("FunctionsEngine|" + name);
+	        var log = LogManager.GetLogger("FunctionsEngine|" + name);
 	        var logDynValue = UserData.Create(log);
             script.Globals.Set("log", logDynValue);
 

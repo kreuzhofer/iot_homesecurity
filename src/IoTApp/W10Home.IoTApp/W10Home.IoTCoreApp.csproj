@@ -28,7 +28,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\ARM\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;AZUREIOTHUB;ETATOUCH;TWILIO;CODE_ANALYSIS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;AZUREIOTHUB;ETATOUCH;TWILIO;SECVEST;CODE_ANALYSIS</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>ARM</PlatformTarget>
@@ -180,6 +180,26 @@
       <Project>{000c0e13-fbe4-4815-b30b-35ade072e45f}</Project>
       <Name>IoTHs.Devices.Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.ABUS.SecVest\IoTHs.Plugin.ABUS.SecVest.csproj">
+      <Project>{0acaf795-9493-4251-ae48-2a11edc483ba}</Project>
+      <Name>IoTHs.Plugin.ABUS.SecVest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.AzureIoTHub\IoTHs.Plugin.AzureIoTHub.csproj">
+      <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
+      <Name>IoTHs.Plugin.AzureIoTHub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.ETATouch\IoTHs.Plugin.ETATouch.csproj">
+      <Project>{7f92bd3f-114b-431a-9b00-48aa60d22ead}</Project>
+      <Name>IoTHs.Plugin.ETATouch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.HomeMatic\IoTHs.Plugin.HomeMatic.csproj">
+      <Project>{b500eb85-8a90-45bc-aa6e-448dabb187cc}</Project>
+      <Name>IoTHs.Plugin.HomeMatic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.MqttClient\IoTHs.Plugin.MqttClient.csproj">
+      <Project>{174a9f97-1dd6-4d50-8cd4-2052c525ef5a}</Project>
+      <Name>IoTHs.Plugin.MqttClient</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IoTHs.Plugin.Twilio\IoTHs.Plugin.Twilio.csproj">
       <Project>{213D13F8-91BF-4EEF-AC5E-53F37B631810}</Project>
       <Name>IoTHs.Plugin.Twilio</Name>
@@ -187,22 +207,6 @@
     <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
       <Project>{c3c103ff-8993-420d-8f50-979eca9c7d73}</Project>
       <Name>W10Home.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\W10Home.Plugin.AzureIoTHub\W10Home.Plugin.AzureIoTHub.csproj">
-      <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
-      <Name>W10Home.Plugin.AzureIoTHub</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\W10Home.Plugin.ETATouch\W10Home.Plugin.ETATouch.csproj">
-      <Project>{7f92bd3f-114b-431a-9b00-48aa60d22ead}</Project>
-      <Name>W10Home.Plugin.ETATouch</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\W10Home.Plugin.HomeMatic\IoTHs.Plugin.HomeMatic.csproj">
-      <Project>{B500EB85-8A90-45BC-AA6E-448DABB187CC}</Project>
-      <Name>IoTHs.Plugin.HomeMatic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\W10Home.Plugin.MqttClient\W10Home.Plugin.MqttClient.csproj">
-      <Project>{174a9f97-1dd6-4d50-8cd4-2052c525ef5a}</Project>
-      <Name>W10Home.Plugin.MqttClient</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -223,6 +227,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\libs\Restup.Webserver.Models.winmd</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="..\W10Home.App.Shared\W10Home.App.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

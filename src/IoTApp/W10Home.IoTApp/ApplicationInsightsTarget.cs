@@ -1,55 +1,50 @@
-﻿using MetroLog;
-using MetroLog.Layouts;
-using MetroLog.Targets;
-using Microsoft.ApplicationInsights;
+﻿using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
+using NLog;
+using NLog.Targets;
 
 namespace W10Home.IoTCoreApp
 {
-    internal class ApplicationInsightsTarget : SyncTarget
+    internal class ApplicationInsightsTarget : TargetWithLayout
     {
         private readonly TelemetryClient _telemetryClient;
 
-        public ApplicationInsightsTarget(Layout layout) : base(layout)
-        {
-        }
-
-        public ApplicationInsightsTarget(TelemetryClient telemetryClient) : base(new SingleLineLayout())
+        public ApplicationInsightsTarget(TelemetryClient telemetryClient)
         {
             _telemetryClient = telemetryClient;
         }
 
-        protected override void Write(LogWriteContext context, LogEventInfo entry)
+        protected override void Write(LogEventInfo logEvent)
         {
             SeverityLevel level = SeverityLevel.Verbose;
-            switch (entry.Level)
+            switch (logEvent.Level.Name)
             {
-                case LogLevel.Trace:
-                case LogLevel.Debug:
+                case "Trace":
+                case "Debug":
                     level = SeverityLevel.Verbose;
                     break;
-                case LogLevel.Info:
+                case "Info":
                     level = SeverityLevel.Information;
                     break;
-                case LogLevel.Warn:
+                case "Warn":
                     level = SeverityLevel.Warning;
                     break;
-                case LogLevel.Error:
+                case "Error":
                     level = SeverityLevel.Error;
                     break;
-                case LogLevel.Fatal:
+                case "Fatal":
                     level = SeverityLevel.Critical;
                     break;
             }
             ITelemetry telemetry = null;
-            if (entry.Exception == null)
+            if (logEvent.Exception == null)
             {
-                telemetry = new TraceTelemetry(entry.Message, level);
+                telemetry = new TraceTelemetry(logEvent.Message, level);
             }
             else
             {
-                telemetry = new ExceptionTelemetry(entry.Exception);
+                telemetry = new ExceptionTelemetry(logEvent.Exception);
             }
 
             _telemetryClient.Track(telemetry);
