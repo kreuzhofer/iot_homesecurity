@@ -19,7 +19,8 @@ namespace W10Home.App.Shared.Logging
 
         protected override void Write(LogEventInfo logEvent)
         {
-            Debug.WriteLine(logEvent.FormattedMessage);
+            var message = this.Layout.Render(logEvent);
+            Debug.WriteLine(message);
         }
     }
 }

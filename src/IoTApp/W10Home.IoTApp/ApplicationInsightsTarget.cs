@@ -10,10 +10,6 @@ namespace W10Home.IoTCoreApp
     {
         private readonly TelemetryClient _telemetryClient;
 
-        public ApplicationInsightsTarget()
-        {
-        }
-
         public ApplicationInsightsTarget(TelemetryClient telemetryClient)
         {
             _telemetryClient = telemetryClient;

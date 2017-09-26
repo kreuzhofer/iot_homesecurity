@@ -5,6 +5,7 @@ using W10Home.App.Shared;
 using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
+using DotNetty.Common.Concurrency;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.Practices.ServiceLocation;
@@ -32,26 +33,52 @@ namespace W10Home.IoTCoreApp
             // should be removed. Which results in the application being closed.
             _deferral = taskInstance.GetDeferral();
             taskInstance.Canceled += TaskInstance_Canceled;
-            
+
             // this is one way to handle unobserved task exceptions but not the best
             //TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
+            // Init Application Insights
+            var telemetryClient = new TelemetryClient();
+            telemetryClient.InstrumentationKey = "4e4ea96b-6b69-4aba-919b-558b4a4583ae";
+            
             // configure logging first
             Target.Register<CustomDebuggerTarget>("CustomDebugger");
 
-            var logConfig = new LoggingConfiguration();
-            var debugTarget = new CustomDebuggerTarget();
-            debugTarget.Layout = @"${date:format=HH\:mm\:ss} ${logger} ${message}";
-            logConfig.AddTarget("debug", debugTarget);
+            var singleLineLayoutFormat = @"${date:universalTime=true}|${pad:padding=5:inner=${level:uppercase=true}}|${logger}|${message}";
 
+            var logConfig = new LoggingConfiguration();
+
+            var debugTarget = new CustomDebuggerTarget();
+            debugTarget.Layout = singleLineLayoutFormat;
+            logConfig.AddTarget("debug", debugTarget);
             var rule1 = new LoggingRule("*", LogLevel.Trace, debugTarget);
             logConfig.LoggingRules.Add(rule1);
 
-            LogManager.Configuration = logConfig;
+            //var fileTarget = new FileTarget();
+            //fileTarget.Layout = singleLineLayoutFormat;
+            //fileTarget.FileName = "log.txt";
+            //fileTarget.ArchiveFileName = "log.{#}.txt";
+            //fileTarget.ArchiveNumbering = ArchiveNumberingMode.Date;
+            //fileTarget.ArchiveEvery = FileArchivePeriod.Day;
+            //fileTarget.ArchiveDateFormat = "yyyyMMdd";
+            //fileTarget.MaxArchiveFiles = 30;
+            //fileTarget.KeepFileOpen = false;
+            //logConfig.AddTarget("file", fileTarget);
+            //var rule2 = new LoggingRule("*", LogLevel.Trace, fileTarget);
+            //logConfig.LoggingRules.Add(rule2);
 
+            var applicationInsightsTarget = new ApplicationInsightsTarget(telemetryClient);
+            logConfig.AddTarget("appinsights", applicationInsightsTarget);
+            var rule3 = new LoggingRule("*", LogLevel.Info, applicationInsightsTarget);
+            logConfig.LoggingRules.Add(rule3);
+
+            var iotHubTarget = new IotHubTarget();
+            logConfig.AddTarget("iothub", iotHubTarget);
+            var rule4 = new LoggingRule("*", LogLevel.Info, iotHubTarget);
+            logConfig.LoggingRules.Add(rule4);
+
+            LogManager.Configuration = logConfig;
             
-            var telemetryClient = new TelemetryClient();
-            telemetryClient.InstrumentationKey = "4e4ea96b-6b69-4aba-919b-558b4a4583ae";
             //LogManagerFactory.DefaultConfiguration = new LoggingConfiguration();
             //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new DebugTarget());
             //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new EtwTarget());
