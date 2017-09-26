@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace W10Home.Plugin.ETATouch
+namespace IoTHs.Plugin.ETATouch
 {
 
 	public static class StringExtensions

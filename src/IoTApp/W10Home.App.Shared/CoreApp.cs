@@ -24,7 +24,6 @@ using IoTHs.Plugin.ABUS.SecVest;
 using IoTHs.Plugin.AzureIoTHub;
 #endif
 #if ETATOUCH
-using W10Home.Plugin.ETATouch;
 #endif
 #if TWILIO
 using IoTHs.Plugin.Twilio;
@@ -39,6 +38,7 @@ using W10Home.App.Shared.Logging;
 using W10Home.Interfaces.Configuration;
 using IoTHs.Api.Shared;
 using IoTHs.Devices.Interfaces;
+using IoTHs.Plugin.ETATouch;
 using IoTHs.Plugin.HomeMatic;
 using W10Home.Core.Channels;
 

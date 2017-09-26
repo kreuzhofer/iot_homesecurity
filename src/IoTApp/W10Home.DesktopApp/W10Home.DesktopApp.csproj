@@ -147,13 +147,13 @@
       <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
       <Name>IoTHs.Plugin.AzureIoTHub</Name>
     </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.ETATouch\IoTHs.Plugin.ETATouch.csproj">
+      <Project>{7f92bd3f-114b-431a-9b00-48aa60d22ead}</Project>
+      <Name>IoTHs.Plugin.ETATouch</Name>
+    </ProjectReference>
     <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
       <Project>{C3C103FF-8993-420D-8F50-979ECA9C7D73}</Project>
       <Name>W10Home.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\W10Home.Plugin.ETATouch\W10Home.Plugin.ETATouch.csproj">
-      <Project>{7f92bd3f-114b-431a-9b00-48aa60d22ead}</Project>
-      <Name>W10Home.Plugin.ETATouch</Name>
     </ProjectReference>
     <ProjectReference Include="..\W10Home.Plugin.HomeMatic\IoTHs.Plugin.HomeMatic.csproj">
       <Project>{b500eb85-8a90-45bc-aa6e-448dabb187cc}</Project>

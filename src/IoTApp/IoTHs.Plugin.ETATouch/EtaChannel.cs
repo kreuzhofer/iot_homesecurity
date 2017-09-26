@@ -1,9 +1,8 @@
-﻿using IoTHs.Devices.Interfaces;
-using System;
-using System.Threading.Tasks;
+﻿using System;
+using IoTHs.Devices.Interfaces;
 using W10Home.Core.Channels;
 
-namespace W10Home.Plugin.ETATouch
+namespace IoTHs.Plugin.ETATouch
 {
 	public class EtaChannel : IDeviceChannel
 	{

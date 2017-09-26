@@ -1,4 +1,4 @@
-﻿namespace W10Home.Plugin.ETATouch
+﻿namespace IoTHs.Plugin.ETATouch
 {
 
 	public class EtaValue

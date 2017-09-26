@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace W10Home.Plugin.ETATouch
+namespace IoTHs.Plugin.ETATouch
 {
 
 	public class TreeItem

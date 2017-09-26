@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Xml;
-using W10Home.Core.Channels;
 using Windows.Data.Xml.Dom;
-using IoTHs.Devices.Interfaces;
-using W10Home.Core.Standard;
 using IoTHs.Api.Shared;
+using IoTHs.Devices.Interfaces;
+using W10Home.Core.Channels;
+using W10Home.Core.Standard;
 
-namespace W10Home.Plugin.ETATouch
+namespace IoTHs.Plugin.ETATouch
 {
 	public class EtaTouchDevice : DeviceBase
     {
