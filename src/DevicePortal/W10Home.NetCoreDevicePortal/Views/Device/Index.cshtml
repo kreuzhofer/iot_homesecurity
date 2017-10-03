@@ -53,6 +53,19 @@
             }
         });
     }
+
+    function deleteDevice(id) {
+        if (confirm('Are you sure?')) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Delete", "Device")',
+                data: { id: id },
+                cache: false,
+                success: function(data) { window.location.href = '@Url.Action("Index", "Device")'; },
+            error: function (){ alert("error"); }
+            });
+        }
+    }
 </script>
 
 <h2>Devices</h2>
@@ -116,9 +129,8 @@
             @Html.DisplayFor(modelItem => item.SuspensionReason)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
             @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { onclick = "return confirm('Are you sure?');" }) |
+            <a href="#" onclick="deleteDevice('@item.Id'); return false;">Delete</a> |
             <a href="#" onclick="opensendmessagedialog('@item.Id'); return false;">Send Message</a> |
             <a href="#" onclick="calldevicemethod('@item.Id'); return false;">Call Device Method</a>
         </td>

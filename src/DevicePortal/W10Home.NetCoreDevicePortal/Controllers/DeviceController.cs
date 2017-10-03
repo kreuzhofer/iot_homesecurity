@@ -9,6 +9,7 @@ using W10Home.DevicePortal.DataAccess;
 using Newtonsoft.Json;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Extensions.Configuration;
 using W10Home.NetCoreDevicePortal.DataAccess;
 using W10Home.NetCoreDevicePortal.DataAccess.Entities;
@@ -157,6 +158,10 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             return await EditFunction(deviceFunctionEntity.PartitionKey, deviceFunctionEntity.RowKey);
         }
 
+
+
+#region Ajax methods
+
         [HttpPost]
         public async Task<IActionResult> SendMessage(string id, string message)
         {
@@ -183,6 +188,16 @@ namespace W10Home.NetCoreDevicePortal.Controllers
 
             return Json("success");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var registry = _deviceManagementService.GlobalRegistryManager;
+            await registry.RemoveDeviceAsync(id);
+            return Json("success");
+        }
+
+        #endregion
 
     }
 }
