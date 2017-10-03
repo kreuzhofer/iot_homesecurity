@@ -34,12 +34,31 @@
             error: function (){ alert("error"); }
         });
     }
+
+    function createNewDeviceDialog() {
+        bootbox.prompt({
+            title: "Enter name for new device",
+            inputType: "text",
+            callback: function(result) {
+                if (result != null) {
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("Create", "Device")',
+                        data: { name: result },
+                        cache: false,
+                        success: function (data) { window.location.href = '@Url.Action("Index", "Device")'; },
+                        error: function() { alert("error"); }
+                    });
+                }
+            }
+        });
+    }
 </script>
 
 <h2>Devices</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    <a href="#" onclick="createNewDeviceDialog(); return false;">Create new</a>
 </p>
 <table class="table">
     <tr>

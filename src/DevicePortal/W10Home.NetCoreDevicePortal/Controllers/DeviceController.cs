@@ -175,5 +175,14 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             return Json(result.GetPayloadAsJson());
         }
 
+        [HttpPost]
+        public async Task<ActionResult> Create(string name)
+        {
+            var client = _deviceManagementService.GlobalRegistryManager;
+            var device = await client.AddDeviceAsync(new Device(Guid.NewGuid().ToString()));
+
+            return Json("success");
+        }
+
     }
 }
