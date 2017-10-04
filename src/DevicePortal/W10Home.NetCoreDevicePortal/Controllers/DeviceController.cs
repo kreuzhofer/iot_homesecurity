@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Devices;
 using W10Home.DevicePortal.IotHub;
-using W10Home.DevicePortal.DataAccess;
 using Newtonsoft.Json;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Extensions.Configuration;
 using W10Home.NetCoreDevicePortal.DataAccess;
 using W10Home.NetCoreDevicePortal.DataAccess.Entities;
+using W10Home.NetCoreDevicePortal.DataAccess.Interfaces;
 using W10Home.NetCoreDevicePortal.DataAccess.Services;
 using W10Home.NetCoreDevicePortal.Models;
 
@@ -27,9 +27,11 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         private IDeviceFunctionService _deviceFunctionService;
         private IConfiguration _configuration;
         private DevicePluginService _devicePluginService;
+        private IDeviceService _deviceService;
 
         public DeviceController(IConfiguration configuration, DeviceManagementService deviceManagementService, IDeviceStateService deviceStateService, 
-            IDeviceConfigurationService deviceConfigurationService, IDeviceFunctionService deviceFunctionService, DevicePluginService devicePluginService)
+            IDeviceConfigurationService deviceConfigurationService, IDeviceFunctionService deviceFunctionService, DevicePluginService devicePluginService,
+            IDeviceService deviceService)
         {
             _deviceManagementService = deviceManagementService;
             _deviceStateService = deviceStateService;
@@ -37,6 +39,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             _deviceFunctionService = deviceFunctionService;
             _configuration = configuration;
             _devicePluginService = devicePluginService;
+            _deviceService = deviceService;
         }
 
         // GET: Device
@@ -94,6 +97,21 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         public async Task<IActionResult> Edit(DeviceData data)
         {
             // save configuration data
+            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            DeviceEntity device = null;
+            device = await _deviceService.GetAsync(userId, data.Id);
+            if (device == null)
+            {
+                device = new DeviceEntity
+                {
+                    PartitionKey = userId,
+                    RowKey = data.Id,
+                    ApiKey = Guid.NewGuid().ToString()
+                };
+            }
+            await _deviceService.InsertOrReplaceAsync(device);
+
+
             await _deviceConfigurationService.SaveConfig(data.Id, "configurationFileUrl", data.Configuration);
 
             var patch = new

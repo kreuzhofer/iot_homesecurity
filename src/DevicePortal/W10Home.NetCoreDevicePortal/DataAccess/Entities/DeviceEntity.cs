@@ -4,6 +4,6 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Entities
 {
     public class DeviceEntity : TableEntity
     {
-        public string eMail { get; set; } 
+        public string ApiKey { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using W10Home.NetCoreDevicePortal.DataAccess;
+using W10Home.NetCoreDevicePortal.DataAccess.Interfaces;
 using W10Home.NetCoreDevicePortal.DataAccess.Services;
 
 namespace W10Home.NetCoreDevicePortal.Controllers.api

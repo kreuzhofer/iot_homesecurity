@@ -62,5 +62,10 @@ namespace W10Home.NetCoreDevicePortal.Controllers
 
             return View();
         }
+
+        public IActionResult Claims()
+        {
+            return View();
+        }
     }
 }

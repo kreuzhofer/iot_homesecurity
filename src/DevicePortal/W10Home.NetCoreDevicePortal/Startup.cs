@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using W10Home.DevicePortal.DataAccess;
 using W10Home.DevicePortal.IotHub;
 using W10Home.NetCoreDevicePortal.DataAccess;
 using W10Home.NetCoreDevicePortal.DataAccess.Services;
@@ -16,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
+using W10Home.NetCoreDevicePortal.DataAccess.Interfaces;
 using WebApp_OpenIDConnect_DotNet;
 
 namespace W10Home.NetCoreDevicePortal

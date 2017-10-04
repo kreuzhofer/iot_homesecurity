@@ -369,6 +369,7 @@ namespace IoTHs.Plugin.AzureIoTHub
             // download file
             var baseUri = desiredProperties["configurationUrl"].ToString();
 		    var configUri = baseUri + "api/DeviceConfiguration/" + _deviceId;
+		    _log.Debug("Downloading new configuration from " + configUri);
 			var httpClient = new HttpClient(aHBPF);
 			var configFileContent = await httpClient.GetStringAsync(new Uri(configUri));
 

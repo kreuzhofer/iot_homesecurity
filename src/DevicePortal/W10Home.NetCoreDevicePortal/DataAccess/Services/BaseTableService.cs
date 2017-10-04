@@ -8,7 +8,7 @@ using W10Home.NetCoreDevicePortal.DataAccess.Entities;
 
 namespace W10Home.NetCoreDevicePortal.DataAccess.Services
 {
-    public class BaseTableService<T> where T : TableEntity, new()
+    public class BaseTableService<T> : IBaseTableService<T> where T : TableEntity, new()
     {
         protected readonly CloudTable TableRef;
 
