@@ -19,6 +19,7 @@ namespace W10Home.DevicePortal.IotHub
         public string SuspensionReason { get; set; }
 
 		// Additional properties
+        public string Name { get; set; }
 		public string Configuration { get; set; }
 	    public List<DeviceStateEntity> StateList { get; set; }
         public List<DeviceFunctionEntity> DeviceFunctions { get; set; }
@@ -38,7 +39,7 @@ namespace W10Home.DevicePortal.IotHub
 
 		public DeviceData()
 		{ }
-        public DeviceData(Device dev)
+        public DeviceData(Device dev, DeviceEntity deviceEntity)
         {
             Id = dev.Id;
             ConnectionState = dev.ConnectionState.ToString();
@@ -48,6 +49,7 @@ namespace W10Home.DevicePortal.IotHub
             MessageCount = dev.CloudToDeviceMessageCount;
             State = dev.Status.ToString();
             SuspensionReason = dev.StatusReason;
+            Name = deviceEntity.Name;
         }
     }
 }

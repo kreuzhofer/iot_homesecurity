@@ -45,22 +45,33 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         // GET: Device
         public async Task<IActionResult> Index()
         {
+            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            var userDevices = await _deviceService.GetAsync(userId);
+
             var rm = _deviceManagementService.GlobalRegistryManager;
-            var devlist = await rm.GetDevicesAsync(1000);
             var devdatalist = new DeviceDataList();
-            foreach (Device dev in devlist)
+            foreach (var device in userDevices)
             {
-                devdatalist.Add(new DeviceData(dev));
+                var iotDevice = await rm.GetDeviceAsync(device.RowKey);
+                devdatalist.Add(new DeviceData(iotDevice, device));
             }
+
             return View(devdatalist);
         }
 
         public async Task<IActionResult> Details(string id)
         {
+            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            var userDevice = await _deviceService.GetAsync(userId, id);
+            if (userDevice == null)
+            {
+                return NotFound(); // no matter if this device does not exist or you just don't have the access rights. Don't give a hint...
+            }
+
             var rm = _deviceManagementService.GlobalRegistryManager;
             Device device = await rm.GetDeviceAsync(id);
 
-            var deviceData = new DeviceData(device);
+            var deviceData = new DeviceData(device, userDevice);
             var configData = await _deviceConfigurationService.LoadConfig(id, "configurationFileUrl");
             if (configData != null)
             {
@@ -80,10 +91,17 @@ namespace W10Home.NetCoreDevicePortal.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
+            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            var userDevice = await _deviceService.GetAsync(userId, id);
+            if (userDevice == null)
+            {
+                return NotFound(); // no matter if this device does not exist or you just don't have the access rights. Don't give a hint...
+            }
+
             var rm = _deviceManagementService.GlobalRegistryManager;
             Device device = await rm.GetDeviceAsync(id);
 
-            var deviceData = new DeviceData(device);
+            var deviceData = new DeviceData(device, userDevice);
             var configData = await _deviceConfigurationService.LoadConfig(id, "configurationFileUrl");
             if (configData != null)
             {
@@ -96,22 +114,6 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(DeviceData data)
         {
-            // save configuration data
-            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            DeviceEntity device = null;
-            device = await _deviceService.GetAsync(userId, data.Id);
-            if (device == null)
-            {
-                device = new DeviceEntity
-                {
-                    PartitionKey = userId,
-                    RowKey = data.Id,
-                    ApiKey = Guid.NewGuid().ToString()
-                };
-            }
-            await _deviceService.InsertOrReplaceAsync(device);
-
-
             await _deviceConfigurationService.SaveConfig(data.Id, "configurationFileUrl", data.Configuration);
 
             var patch = new
@@ -180,29 +182,40 @@ namespace W10Home.NetCoreDevicePortal.Controllers
 
 #region Ajax methods
 
-        [HttpPost]
-        public async Task<IActionResult> SendMessage(string id, string message)
-        {
-            var client = _deviceManagementService.ServiceClient;
-            await client.SendAsync(id, new Message(Encoding.UTF8.GetBytes(message)));
-            return Json("message sent");
-        }
+        //[HttpPost]
+        //public async Task<IActionResult> SendMessage(string id, string message)
+        //{
+        //    var client = _deviceManagementService.ServiceClient;
+        //    await client.SendAsync(id, new Message(Encoding.UTF8.GetBytes(message)));
+        //    return Json("message sent");
+        //}
 
-        [HttpPost]
-        public async Task<ActionResult> CallMethod(string id, string method, string payload)
-        {
-            var client = _deviceManagementService.ServiceClient;
-            var c2dmethod = new CloudToDeviceMethod(method);
-            c2dmethod.SetPayloadJson("{payload: '" + payload + "'}");
-            var result = await client.InvokeDeviceMethodAsync(id, c2dmethod);
-            return Json(result.GetPayloadAsJson());
-        }
+        //[HttpPost]
+        //public async Task<ActionResult> CallMethod(string id, string method, string payload)
+        //{
+        //    var client = _deviceManagementService.ServiceClient;
+        //    var c2dmethod = new CloudToDeviceMethod(method);
+        //    c2dmethod.SetPayloadJson("{payload: '" + payload + "'}");
+        //    var result = await client.InvokeDeviceMethodAsync(id, c2dmethod);
+        //    return Json(result.GetPayloadAsJson());
+        //}
 
         [HttpPost]
         public async Task<ActionResult> Create(string name)
         {
             var client = _deviceManagementService.GlobalRegistryManager;
-            var device = await client.AddDeviceAsync(new Device(Guid.NewGuid().ToString()));
+            var iotDevice = await client.AddDeviceAsync(new Device(Guid.NewGuid().ToString()));
+
+            // save configuration data
+            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            var device = new DeviceEntity
+            {
+                PartitionKey = userId,
+                Name = name,
+                RowKey = iotDevice.Id,
+                ApiKey = Guid.NewGuid().ToString()
+            };
+            await _deviceService.InsertOrReplaceAsync(device);
 
             return Json("success");
         }
@@ -210,8 +223,22 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
+            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            var userDevice = await _deviceService.GetAsync(userId, id);
+            if (userDevice == null)
+            {
+                return NotFound(); // no matter if this device does not exist or you just don't have the access rights. Don't give a hint...
+            }
+
             var registry = _deviceManagementService.GlobalRegistryManager;
-            await registry.RemoveDeviceAsync(id);
+            var iotDevice = await registry.GetDeviceAsync(id);
+            iotDevice.Status = DeviceStatus.Disabled;
+            await registry.UpdateDeviceAsync(iotDevice);
+
+            userDevice.Deleted = true;
+            userDevice.DeletedAt = DateTime.UtcNow;
+            await _deviceService.InsertOrReplaceAsync(userDevice);
+
             return Json("success");
         }
 

@@ -22,28 +22,28 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Services
             TableRef.CreateIfNotExistsAsync();
         }
 
-        public async Task<T> InsertOrReplaceAsync(T entity)
+        public virtual async Task<T> InsertOrReplaceAsync(T entity)
         {
             var operation = TableOperation.InsertOrReplace(entity);
             var result = await TableRef.ExecuteAsync(operation);
             return result.Result as T;
         }
 
-        public async Task<T> GetAsync(string partitionKey, string rowKey)
+        public virtual async Task<T> GetAsync(string partitionKey, string rowKey)
         {
             var operation = TableOperation.Retrieve<T>(partitionKey, rowKey);
             var result = await TableRef.ExecuteAsync(operation);
             return result.Result as T;
         }
 
-        public async Task<List<T>> GetAsync(string partitionKey)
+        public virtual async Task<List<T>> GetAsync(string partitionKey)
         {
             TableQuery<T> query = new TableQuery<T>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));
             var result = await TableRef.ExecuteQuerySegmentedAsync<T>(query, null);
             return result.Results;
         }
 
-        public async Task<bool> DeleteAsync(string partitionKey, string rowKey)
+        public virtual async Task<bool> DeleteAsync(string partitionKey, string rowKey)
         {
             var entity = await GetAsync(partitionKey, rowKey);
             if (entity != null)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Microsoft.Azure.Devices;
+using W10Home.NetCoreDevicePortal.DataAccess.Entities;
 
 namespace W10Home.DevicePortal.IotHub
 {
@@ -10,7 +11,7 @@ namespace W10Home.DevicePortal.IotHub
         public string SecondaryKey { get; set; }
         public string ConnectionString { get; set; }
 
-        public DeviceDataAuth(Device dev) :base (dev)
+        public DeviceDataAuth(Device dev, DeviceEntity deviceEntity) :base (dev, deviceEntity)
         {
             PrimaryKey = dev.Authentication.SymmetricKey.PrimaryKey;
             SecondaryKey = dev.Authentication.SymmetricKey.SecondaryKey;
