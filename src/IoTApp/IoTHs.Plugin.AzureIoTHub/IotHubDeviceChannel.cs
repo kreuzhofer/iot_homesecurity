@@ -1,4 +1,5 @@
 ﻿using System;
+using IoTHs.Api.Shared;
 using IoTHs.Devices.Interfaces;
 using W10Home.Core.Queing;
 

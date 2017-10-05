@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IoTHs.Api.Shared;
 using W10Home.Core.Queing;
 
 namespace W10Home.IoTCoreApp.Controllers

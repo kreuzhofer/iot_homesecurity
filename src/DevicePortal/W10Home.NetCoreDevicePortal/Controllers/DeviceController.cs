@@ -7,6 +7,7 @@ using Microsoft.Azure.Devices;
 using W10Home.DevicePortal.IotHub;
 using Newtonsoft.Json;
 using System.Text;
+using IoTHs.Api.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Extensions.Configuration;
@@ -61,8 +62,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers
 
         public async Task<IActionResult> Details(string id)
         {
-            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            var userDevice = await _deviceService.GetAsync(userId, id);
+            var userDevice = await GetMyDevice(id);
             if (userDevice == null)
             {
                 return NotFound(); // no matter if this device does not exist or you just don't have the access rights. Don't give a hint...
@@ -91,8 +91,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
-            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            var userDevice = await _deviceService.GetAsync(userId, id);
+            var userDevice = await GetMyDevice(id);
             if (userDevice == null)
             {
                 return NotFound(); // no matter if this device does not exist or you just don't have the access rights. Don't give a hint...
@@ -114,6 +113,11 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(DeviceData data)
         {
+            if (!await IsMyDevice(data.Id))
+            {
+                return NotFound();
+            }
+
             await _deviceConfigurationService.SaveConfig(data.Id, "configurationFileUrl", data.Configuration);
 
             var patch = new
@@ -127,16 +131,36 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                 }
             };
 
-            // get device management client to send the congfiguration
+            // get device management client to send the twin update
             var registryManager = _deviceManagementService.GlobalRegistryManager;
             var twin = await registryManager.GetTwinAsync(data.Id);
             await registryManager.UpdateTwinAsync(data.Id, JsonConvert.SerializeObject(patch), twin.ETag);
+
+            // if the device is offline, queue a message to update next time it gets online
+            var device = await _deviceManagementService.GlobalRegistryManager.GetDeviceAsync(data.Id);
+            if (device.ConnectionState == DeviceConnectionState.Disconnected)
+            {
+                var message = new
+                {
+                    queue = "iothub",
+                    key = "load_configuration",
+                    value = _configuration["ExternalBaseUrl"]
+                };
+                var content = JsonConvert.SerializeObject(message);
+                var bytes = Encoding.UTF8.GetBytes(content);
+                await _deviceManagementService.ServiceClient.SendAsync(data.Id, new Message(bytes));
+            }
 
             return await Edit(data.Id);
         }
 
         public async Task<IActionResult> EditFunction(string deviceId, string functionName)
         {
+            if (!await IsMyDevice(deviceId))
+            {
+                return NotFound();
+            }
+
             var function = await _deviceFunctionService.GetFunctionAsync(deviceId, functionName);
             return View(function);
         }
@@ -144,6 +168,11 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         [HttpPost]
         public async Task<IActionResult> EditFunction(DeviceFunctionEntity deviceFunctionEntity)
         {
+            if (!await IsMyDevice(deviceFunctionEntity.PartitionKey))
+            {
+                return NotFound();
+            }
+
             await _deviceFunctionService.SaveFunctionAsync(deviceFunctionEntity.PartitionKey,
                 deviceFunctionEntity.RowKey, deviceFunctionEntity.Name, deviceFunctionEntity.TriggerType, deviceFunctionEntity.Interval,
                 deviceFunctionEntity.QueueName, deviceFunctionEntity.Enabled, deviceFunctionEntity.Script);
@@ -206,7 +235,6 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             var client = _deviceManagementService.GlobalRegistryManager;
             var iotDevice = await client.AddDeviceAsync(new Device(Guid.NewGuid().ToString()));
 
-            // save configuration data
             var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
             var device = new DeviceEntity
             {
@@ -223,8 +251,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            var userDevice = await _deviceService.GetAsync(userId, id);
+            var userDevice = await GetMyDevice(id);
             if (userDevice == null)
             {
                 return NotFound(); // no matter if this device does not exist or you just don't have the access rights. Don't give a hint...
@@ -243,6 +270,30 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         }
 
         #endregion
+
+        /// <summary>
+        /// Checks whether the given device id exists and is assigned to the current user
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <returns></returns>
+        private async Task<bool> IsMyDevice(string deviceId)
+        {
+            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            var userDevice = await _deviceService.GetAsync(userId, deviceId);
+            return userDevice != null;
+        }
+
+        /// <summary>
+        /// Checks if the device is owned by the current user. Returns the device if it exists and is assigned to the user account.
+        /// </summary>
+        /// <param name="deviceId"></param>
+        /// <returns></returns>
+        private async Task<DeviceEntity> GetMyDevice(string deviceId)
+        {
+            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            var userDevice = await _deviceService.GetAsync(userId, deviceId);
+            return userDevice;
+        }
 
     }
 }

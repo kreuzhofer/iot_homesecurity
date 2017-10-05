@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
 using DotNetty.Common.Concurrency;
+using IoTHs.Api.Shared;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.Practices.ServiceLocation;
