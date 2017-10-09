@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\QueueController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CoreApp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\CustomDebuggerTarget.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logging\CustomFileTarget.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\IotHubTarget.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lua\FunctionInstance.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lua\FunctionsEngine.cs" />

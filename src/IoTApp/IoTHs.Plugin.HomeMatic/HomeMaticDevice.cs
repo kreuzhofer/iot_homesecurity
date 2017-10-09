@@ -12,6 +12,7 @@ using Windows.Web.Http;
 using Windows.Web.Http.Filters;
 using Microsoft.Practices.ServiceLocation;
 using NLog;
+using W10Home.Core;
 using W10Home.Core.Queing;
 
 namespace IoTHs.Plugin.HomeMatic
@@ -68,7 +69,7 @@ namespace IoTHs.Plugin.HomeMatic
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    await Task.Delay(1, cancellationToken);
+                    await Task.Delay(Constants.MessageLoopDelay, cancellationToken);
                 }
             } while (!cancellationToken.IsCancellationRequested);
             _log.Trace("Exit MessageReceiverLoop");

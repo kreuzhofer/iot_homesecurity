@@ -5,6 +5,7 @@
     "MoonSharp": "1.8.0",
     "Newtonsoft.Json": "10.0.3",
     "NLog": "5.0.0-beta10",
+    "System.Reactive": "4.0.0-preview00001",
     "Unity": "4.0.1",
     "Unity.ServiceLocator": "2.0.0"
   },

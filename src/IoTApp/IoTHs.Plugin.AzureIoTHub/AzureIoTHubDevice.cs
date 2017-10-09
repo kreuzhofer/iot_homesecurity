@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ using Microsoft.Azure.Devices.Shared;
 using Microsoft.Practices.ServiceLocation;
 using Newtonsoft.Json;
 using NLog;
+using W10Home.Core;
 using W10Home.Core.Channels;
 using W10Home.Core.Queing;
 using W10Home.Core.Standard;
@@ -197,7 +199,11 @@ namespace IoTHs.Plugin.AzureIoTHub
 	    private async Task StartupAsync()
 	    {
             _log.Trace("StartupAsync");
-	        await CreateDeviceClientAsync();
+	        await Observable.Defer(async () =>
+	        {
+	            await CreateDeviceClientAsync();
+	            return Observable.Return("ok");
+	        }).Retry(5);
 
 	        _threadCancellation = new CancellationTokenSource();
 	        _messageReceiverTask = MessageReceiverLoop(_threadCancellation.Token); // launch message loop in the background
@@ -313,7 +319,7 @@ namespace IoTHs.Plugin.AzureIoTHub
                 }
 	            if (!cancellationToken.IsCancellationRequested)
 	            {
-	                await Task.Delay(1, cancellationToken);
+	                await Task.Delay(Constants.MessageLoopDelay, cancellationToken);
 	            }
 	        } while (!cancellationToken.IsCancellationRequested);
             _log.Trace("Exit MessageReceiverLoop");

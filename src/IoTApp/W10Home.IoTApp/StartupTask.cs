@@ -16,6 +16,7 @@ using NLog.Layouts;
 using NLog.Targets;
 using NLog.Targets.Wrappers;
 using W10Home.App.Shared.Logging;
+using W10Home.Core;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
@@ -77,6 +78,11 @@ namespace W10Home.IoTCoreApp
             logConfig.AddTarget("iothub", iotHubTarget);
             var rule4 = new LoggingRule("*", LogLevel.Info, iotHubTarget);
             logConfig.LoggingRules.Add(rule4);
+
+            var customFileTarget = new CustomFileTarget();
+            logConfig.AddTarget("customfile", customFileTarget);
+            var rule5 = new LoggingRule("*", LogLevel.Trace, customFileTarget);
+            logConfig.LoggingRules.Add(rule5);
 
             LogManager.Configuration = logConfig;
             
@@ -192,7 +198,7 @@ namespace W10Home.IoTCoreApp
                         _log.Error("MessageLoopWorker", ex);
 					}
 				}
-				await Task.Delay(250);
+				await Task.Delay(Constants.MessageLoopDelay);
 			} while (true);
 		}
 

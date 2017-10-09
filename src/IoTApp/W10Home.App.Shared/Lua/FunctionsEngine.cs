@@ -22,6 +22,7 @@ using Microsoft.Azure.Devices.Shared;
 using Newtonsoft.Json;
 using W10Home.App.Shared.Lua;
 using NLog;
+using W10Home.Core;
 
 namespace W10Home.App.Shared
 {
@@ -130,7 +131,7 @@ namespace W10Home.App.Shared
                                 _log.Error("Error running function " + function.Name, ex);
                             }
                         }
-                        await Task.Delay(1, functionInstance.CancellationTokenSource.Token);
+                        await Task.Delay(Constants.MessageLoopDelay, functionInstance.CancellationTokenSource.Token);
                     } while (!functionInstance.CancellationTokenSource.IsCancellationRequested);
                 }, functionInstance.CancellationTokenSource.Token);
                 functionInstance.LuaScript = script;
@@ -234,7 +235,7 @@ namespace W10Home.App.Shared
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    await Task.Delay(1, cancellationToken);
+                    await Task.Delay(Constants.MessageLoopDelay, cancellationToken);
                 }
             } while (!cancellationToken.IsCancellationRequested);
             _log.Trace("Exit MessageReceiverLoop");
