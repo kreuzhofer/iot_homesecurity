@@ -19,7 +19,6 @@ namespace W10Home.App.Shared.Logging
         {
             if (ServiceLocator.IsLocationProviderSet)
             {
-                var entrySerialized = JsonConvert.SerializeObject(logEvent);
                 ServiceLocator.Current.GetInstance<IMessageQueue>().Enqueue("iothublog", logEvent.Level.Name, this.RenderLogEvent(this.Layout, logEvent)
                     , "json");
             }
