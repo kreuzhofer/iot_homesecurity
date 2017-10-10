@@ -25,6 +25,8 @@ using W10Home.Core;
 using W10Home.Core.Channels;
 using W10Home.Core.Queing;
 using W10Home.Core.Standard;
+using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
+
 #if USE_TPM
 using Microsoft.Devices.Tpm;
 #endif
@@ -47,6 +49,9 @@ namespace IoTHs.Plugin.AzureIoTHub
 	    private string _type;
 	    private AutoResetEvent _messageLoopTerminationEvent;
 	    private Task _messageReceiverTask;
+	    private string _serviceBaseUrl;
+	    private string _apiKey;
+	    private int _configVersion;
 
 	    public override string Name
 	    {
@@ -82,15 +87,31 @@ namespace IoTHs.Plugin.AzureIoTHub
 
         private async Task<bool> SendLogMessageToIoTHubAsync(string severity, string message)
 		{
-			var messageObj = new IotHubLogMessage()
-			{
-				DeviceId = _deviceId,
-				DeviceType = _deviceType,
-				Severity = severity,
-				Message = message,
-				LocalTimestamp = $"{DateTime.Now.ToUniversalTime():O}"
-			};
-			return await SendMessageToIoTHubAsync(messageObj, "Log");
+            try
+            {
+                var messageObj = new LogMessage()
+                {
+                    DeviceId = _deviceId,
+                    Severity = severity,
+                    Message = message,
+                    LocalTimestamp = $"{DateTime.Now.ToUniversalTime():O}"
+                };
+                var aHBPF = new HttpBaseProtocolFilter();
+                aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Expired);
+                aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Untrusted);
+                aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
+                var client = new HttpClient(aHBPF);
+                client.DefaultRequestHeaders.Add("apikey", _apiKey);
+                var content = new HttpStringContent(JsonConvert.SerializeObject(messageObj, Formatting.Indented), UnicodeEncoding.Utf8, "application/json");
+                var result = await client.PostAsync(new Uri(_serviceBaseUrl + "Logging/" + _deviceId), content);
+                return result.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error while sending log message to server: "+ex.Message);
+                return false;
+            }
+		    //return await SendMessageToIoTHubAsync(messageObj, "Log");
 		}
 
 		private async Task<bool> SendChannelMessageToIoTHubAsync(string key, object value, string channelType)
@@ -172,17 +193,30 @@ namespace IoTHs.Plugin.AzureIoTHub
 					_deviceId = _connectionString.Split(';').Single(c => c.ToLower().StartsWith("deviceid")).Split('=')[1];
 				}
 
-
                 await StartupAsync();
 
-			    if (configuration.Properties.ContainsKey("TryLoadConfiguration"))
-				{
-					var twin = await _deviceClient.GetTwinAsync(); // get device twin from server
-					if (twin.Properties.Desired.Contains("configurationUrl"))
-					{
-						await DownloadConfigAndRestart(twin.Properties.Desired);
-					}
-				}
+			    var twin = await _deviceClient.GetTwinAsync(); // get device twin from server
+			    if (twin.Properties.Desired.Contains("serviceBaseUrl"))
+			    {
+			        _serviceBaseUrl = twin.Properties.Desired["serviceBaseUrl"].ToString();
+			    }
+			    if (twin.Properties.Desired.Contains("apikey"))
+			    {
+			        _apiKey = twin.Properties.Desired["apikey"].ToString();
+			    }
+			    if (twin.Properties.Reported.Contains("ConfigVersion"))
+			    {
+			        _configVersion = twin.Properties.Reported["ConfigVersion"];
+			    }
+                if(twin.Properties.Desired.Version>_configVersion)
+                {                
+					await DownloadConfigAndRestart(_serviceBaseUrl, _apiKey);
+
+                    var reportedProperties = new TwinCollection();
+                    reportedProperties["ConfigVersion"] = twin.Properties.Desired.Version;
+                    await _deviceClient.UpdateReportedPropertiesAsync(reportedProperties);
+                }
+
 
                 // send package version to iot hub for tracking device software version
 			    var package = Windows.ApplicationModel.Package.Current;
@@ -192,7 +226,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 			}
 			catch (Exception ex)
 			{
-                _log.Error("InitializeAsync", ex);
+                _log.Error(ex, "InitializeAsync");
 			}
 		}
 
@@ -203,7 +237,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 	        {
 	            await CreateDeviceClientAsync();
 	            return Observable.Return("ok");
-	        }).Retry(5);
+	        }).Retry(10);
 
 	        _threadCancellation = new CancellationTokenSource();
 	        _messageReceiverTask = MessageReceiverLoop(_threadCancellation.Token); // launch message loop in the background
@@ -234,12 +268,12 @@ namespace IoTHs.Plugin.AzureIoTHub
             // Instantiate the Azure IoT Hub device client
             _deviceClient = DeviceClient.CreateFromConnectionString(_connectionString, TransportType.Mqtt);
 #endif
-	        _log.Trace("Device connection established");
-
 	        await _deviceClient.SetMethodHandlerAsync("getdevices", HandleGetDevicesMethod, null);
 	        await _deviceClient.SetDesiredPropertyUpdateCallbackAsync(DesiredPropertyUpdateCallback, null);
+	        _log.Trace("Device connection established");
 
-	        _clientTimeoutTimer = new Timer(ClientTimeoutTimerCallback, null, TimeSpan.FromMinutes(CLIENT_TIMEOUT), TimeSpan.Zero);
+
+            _clientTimeoutTimer = new Timer(ClientTimeoutTimerCallback, null, TimeSpan.FromMinutes(CLIENT_TIMEOUT), TimeSpan.Zero);
         }
 
 	    private async Task MessageReceiverLoop(CancellationToken cancellationToken)
@@ -351,10 +385,6 @@ namespace IoTHs.Plugin.AzureIoTHub
         private async Task DesiredPropertyUpdateCallback(TwinCollection desiredProperties, object userContext)
 		{
 		    _log.Trace(desiredProperties.ToString());
-			if (desiredProperties.Contains("configurationUrl"))
-			{
-				await DownloadConfigAndRestart(desiredProperties);
-			}
 		    if (desiredProperties.Contains("functions"))
 		    {
 		        string functionsAndVersions = desiredProperties["functions"].versions.ToString();
@@ -364,7 +394,7 @@ namespace IoTHs.Plugin.AzureIoTHub
             }
 		}
 
-		private async Task DownloadConfigAndRestart(TwinCollection desiredProperties)
+		private async Task DownloadConfigAndRestart(string serviceBaseUrl, string apiKey)
 		{
             // create http base protocol filter to be able to download from untrusted https address in internal network
 		    var aHBPF = new HttpBaseProtocolFilter();
@@ -373,10 +403,10 @@ namespace IoTHs.Plugin.AzureIoTHub
 		    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
 
             // download file
-            var baseUri = desiredProperties["configurationUrl"].ToString();
-		    var configUri = baseUri + "api/DeviceConfiguration/" + _deviceId;
+		    var configUri = serviceBaseUrl + "DeviceConfiguration/" + _deviceId;
 		    _log.Debug("Downloading new configuration from " + configUri);
 			var httpClient = new HttpClient(aHBPF);
+            httpClient.DefaultRequestHeaders.Add("apikey", apiKey);
 			var configFileContent = await httpClient.GetStringAsync(new Uri(configUri));
 
 			// save config file to disk
@@ -388,7 +418,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 		    var configuration = JsonConvert.DeserializeObject<DeviceConfigurationModel>(configFileContent);
 		    foreach (var functionId in configuration.DeviceFunctionIds)
 		    {
-		        var functionUri = baseUri + "api/DeviceFunction/" + _deviceId + "/" + functionId;
+		        var functionUri = serviceBaseUrl + "DeviceFunction/" + _deviceId + "/" + functionId;
                 httpClient = new HttpClient(aHBPF);
 		        var functionContent = await httpClient.GetStringAsync(new Uri(functionUri));
                 // store function file to disk

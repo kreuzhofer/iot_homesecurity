@@ -4,6 +4,7 @@ using Windows.System;
 using W10Home.App.Shared;
 using System.Diagnostics;
 using System;
+using System.Text;
 using System.Threading.Tasks;
 using DotNetty.Common.Concurrency;
 using IoTHs.Api.Shared;
@@ -76,13 +77,13 @@ namespace W10Home.IoTCoreApp
 
             var iotHubTarget = new IotHubTarget();
             logConfig.AddTarget("iothub", iotHubTarget);
-            var rule4 = new LoggingRule("*", LogLevel.Info, iotHubTarget);
+            var rule4 = new LoggingRule("*", LogLevel.Trace, iotHubTarget);
             logConfig.LoggingRules.Add(rule4);
 
-            var customFileTarget = new CustomFileTarget();
-            logConfig.AddTarget("customfile", customFileTarget);
-            var rule5 = new LoggingRule("*", LogLevel.Trace, customFileTarget);
-            logConfig.LoggingRules.Add(rule5);
+            //var customFileTarget = new CustomFileTarget();
+            //logConfig.AddTarget("customfile", customFileTarget);
+            //var rule5 = new LoggingRule("*", LogLevel.Trace, customFileTarget);
+            //logConfig.LoggingRules.Add(rule5);
 
             LogManager.Configuration = logConfig;
             

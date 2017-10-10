@@ -72,11 +72,6 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             Device device = await rm.GetDeviceAsync(id);
 
             var deviceData = new DeviceData(device, userDevice);
-            var configData = await _deviceConfigurationService.LoadConfig(id, "configurationFileUrl");
-            if (configData != null)
-            {
-                deviceData.Configuration = configData.Configuration;
-            }
             var deviceStateList = await _deviceStateService.GetDeviceState(id);
             deviceData.StateList = deviceStateList;
 
@@ -101,12 +96,6 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             Device device = await rm.GetDeviceAsync(id);
 
             var deviceData = new DeviceData(device, userDevice);
-            var configData = await _deviceConfigurationService.LoadConfig(id, "configurationFileUrl");
-            if (configData != null)
-            {
-                deviceData.Configuration = configData.Configuration;
-            }
-
             return View(deviceData);
         }
 
@@ -118,15 +107,14 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                 return NotFound();
             }
 
-            await _deviceConfigurationService.SaveConfig(data.Id, "configurationFileUrl", data.Configuration);
-
             var patch = new
             {
                 properties = new
                 {
                     desired = new
                     {
-                        configurationUrl = _configuration["ExternalBaseUrl"]
+                        serviceBaseUrl = _configuration["ExternalBaseUrl"],
+                        apikey = _configuration["ApiKey"]
                     }
                 }
             };

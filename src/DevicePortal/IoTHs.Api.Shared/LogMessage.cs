@@ -1,10 +1,8 @@
-﻿namespace IoTHs.Plugin.AzureIoTHub
+﻿namespace IoTHs.Api.Shared
 {
-	public class IotHubLogMessage
+	public class LogMessage
 	{
-		public string MessageType = "Log";
 		public string DeviceId { get; set; }
-		public string DeviceType { get; set; }
 		public string LocalTimestamp { get; set; }
 		public string Severity { get; set; }
 		public string Message { get; set; }
