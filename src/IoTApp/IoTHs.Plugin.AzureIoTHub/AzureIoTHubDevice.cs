@@ -87,6 +87,10 @@ namespace IoTHs.Plugin.AzureIoTHub
 
         private async Task<bool> SendLogMessageToIoTHubAsync(string severity, string message)
 		{
+		    if (String.IsNullOrEmpty(_serviceBaseUrl) || String.IsNullOrEmpty(_apiKey))
+		    {
+		        return false;
+		    }
             try
             {
                 var messageObj = new LogMessage()
