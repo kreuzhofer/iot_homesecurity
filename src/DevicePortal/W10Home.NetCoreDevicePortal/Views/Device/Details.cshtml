@@ -40,6 +40,7 @@
             next: function(item) {
                 var myTextArea = $('#log');
                 myTextArea.val(myTextArea.val() + '\n' + item.message);
+                // https://stackoverflow.com/questions/7373081/how-to-have-a-textarea-to-keep-scrolled-to-the-bottom-when-updated
                 $('#log').scrollTop($('#log')[0].scrollHeight);
             },
             error: function (err) {
@@ -223,5 +224,5 @@
 <div style="width: 100%; padding-top: 20px;">
     <h4>Logs</h4>
     <hr/>
-    <textarea class="form-control" id="log" style="min-width: 100%; min-height: 250px; font-family: monospace; font-size: small;"></textarea>
+    <textarea readonly="readonly" class="form-control" id="log" style="min-width: 100%; min-height: 250px; font-family: monospace; font-size: small;"></textarea>
 </div>
