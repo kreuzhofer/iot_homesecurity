@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using W10Home.NetCoreDevicePortal.DataAccess.Interfaces;
+using W10Home.NetCoreDevicePortal.Hubs;
 using WebApp_OpenIDConnect_DotNet;
 
 namespace W10Home.NetCoreDevicePortal
@@ -52,6 +53,8 @@ namespace W10Home.NetCoreDevicePortal
                 options.CookieHttpOnly = true;
             });
 
+            services.AddSignalR();
+
             services.AddSingleton<DeviceManagementService, DeviceManagementService>();
             services.AddTransient<IDeviceStateService, DeviceStateService>();
             services.AddTransient<IDeviceConfigurationService, DeviceConfigurationService>();
@@ -85,6 +88,13 @@ namespace W10Home.NetCoreDevicePortal
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+            });
+
+
+            app.UseSignalR(routes =>
+
+            {
+                routes.MapHub<LogHub>("log");
             });
         }
     }

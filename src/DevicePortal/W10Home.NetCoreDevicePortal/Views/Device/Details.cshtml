@@ -5,6 +5,55 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<script type="text/javascript" src="~/lib/signalr-client/signalr-client-1.0.0-alpha2-final.min.js"></script>
+<script type="text/javascript" src="~/lib/signalr-client/signalr-msgpackprotocol-1.0.0-alpha2-final.min.js"></script>
+
+<script type="text/javascript">
+    //if (typeof Promise === 'undefined')
+    //{
+    //    document.write(
+    //        '<script type="text/javascript" src="lib/signalr-client/signalr-clientES5.js"><\/script>' +
+    //        '<script type="text/javascript" src="lib/signalr-client/signalr-msgpackprotocolES5.js"><\/script>');
+    //}
+    //else
+    //{
+    //    document.write(
+    //        '<script type="text/javascript" src="lib/signalr-client/signalr-client.js"><\/script>' +
+    //        '<script type="text/javascript" src="lib/signalr-client/signalr-msgpackprotocol.js"><\/script>');
+    //}
+
+    let logger = new signalR.ConsoleLogger(signalR.LogLevel.Information);
+    let transportType = signalR.TransportType[signalR.TransportType.LongPolling];
+    connection = new signalR.HubConnection('/log', { logger: logger });
+    
+    function addLine(listId, line, color) {
+        var child = document.createElement('li');
+        if (color) {
+            child.style.color = color;
+        }
+        child.innerText = line;
+        document.getElementById(listId).appendChild(child);
+    }
+
+    function startStreaming() {
+        connection.stream("Logs", "@Model.Id").subscribe({
+            next: function(item) {
+                var myTextArea = $('#log');
+                myTextArea.val(myTextArea.val() + '\n' + item.message);
+                $('#log').scrollTop($('#log')[0].scrollHeight);
+            },
+            error: function (err) {
+                logger.log(err);
+            }
+        });
+    }
+
+    connection.start().then(function (){
+        startStreaming();
+    });
+    
+</script>
+
 <h2>Details - @Model.Id</h2>
 
 <div>
@@ -169,4 +218,10 @@
             <td>@Html.ActionLink("+", "Add")</td>
         </tr>
     </table>
+</div>
+
+<div style="width: 100%; padding-top: 20px;">
+    <h4>Logs</h4>
+    <hr/>
+    <textarea class="form-control" id="log" style="min-width: 100%; min-height: 250px; font-family: monospace; font-size: small;"></textarea>
 </div>
