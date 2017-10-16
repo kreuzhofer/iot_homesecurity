@@ -63,6 +63,16 @@ namespace IoTHs.Plugin.AzureIoTHub
 	        get { return _type; }
 	    }
 
+	    public string ServiceBaseUrl
+	    {
+            get { return _serviceBaseUrl; }
+	    }
+
+	    public string ApiKey
+	    {
+	        get { return _apiKey; }
+	    }
+
         public AzureIoTHubDevice(IMessageQueue messageQueue, IDeviceRegistry deviceRegistry)
 	    {
 	        _channels.Add(new IotHubDeviceChannel(messageQueue));

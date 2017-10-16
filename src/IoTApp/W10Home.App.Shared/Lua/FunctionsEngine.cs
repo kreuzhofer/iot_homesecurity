@@ -18,6 +18,7 @@ using IoTHs.Devices.Interfaces;
 using Windows.Storage;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
+using IoTHs.Plugin.AzureIoTHub;
 using Microsoft.Azure.Devices.Shared;
 using Newtonsoft.Json;
 using W10Home.App.Shared.Lua;
@@ -248,6 +249,8 @@ namespace W10Home.App.Shared
             var baseUrl = configuration.ServiceBaseUrl;
             var deviceId = configuration.DeviceId;
 
+            var apiKey = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>("iothub").ApiKey;
+
             foreach (var functionVersionPair in functionVersionPairs)
             {
                 var functionId = functionVersionPair.Split(':')[0];
@@ -261,7 +264,9 @@ namespace W10Home.App.Shared
                     aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Expired);
                     aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Untrusted);
                     aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
-                    var functionContent = await new HttpClient(aHBPF).GetStringAsync(new Uri(baseUrl + "api/DeviceFunction/" + deviceId + "/" + functionId));
+                    var client = new HttpClient(aHBPF);
+                    client.DefaultRequestHeaders.Add("apikey", apiKey);
+                    var functionContent = await client.GetStringAsync(new Uri(baseUrl + "DeviceFunction/" + deviceId + "/" + functionId));
                     // store function file to disk
                     var localStorage = ApplicationData.Current.LocalFolder;
                     string filename = "function_" + functionId + ".json";

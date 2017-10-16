@@ -9,9 +9,11 @@ using W10Home.NetCoreDevicePortal.DataAccess.Entities;
 using W10Home.NetCoreDevicePortal.Models;
 using IoTHs.Api.Shared;
 using W10Home.NetCoreDevicePortal.DataAccess.Interfaces;
+using W10Home.NetCoreDevicePortal.Security;
 
 namespace W10Home.NetCoreDevicePortal.Controllers.api
 {
+    [ApiKeyAuthentication()]
     [Produces("application/json")]
     [Route("api/DeviceFunction")]
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
