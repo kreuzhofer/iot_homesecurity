@@ -8,6 +8,7 @@
 <script type="text/javascript" src="~/lib/signalr-client/signalr-client-1.0.0-alpha2-final.min.js"></script>
 <script type="text/javascript" src="~/lib/signalr-client/signalr-msgpackprotocol-1.0.0-alpha2-final.min.js"></script>
 <script type="text/javascript" src="~/lib/jquery-color/jquery.color.js"></script>
+<script type="text/javascript" src="~/lib/chart.js/dist/Chart.js"></script>
 
 <script type="text/javascript">
     //if (typeof Promise === 'undefined')
@@ -47,7 +48,17 @@
                 var myTextArea = $('#' +item.channelKey);
                 myTextArea.html(item.channelValue);
                 myTextArea.stop().css("background-color", "green")
-                    .animate({ backgroundColor: "#FFFFFF"}, 500);
+                    .animate({ backgroundColor: "#FFFFFF" }, 500);
+
+                var chart = window["chart_" + item.channelKey];
+                if (chart)
+                {
+                    chart.data.labels.push(item.localTimestamp);
+                    chart.data.datasets.forEach((dataset) => {
+                        dataset.data.push(item.channelValue);
+                    });
+                    chart.update();
+                }
             },
             error: function (err) {
                 logger.log(err);
@@ -170,6 +181,7 @@
             <th>Channel</th>
             <th>ChannelType</th>
             <th>Value</th>
+            <th>Chart</th>
         </tr>
         
         @foreach (var item in Model.StateList)
@@ -183,6 +195,41 @@
                 </td>
                 <td id="@item.ChannelKey">
                     @Html.DisplayFor(modelItem => item.ChannelValue)
+                </td>
+                <td>
+                    @{
+                        if (item.ChannelType == "temperature_celsius")
+                        {
+                            <canvas id="chart_@item.ChannelKey" width="320" height="240">
+                            </canvas>
+                            <script type="text/javascript">
+                                var ctx = $('#chart_@item.ChannelKey');
+                                chart_@item.ChannelKey = new Chart(ctx,
+                                    {
+                                        type: 'line',
+                                        data: {
+                                            labels: ["@item.LocalTimestamp"],
+                                            datasets: [
+                                                {
+                                                    label: "Temperature",
+                                                    data: [@item.ChannelValue]
+                                                }]
+                                        },
+                                        options: {
+                                            scales: {
+                                                yAxes: [
+                                                    {
+                                                        ticks: {
+                                                            min: -20,
+                                                            max: 50
+                                                        }
+                                                    }]
+                                            }
+                                        }
+                                    });
+                            </script>
+                        }
+                    }
                 </td>
             </tr>
         }
