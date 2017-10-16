@@ -7,9 +7,11 @@ using IoTHs.Api.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using W10Home.NetCoreDevicePortal.Security;
 
 namespace W10Home.NetCoreDevicePortal.Controllers.api
 {
+    [ApiKeyAuthentication()]
     [Produces("application/json")]
     [Route("api/ApiAuthentication")]
     public class ApiAuthenticationController : Controller

@@ -9,9 +9,11 @@ using Microsoft.Extensions.Configuration;
 using W10Home.NetCoreDevicePortal.DataAccess;
 using W10Home.NetCoreDevicePortal.DataAccess.Interfaces;
 using W10Home.NetCoreDevicePortal.DataAccess.Services;
+using W10Home.NetCoreDevicePortal.Security;
 
 namespace W10Home.NetCoreDevicePortal.Controllers.api
 {
+    [ApiKeyAuthentication()]
     [Produces("application/json")]
     [Route("api/DeviceConfiguration")]
     public class DeviceConfigurationApiController : Controller
