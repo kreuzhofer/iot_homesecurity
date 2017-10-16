@@ -18,6 +18,7 @@ using NLog.Targets;
 using NLog.Targets.Wrappers;
 using W10Home.App.Shared.Logging;
 using W10Home.Core;
+using W10Home.IoTCoreApp.Logging;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 

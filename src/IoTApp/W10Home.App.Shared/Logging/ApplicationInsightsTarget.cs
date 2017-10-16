@@ -4,7 +4,7 @@ using Microsoft.ApplicationInsights.DataContracts;
 using NLog;
 using NLog.Targets;
 
-namespace W10Home.IoTCoreApp
+namespace W10Home.IoTCoreApp.Logging
 {
     internal class ApplicationInsightsTarget : TargetWithLayout
     {
