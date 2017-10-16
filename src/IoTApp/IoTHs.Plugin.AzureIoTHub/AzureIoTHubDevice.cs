@@ -434,6 +434,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 		    {
 		        var functionUri = serviceBaseUrl + "DeviceFunction/" + _deviceId + "/" + functionId;
                 httpClient = new HttpClient(aHBPF);
+		        httpClient.DefaultRequestHeaders.Add("apikey", apiKey);
 		        var functionContent = await httpClient.GetStringAsync(new Uri(functionUri));
                 // store function file to disk
 		        file = await localStorage.CreateFileAsync("function_"+functionId+".json", CreationCollisionOption.ReplaceExisting);
