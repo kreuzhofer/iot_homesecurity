@@ -226,7 +226,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 			    var package = Windows.ApplicationModel.Package.Current;
 			    var packageId = package.Id;
 			    var version = packageId.Version;
-			    await SendChannelMessageToIoTHubAsync("packageversion", version, ChannelType.None.ToString());
+			    await SendChannelMessageToIoTHubAsync("packageversion", $"{version.Major}.{version.Minor}.{version.Build}", ChannelType.None.ToString());
 			}
 			catch (Exception ex)
 			{

@@ -7,6 +7,7 @@
 
 <script type="text/javascript" src="~/lib/signalr-client/signalr-client-1.0.0-alpha2-final.min.js"></script>
 <script type="text/javascript" src="~/lib/signalr-client/signalr-msgpackprotocol-1.0.0-alpha2-final.min.js"></script>
+<script type="text/javascript" src="~/lib/jquery-color/jquery.color.js"></script>
 
 <script type="text/javascript">
     //if (typeof Promise === 'undefined')
@@ -23,20 +24,11 @@
     //}
 
     let logger = new signalR.ConsoleLogger(signalR.LogLevel.Information);
-    let transportType = signalR.TransportType[signalR.TransportType.LongPolling];
-    connection = new signalR.HubConnection('/log', { logger: logger });
-    
-    function addLine(listId, line, color) {
-        var child = document.createElement('li');
-        if (color) {
-            child.style.color = color;
-        }
-        child.innerText = line;
-        document.getElementById(listId).appendChild(child);
-    }
+    logConnection = new signalR.HubConnection('/log', { logger: logger });
+    channelConnection = new signalR.HubConnection('/devicestate', { logger: logger });
 
-    function startStreaming() {
-        connection.stream("Logs", "@Model.Id").subscribe({
+    function startStreamingLogs() {
+        logConnection.stream("Logs", "@Model.Id").subscribe({
             next: function(item) {
                 var myTextArea = $('#log');
                 myTextArea.val(myTextArea.val() + '\n' + item.message);
@@ -49,10 +41,28 @@
         });
     }
 
-    connection.start().then(function (){
-        startStreaming();
+    function startStreamingChannel() {
+        channelConnection.stream("State", "@Model.Id").subscribe({
+            next: function(item) {
+                var myTextArea = $('#' +item.channelKey);
+                myTextArea.html(item.channelValue);
+                myTextArea.stop().css("background-color", "green")
+                    .animate({ backgroundColor: "#FFFFFF"}, 500);
+            },
+            error: function (err) {
+                logger.log(err);
+            }
+        });
+    }
+
+    logConnection.start().then(function () {
+        startStreamingLogs();
     });
-    
+    channelConnection.start().then(function() {
+        startStreamingChannel();
+    });
+
+
 </script>
 
 <h2>Details - @Model.Id</h2>
@@ -166,13 +176,13 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem=>item.channelkey)
+                    @Html.DisplayFor(modelItem=>item.ChannelKey)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.channeltype)
+                    @Html.DisplayFor(modelItem => item.ChannelType)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.channelvalue)
+                <td id="@item.ChannelKey">
+                    @Html.DisplayFor(modelItem => item.ChannelValue)
                 </td>
             </tr>
         }

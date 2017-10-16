@@ -95,6 +95,7 @@ namespace W10Home.NetCoreDevicePortal
 
             {
                 routes.MapHub<LogHub>("log");
+                routes.MapHub<DeviceStateHub>("devicestate");
             });
         }
     }

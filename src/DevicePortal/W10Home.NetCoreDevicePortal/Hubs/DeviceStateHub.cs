@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using IoTHs.Api.Shared;
+using IoTHs.Plugin.AzureIoTHub;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,12 +18,12 @@ namespace W10Home.NetCoreDevicePortal.Hubs
     /// See https://blogs.msdn.microsoft.com/webdev/2017/09/14/announcing-signalr-for-asp-net-core-2-0/ for details about .net Core 2.0 SignalR
     /// </summary>
     [Authorize]
-    public class LogHub : Hub
+    public class DeviceStateHub : Hub
     {
         private CloudQueueClient _queueClient;
         private static volatile int _connectedClientsCount;
 
-        public LogHub(IConfiguration configuration)
+        public DeviceStateHub(IConfiguration configuration)
         {
             if (_queueClient == null)
             {
@@ -43,11 +44,11 @@ namespace W10Home.NetCoreDevicePortal.Hubs
             return base.OnDisconnectedAsync(exception);
         }
 
-        public IObservable<LogMessage> Logs(string deviceId)
+        public IObservable<IotHubChannelMessage> State(string deviceId)
         {
-            return Observable.Create(async (IObserver<LogMessage> observer) =>
+            return Observable.Create(async (IObserver<IotHubChannelMessage> observer) =>
             {
-                var queue = _queueClient.GetQueueReference("log-" + deviceId);
+                var queue = _queueClient.GetQueueReference("devicestate-" + deviceId);
                 if (await queue.ExistsAsync())
                 {
                     while (_connectedClientsCount>0)
@@ -55,7 +56,7 @@ namespace W10Home.NetCoreDevicePortal.Hubs
                         var message = await queue.GetMessageAsync();
                         if (message != null)
                         {
-                            var logMessage = JsonConvert.DeserializeObject<LogMessage>(message.AsString);
+                            var logMessage = JsonConvert.DeserializeObject<IotHubChannelMessage>(message.AsString);
                             observer.OnNext(logMessage);
                             await queue.DeleteMessageAsync(message);
                             await Task.Delay(1);

@@ -33,6 +33,29 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\lib\jquery-color\.gitignore" />
+    <None Include="wwwroot\lib\jquery-color\.gitmodules" />
+    <None Include="wwwroot\lib\jquery-color\.jshintrc" />
+    <None Include="wwwroot\lib\jquery-color\grunt.js" />
+    <None Include="wwwroot\lib\jquery-color\jquery.color.js" />
+    <None Include="wwwroot\lib\jquery-color\jquery.color.svg-names.js" />
+    <None Include="wwwroot\lib\jquery-color\README.md" />
+    <None Include="wwwroot\lib\jquery-color\test\data\swarminject.js" />
+    <None Include="wwwroot\lib\jquery-color\test\data\testinit.js" />
+    <None Include="wwwroot\lib\jquery-color\test\jquery-1.5.1.js" />
+    <None Include="wwwroot\lib\jquery-color\test\jquery-1.5.2.js" />
+    <None Include="wwwroot\lib\jquery-color\test\jquery-1.5.js" />
+    <None Include="wwwroot\lib\jquery-color\test\jquery-1.6.1.js" />
+    <None Include="wwwroot\lib\jquery-color\test\jquery-1.6.2.js" />
+    <None Include="wwwroot\lib\jquery-color\test\jquery-1.6.3.js" />
+    <None Include="wwwroot\lib\jquery-color\test\jquery-1.6.4.js" />
+    <None Include="wwwroot\lib\jquery-color\test\jquery-1.6.js" />
+    <None Include="wwwroot\lib\jquery-color\test\jquery-1.7.1.js" />
+    <None Include="wwwroot\lib\jquery-color\test\jquery-1.7.2.js" />
+    <None Include="wwwroot\lib\jquery-color\test\jquery-1.7.js" />
+    <None Include="wwwroot\lib\jquery-color\test\jquery.js" />
+    <None Include="wwwroot\lib\jquery-color\test\unit\.jshintrc" />
+    <None Include="wwwroot\lib\jquery-color\test\unit\color.js" />
     <None Include="wwwroot\lib\signalr-client\signalr-client-1.0.0-alpha2-final.min.js" />
     <None Include="wwwroot\lib\signalr-client\signalr-clientES5-1.0.0-alpha2-final.min.js" />
     <None Include="wwwroot\lib\signalr-client\signalr-msgpackprotocol-1.0.0-alpha2-final.min.js" />
@@ -41,6 +64,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IoTHs.Api.Shared\IoTHs.Api.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\jquery-color\test\qunit\" />
   </ItemGroup>
 
 </Project>

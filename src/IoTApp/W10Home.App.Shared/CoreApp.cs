@@ -253,7 +253,7 @@ namespace W10Home.App.Shared
             var usageReport = MemoryManager.GetAppMemoryReport();
             var messageQueue = ServiceLocator.Current.GetInstance<IMessageQueue>();
             _log.Trace("Memory usage: "+usageReport.TotalCommitUsage+" of max "+usageReport.TotalCommitLimit+ " ~ "+String.Format("{0:P2}",usageReport.TotalCommitUsage/usageReport.TotalCommitLimit));
-            messageQueue.Enqueue("iothub", "appmemory", JsonConvert.SerializeObject(usageReport), "json");
+            messageQueue.Enqueue("iothub", "appmemory", $"{usageReport.TotalCommitUsage}", ChannelType.None.ToString());
         }
     }
 }

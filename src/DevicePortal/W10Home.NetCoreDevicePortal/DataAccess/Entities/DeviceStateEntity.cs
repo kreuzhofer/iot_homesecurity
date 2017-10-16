@@ -4,11 +4,11 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Entities
 {
 	public class DeviceStateEntity : TableEntity
 	{
-		public string channeltype { get; set; }
-		public string channelkey { get; set; }
-		public string channelvalue { get; set; }
-		public string deviceid { get; set; }
-		public string devicetype { get; set; }
-		public string localtimestamp { get; set; }
+		public string ChannelType { get; set; }
+		public string ChannelKey { get; set; }
+		public string ChannelValue { get; set; }
+		public string DeviceId { get; set; }
+		public string DeviceType { get; set; }
+		public string LocalTimestamp { get; set; }
 	}
 }
