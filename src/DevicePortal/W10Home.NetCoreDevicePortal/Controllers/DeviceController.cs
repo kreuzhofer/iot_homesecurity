@@ -257,6 +257,18 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             return Json("success");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetFunction(string deviceId, string functionId)
+        {
+            var userDevice = await GetMyDevice(deviceId);
+            if (userDevice == null)
+            {
+                return NotFound(); // no matter if this device does not exist or you just don't have the access rights. Don't give a hint...
+            }
+            var result = await _deviceFunctionService.GetFunctionAsync(deviceId, functionId);
+            return Json(result.ToDeviceFunctionModel());
+        }
+
         #endregion
 
         /// <summary>

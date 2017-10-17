@@ -13,9 +13,10 @@
     require.config({ paths: { 'vs': '/lib/monaco-editor/min/vs' } });
     require(['vs/editor/editor.main'], function() {
         $.ajax({
-            type: "GET",
+            type: "POST",
             dataType: "json",
-            url: '/api/DeviceFunction/@Model.PartitionKey/@Model.RowKey',
+            url: '@Url.Action("GetFunction", "Device")',
+            data: {deviceId: '@Model.PartitionKey', functionId: '@Model.RowKey'},
             success: function(data) {
                 var codeSnippet = data.script;
                 window.editor = monaco.editor.create(document.getElementById('codecontainer'), {
@@ -93,7 +94,7 @@
 <div>
     All device scripts are currently written in Lua. If you like to know how to develop in Lua, check out the official documentation: <a href="https://www.lua.org/pil/contents.html" target="_blank">"Programming in Lua"</a>
 </div>
-<div id="codecontainer" style="height: 400px; width: 800px; margin-top: 10px;"></div>
+<div id="codecontainer" style="height: 600px; width: 800px; margin-top: 10px;"></div>
 
 <div class="form-group">
     <div class="col-md-offset-0 col-md-10">
