@@ -212,11 +212,11 @@ namespace IoTHs.Plugin.AzureIoTHub
 			    var twin = await _deviceClient.GetTwinAsync(); // get device twin from server
 			    if (twin.Properties.Desired.Contains("serviceBaseUrl"))
 			    {
-			        _serviceBaseUrl = twin.Properties.Desired["serviceBaseUrl"].ToString();
+			        _serviceBaseUrl = twin.Properties.Desired["serviceBaseUrl"];
 			    }
 			    if (twin.Properties.Desired.Contains("apikey"))
 			    {
-			        _apiKey = twin.Properties.Desired["apikey"].ToString();
+			        _apiKey = twin.Properties.Desired["apikey"];
 			    }
 			    if (twin.Properties.Reported.Contains("ConfigVersion"))
 			    {
