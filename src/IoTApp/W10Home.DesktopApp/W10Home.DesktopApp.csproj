@@ -163,9 +163,9 @@
       <Project>{213d13f8-91bf-4eef-ac5e-53f37b631810}</Project>
       <Name>IoTHs.Plugin.Twilio</Name>
     </ProjectReference>
-    <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
+    <ProjectReference Include="..\IoTHs.Core\IoTHs.Core.csproj">
       <Project>{C3C103FF-8993-420D-8F50-979ECA9C7D73}</Project>
-      <Name>W10Home.Core</Name>
+      <Name>IoTHs.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -3,17 +3,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using IoTHs.Devices.Interfaces;
 using IoTHs.Api.Shared;
-using W10Home.Core.Standard;
 using System;
 using System.Threading;
 using Windows.Security.Cryptography.Certificates;
 using Windows.UI.Xaml.Automation;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
+using IoTHs.Core;
+using IoTHs.Core.Queing;
 using Microsoft.Practices.ServiceLocation;
 using NLog;
-using W10Home.Core;
-using W10Home.Core.Queing;
 
 namespace IoTHs.Plugin.HomeMatic
 {
@@ -71,7 +70,7 @@ namespace IoTHs.Plugin.HomeMatic
                 {
                     try
                     {
-                        await Task.Delay(Constants.MessageLoopDelay, cancellationToken);
+                        await Task.Delay(IoTHsConstants.MessageLoopDelay, cancellationToken);
                     }
                     catch
                     {

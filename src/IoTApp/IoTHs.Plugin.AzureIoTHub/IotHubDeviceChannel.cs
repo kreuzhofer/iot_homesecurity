@@ -1,7 +1,7 @@
 ﻿using System;
 using IoTHs.Api.Shared;
+using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
-using W10Home.Core.Queing;
 
 namespace IoTHs.Plugin.AzureIoTHub
 {

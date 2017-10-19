@@ -1,5 +1,4 @@
 ﻿using Windows.ApplicationModel.Background;
-using W10Home.Core.Queing;
 using Windows.System;
 using W10Home.App.Shared;
 using System.Diagnostics;
@@ -8,8 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using DotNetty.Common.Concurrency;
 using IoTHs.Api.Shared;
+using IoTHs.Core;
+using IoTHs.Core.Queing;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.Practices.ServiceLocation;
 using NLog;
 using NLog.Config;
@@ -222,7 +222,7 @@ namespace W10Home.IoTCoreApp
                         _log.Error(ex, "MessageLoopWorker");
 					}
 				}
-				await Task.Delay(Constants.MessageLoopDelay);
+				await Task.Delay(IoTHsConstants.MessageLoopDelay);
 			} while (true);
 		}
 

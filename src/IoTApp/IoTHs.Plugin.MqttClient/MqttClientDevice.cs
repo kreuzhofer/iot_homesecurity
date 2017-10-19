@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using IoTHs.Api.Shared;
+using IoTHs.Core;
 using IoTHs.Devices.Interfaces;
 using Newtonsoft.Json;
 using uPLibrary.Networking.M2Mqtt;
-using W10Home.Core.Standard;
 
 namespace IoTHs.Plugin.MqttClient
 {

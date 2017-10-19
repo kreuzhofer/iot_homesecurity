@@ -6,9 +6,9 @@ using Windows.Web.Http;
 using Windows.Web.Http.Filters;
 using Windows.Web.Http.Headers;
 using IoTHs.Api.Shared;
+using IoTHs.Core;
 using IoTHs.Devices.Interfaces;
 using IoTHs.Plugin.ABUS.SecVest.Utils;
-using W10Home.Core.Standard;
 
 namespace IoTHs.Plugin.ABUS.SecVest
 {

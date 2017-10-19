@@ -10,7 +10,6 @@ using Microsoft.Practices.ServiceLocation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using W10Home.Core.Configuration;
-using W10Home.Core.Queing;
 using W10Home.Interfaces;
 using W10Home.Interfaces.Configuration;
 using IoTHs.Api.Shared;
@@ -18,6 +17,8 @@ using IoTHs.Devices.Interfaces;
 using Windows.Storage;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
+using IoTHs.Core;
+using IoTHs.Core.Queing;
 using IoTHs.Plugin.AzureIoTHub;
 using Microsoft.Azure.Devices.Shared;
 using Newtonsoft.Json;
@@ -143,7 +144,7 @@ namespace W10Home.App.Shared
                                 _log.Error("Error running function " + function.Name, ex);
                             }
                         }
-                        await Task.Delay(Constants.MessageLoopDelay, functionInstance.CancellationTokenSource.Token);
+                        await Task.Delay(IoTHsConstants.MessageLoopDelay, functionInstance.CancellationTokenSource.Token);
                     } while (!functionInstance.CancellationTokenSource.IsCancellationRequested);
                 }, functionInstance.CancellationTokenSource.Token);
                 functionInstance.LuaScript = script;
@@ -254,7 +255,7 @@ namespace W10Home.App.Shared
                 {
                     try
                     {
-                        await Task.Delay(Constants.MessageLoopDelay, cancellationToken);
+                        await Task.Delay(IoTHsConstants.MessageLoopDelay, cancellationToken);
                     }
                     catch
                     {

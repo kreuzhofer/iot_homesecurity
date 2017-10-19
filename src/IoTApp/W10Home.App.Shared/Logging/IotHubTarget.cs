@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using IoTHs.Core.Queing;
 using Microsoft.Practices.ServiceLocation;
 using Newtonsoft.Json;
-using W10Home.Core.Queing;
 using NLog.Targets;
 using NLog;
 

@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using IoTHs.Api.Shared;
+using IoTHs.Core;
 using IoTHs.Devices.Interfaces;
-using W10Home.Core.Standard;
 
 namespace IoTHs.Plugin.Twilio
 {

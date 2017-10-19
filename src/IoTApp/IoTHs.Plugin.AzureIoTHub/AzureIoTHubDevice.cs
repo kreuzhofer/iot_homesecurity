@@ -15,16 +15,15 @@ using Windows.System;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
 using IoTHs.Api.Shared;
+using IoTHs.Core;
+using IoTHs.Core.Channels;
+using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.Practices.ServiceLocation;
 using Newtonsoft.Json;
 using NLog;
-using W10Home.Core;
-using W10Home.Core.Channels;
-using W10Home.Core.Queing;
-using W10Home.Core.Standard;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
 #if USE_TPM
@@ -365,7 +364,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 	            {
 	                try
 	                {
-	                    await Task.Delay(Constants.MessageLoopDelay, cancellationToken);
+	                    await Task.Delay(IoTHsConstants.MessageLoopDelay, cancellationToken);
 	                }
 	                catch
 	                {

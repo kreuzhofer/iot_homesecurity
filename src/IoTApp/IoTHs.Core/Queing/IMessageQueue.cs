@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using IoTHs.Api.Shared;
+﻿using IoTHs.Api.Shared;
 
-namespace W10Home.Core.Queing
+namespace IoTHs.Core.Queing
 {
     public interface IMessageQueue
     {

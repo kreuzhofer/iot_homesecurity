@@ -9,6 +9,8 @@
     <ApplicationIcon />
     <OutputTypeEx>library</OutputTypeEx>
     <StartupObject />
+    <AssemblyName>IoTHs.Core</AssemblyName>
+    <RootNamespace>IoTHs.Core</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

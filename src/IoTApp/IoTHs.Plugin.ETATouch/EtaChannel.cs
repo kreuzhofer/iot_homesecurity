@@ -1,6 +1,6 @@
 ﻿using System;
+using IoTHs.Core.Channels;
 using IoTHs.Devices.Interfaces;
-using W10Home.Core.Channels;
 
 namespace IoTHs.Plugin.ETATouch
 {

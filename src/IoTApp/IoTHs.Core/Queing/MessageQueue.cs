@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using IoTHs.Api.Shared;
 using Newtonsoft.Json;
 
-namespace W10Home.Core.Queing
+namespace IoTHs.Core.Queing
 {
     public class MessageQueue : IMessageQueue
     {

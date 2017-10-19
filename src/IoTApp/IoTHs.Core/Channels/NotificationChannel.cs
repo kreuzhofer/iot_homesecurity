@@ -1,11 +1,7 @@
-﻿using IoTHs.Devices.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using IoTHs.Devices.Interfaces;
 
-namespace W10Home.Core.Channels
+namespace IoTHs.Core.Channels
 {
 	public abstract class NotificationChannel : IDeviceChannel
 	{

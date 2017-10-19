@@ -3,10 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using IoTHs.Api.Shared;
 using IoTHs.Devices.Interfaces;
-using W10Home.Interfaces;
-using W10Home.Interfaces.Configuration;
 
-namespace W10Home.Core.Standard
+namespace IoTHs.Core
 {
 	public abstract class DeviceBase : IDevice
 	{

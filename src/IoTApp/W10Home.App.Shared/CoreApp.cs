@@ -11,7 +11,6 @@ using Restup.Webserver.Http;
 using Restup.Webserver.Rest;
 using Restup.WebServer.Http;
 using W10Home.Core.Configuration;
-using W10Home.Core.Queing;
 using W10Home.IoTCoreApp.Auth;
 using W10Home.IoTCoreApp.Controllers;
 using IoTHs.Plugin.ABUS.SecVest;
@@ -20,10 +19,11 @@ using IoTHs.Plugin.Twilio;
 using Windows.Storage;
 using Windows.System;
 using IoTHs.Api.Shared;
+using IoTHs.Core.Channels;
+using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
 using IoTHs.Plugin.ETATouch;
 using IoTHs.Plugin.HomeMatic;
-using W10Home.Core.Channels;
 using NLog;
 
 namespace W10Home.App.Shared

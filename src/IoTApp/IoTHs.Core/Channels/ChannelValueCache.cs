@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Reflection;
 
-namespace W10Home.Core.Channels
+namespace IoTHs.Core.Channels
 {
     public class ChannelValueCache
     {

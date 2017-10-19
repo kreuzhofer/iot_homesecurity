@@ -121,9 +121,9 @@
       <Project>{000C0E13-FBE4-4815-B30B-35ADE072E45F}</Project>
       <Name>IoTHs.Devices.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\W10Home.Core\W10Home.Core.csproj">
+    <ProjectReference Include="..\IoTHs.Core\IoTHs.Core.csproj">
       <Project>{C3C103FF-8993-420D-8F50-979ECA9C7D73}</Project>
-      <Name>W10Home.Core</Name>
+      <Name>IoTHs.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

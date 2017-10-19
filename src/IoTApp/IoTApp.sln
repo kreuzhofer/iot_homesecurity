@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.IoTCoreApp", "W10Home.IoTApp\W10Home.IoTCoreApp.csproj", "{88D70CF5-DA46-4568-8055-2DC337144B33}"
 EndProject
@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W10Home.DesktopApp", "W10Ho
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "W10Home.App.Shared", "W10Home.App.Shared\W10Home.App.Shared.shproj", "{7152D6D1-CCC8-425F-B260-A8472B43C79A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W10Home.Core", "W10Home.Core\W10Home.Core.csproj", "{C3C103FF-8993-420D-8F50-979ECA9C7D73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTHs.Core", "IoTHs.Core\IoTHs.Core.csproj", "{C3C103FF-8993-420D-8F50-979ECA9C7D73}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTHs.Api.Shared", "..\DevicePortal\IoTHs.Api.Shared\IoTHs.Api.Shared.csproj", "{5BA69DBC-184E-451B-AFC7-90C6A7A0D0C4}"
 EndProject
