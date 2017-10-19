@@ -162,7 +162,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 			}
 			catch (Exception ex)
 			{
-				_log.Error("SendChannelMessageToIoTHubAsync", ex);
+				_log.Error(ex, "SendChannelMessageToIoTHubAsync");
 				return false;
 			}
 		}
@@ -187,7 +187,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 			}
 			catch (Exception ex)
 			{
-                _log.Error("SendMessageToIoTHubAsync", ex);
+                _log.Error(ex, "SendMessageToIoTHubAsync");
 				return false;
 			}
 		}
@@ -343,7 +343,7 @@ namespace IoTHs.Plugin.AzureIoTHub
                             }
                             catch (Exception ex)
                             {
-                                _log.Error("Could not deserialize message from iot hub", ex);
+                                _log.Error(ex, "Could not deserialize message from iot hub");
                             }
                             if (messageObject == null) // maybe a json incompatible message object -> throw away and continue
                             {
@@ -357,7 +357,7 @@ namespace IoTHs.Plugin.AzureIoTHub
                     }
                     catch (Exception ex)
                     {
-                        _log.Error("MessageReceiverLoop", ex);
+                        _log.Error(ex, "MessageReceiverLoop");
                     } 
                 }
 	            if (!cancellationToken.IsCancellationRequested)
@@ -385,7 +385,7 @@ namespace IoTHs.Plugin.AzureIoTHub
             }
             catch(Exception ex)
             {
-                _log.Error("ClientTimeoutTimerCallback|Error while shutting down IoTHub client and message loop", ex);
+                _log.Error(ex, "ClientTimeoutTimerCallback|Error while shutting down IoTHub client and message loop");
             }
             try
             {
@@ -393,7 +393,7 @@ namespace IoTHs.Plugin.AzureIoTHub
             }
             catch (Exception ex)
             {
-                _log.Error("ClientTimeoutTimerCallback|Error while recreating IoTHub client", ex);
+                _log.Error(ex, "ClientTimeoutTimerCallback|Error while recreating IoTHub client");
             }
 
         }

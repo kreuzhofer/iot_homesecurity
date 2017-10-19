@@ -91,7 +91,7 @@ namespace W10Home.App.Shared
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("Error compiling script " + function.Name, ex);
+                    _log.Error(ex, "Error compiling script " + function.Name);
                     return null;
                 }
                 var timer = new Timer(state =>
@@ -105,7 +105,7 @@ namespace W10Home.App.Shared
                         }
                         catch (Exception ex)
                         {
-                            _log.Error("Error running function " + function.Name, ex);
+                            _log.Error(ex, "Error running function " + function.Name);
                         }
                     }
                 }, null, function.Interval, function.Interval);
@@ -122,7 +122,7 @@ namespace W10Home.App.Shared
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("Error compiling script " + function.Name, ex);
+                    _log.Error(ex, "Error compiling script " + function.Name);
                     return null;
                 }
                 var task = Task.Factory.StartNew(async () =>
@@ -140,7 +140,7 @@ namespace W10Home.App.Shared
                             }
                             catch (Exception ex)
                             {
-                                _log.Error("Error running function " + function.Name, ex);
+                                _log.Error(ex, "Error running function " + function.Name);
                             }
                         }
                         await Task.Delay(IoTHsConstants.MessageLoopDelay, functionInstance.CancellationTokenSource.Token);
@@ -248,7 +248,7 @@ namespace W10Home.App.Shared
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("MessageReceiverLoop", ex);
+                    _log.Error(ex, "MessageReceiverLoop");
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
