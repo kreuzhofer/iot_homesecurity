@@ -224,7 +224,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 			    }
                 if(twin.Properties.Desired.Version>_configVersion)
                 {                
-					await DownloadConfigAndRestart(_serviceBaseUrl, _apiKey, twin.Properties.Desired.Version);
+					await DownloadConfigAndRestartAsync(_serviceBaseUrl, _apiKey, twin.Properties.Desired.Version);
                 }
 
 
@@ -409,13 +409,18 @@ namespace IoTHs.Plugin.AzureIoTHub
 		        _log.Trace("DesiredPropertyUpdateCallback|Updating functions: "+functionsAndVersions);
 		        queue.Enqueue("functionsengine", "checkversionsandupdate", functionsAndVersions);
             }
-		    if (desiredProperties.Contains("serviceBaseUrl"))
+		    if (desiredProperties.Contains("apikey"))
 		    {
-		        queue.Enqueue("management", "restart", "now");
-            }
+		        _apiKey = desiredProperties["apikey"].ToString();
+		    }
+            if (desiredProperties.Contains("serviceBaseUrl"))
+		    {
+		        _serviceBaseUrl = desiredProperties["serviceBaseUrl"].ToString();
+		        await DownloadConfigAndRestartAsync(_serviceBaseUrl, _apiKey, desiredProperties.Version);
+		    }
         }
 
-		private async Task DownloadConfigAndRestart(string serviceBaseUrl, string apiKey, long configVersion)
+		private async Task DownloadConfigAndRestartAsync(string serviceBaseUrl, string apiKey, long configVersion)
 		{
             // create http base protocol filter to be able to download from untrusted https address in internal network
 		    var aHBPF = new HttpBaseProtocolFilter();
