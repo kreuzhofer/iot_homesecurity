@@ -97,10 +97,38 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <Content Include="Web\css\bootstrap-theme.css" />
+    <Content Include="Web\css\bootstrap-theme.min.css" />
+    <Content Include="Web\css\bootstrap.min.css" />
+    <Content Include="Web\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Web\index.html" />
+    <Content Include="Web\js\bootstrap.js" />
+    <Content Include="Web\js\bootstrap.min.js" />
+    <Content Include="Web\js\main.js" />
+    <Content Include="Web\js\npm.js" />
     <None Include="W10Home.IoTCoreApp_StoreKey.pfx" />
     <None Include="W10Home.IoTCoreApp_TemporaryKey.pfx" />
+    <Content Include="Web\css\bootstrap.css.map" />
+    <Content Include="Web\css\bootstrap.min.css.map" />
+    <Content Include="Web\css\bootstrap-theme.css.map" />
+    <Content Include="Web\css\bootstrap-theme.min.css.map" />
+    <Content Include="Web\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Web\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Web\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Web\fonts\glyphicons-halflings-regular.woff2" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auth\FixedCredentialsValidator.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="Controllers\QueueController.cs" />
+    <Compile Include="CoreApp.cs" />
+    <Compile Include="Logging\ApplicationInsightsTarget.cs" />
+    <Compile Include="Logging\CustomDebuggerTarget.cs" />
+    <Compile Include="Logging\CustomFileTarget.cs" />
+    <Compile Include="Logging\IotHubTarget.cs" />
+    <Compile Include="Lua\FunctionInstance.cs" />
+    <Compile Include="Lua\FunctionsEngine.cs" />
+    <Compile Include="PacketForwardingWorker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartupTask.cs" />
   </ItemGroup>
@@ -110,6 +138,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Web\css\bootstrap.css" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-100.png" />
@@ -253,7 +282,12 @@
       <Name>Windows IoT Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
-  <Import Project="..\W10Home.App.Shared\W10Home.App.Shared.projitems" Label="Shared" />
+  <ItemGroup>
+    <None Include="Web\js\main.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
