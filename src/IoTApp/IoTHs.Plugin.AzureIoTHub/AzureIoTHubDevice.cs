@@ -224,11 +224,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 			    }
                 if(twin.Properties.Desired.Version>_configVersion)
                 {                
-					await DownloadConfigAndRestart(_serviceBaseUrl, _apiKey);
-
-                    var reportedProperties = new TwinCollection();
-                    reportedProperties["ConfigVersion"] = twin.Properties.Desired.Version;
-                    await _deviceClient.UpdateReportedPropertiesAsync(reportedProperties);
+					await DownloadConfigAndRestart(_serviceBaseUrl, _apiKey, twin.Properties.Desired.Version);
                 }
 
 
@@ -367,7 +363,14 @@ namespace IoTHs.Plugin.AzureIoTHub
                 }
 	            if (!cancellationToken.IsCancellationRequested)
 	            {
-	                await Task.Delay(Constants.MessageLoopDelay, cancellationToken);
+	                try
+	                {
+	                    await Task.Delay(Constants.MessageLoopDelay, cancellationToken);
+	                }
+	                catch
+	                {
+	                    // gulp
+	                }
 	            }
 	        } while (!cancellationToken.IsCancellationRequested);
             _log.Trace("Exit MessageReceiverLoop");
@@ -399,16 +402,20 @@ namespace IoTHs.Plugin.AzureIoTHub
         private async Task DesiredPropertyUpdateCallback(TwinCollection desiredProperties, object userContext)
 		{
 		    _log.Trace(desiredProperties.ToString());
+		    var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
 		    if (desiredProperties.Contains("functions"))
 		    {
 		        string functionsAndVersions = desiredProperties["functions"].versions.ToString();
 		        _log.Trace("DesiredPropertyUpdateCallback|Updating functions: "+functionsAndVersions);
-		        var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
 		        queue.Enqueue("functionsengine", "checkversionsandupdate", functionsAndVersions);
             }
-		}
+		    if (desiredProperties.Contains("serviceBaseUrl"))
+		    {
+		        queue.Enqueue("management", "restart", "now");
+            }
+        }
 
-		private async Task DownloadConfigAndRestart(string serviceBaseUrl, string apiKey)
+		private async Task DownloadConfigAndRestart(string serviceBaseUrl, string apiKey, long configVersion)
 		{
             // create http base protocol filter to be able to download from untrusted https address in internal network
 		    var aHBPF = new HttpBaseProtocolFilter();
@@ -441,8 +448,12 @@ namespace IoTHs.Plugin.AzureIoTHub
 		        await FileIO.WriteTextAsync(file, functionContent);
             }
 
-			var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-			queue.Enqueue("management", "exit", null, null); // restart the app, StartupTask takes care of this. External check to restart the app must be in place.
+		    var reportedProperties = new TwinCollection();
+		    reportedProperties["ConfigVersion"] = configVersion;
+		    await _deviceClient.UpdateReportedPropertiesAsync(reportedProperties);
+
+            var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+			queue.Enqueue("management", "restart", null, null); // restart the app, StartupTask takes care of this. External check to restart the app must be in place.
 		}
 
 
@@ -500,7 +511,6 @@ namespace IoTHs.Plugin.AzureIoTHub
 	        return new MethodResponse(bytes, 0);
 	    }
 #endregion
-
 
 
         public override IEnumerable<IDeviceChannel> GetChannels()

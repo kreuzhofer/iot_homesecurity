@@ -130,9 +130,9 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             {
                 var message = new
                 {
-                    queue = "iothub",
-                    key = "load_configuration",
-                    value = _configuration["ExternalBaseUrl"]
+                    queue = "management",
+                    key = "restart",
+                    value = "now"
                 };
                 var content = JsonConvert.SerializeObject(message);
                 var bytes = Encoding.UTF8.GetBytes(content);

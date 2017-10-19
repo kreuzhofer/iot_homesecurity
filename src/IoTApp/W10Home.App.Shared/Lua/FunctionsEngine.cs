@@ -31,7 +31,8 @@ namespace W10Home.App.Shared
     {
         private readonly ILogger _log = LogManager.GetCurrentClassLogger();
         private readonly List<FunctionInstance> _functions = new List<FunctionInstance>();
-	    public async void Initialize(DeviceConfigurationModel configuration, CancellationToken cancellationToken)
+        CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+	    public async void Initialize(DeviceConfigurationModel configuration)
 		{
 			if (configuration.DeviceFunctionIds == null)
 			{
@@ -47,7 +48,17 @@ namespace W10Home.App.Shared
 			    }
 			}
             // setup message receiver loop
-            MessageReceiverLoop(cancellationToken);
+            MessageReceiverLoop(_cancellationTokenSource.Token);
+        }
+
+        public void Shutdown()
+        {
+            _log.Trace("Shutdown functions engine");
+            _cancellationTokenSource.Cancel();
+            foreach (var functionInstance in _functions.ToList())
+            {
+                UnloadFunction(functionInstance.FunctionId);
+            }
         }
 
         private async Task<FunctionInstance> SetupFunction(string functionId)
@@ -187,17 +198,7 @@ namespace W10Home.App.Shared
         private async Task ReloadFunction(string functionId)
         {
             _log.Trace("Reloading function "+functionId);
-            if (_functions.Any(f => f.FunctionId == functionId))
-            {
-                _log.Trace("Unloading old instance of function " + functionId);
-                var removeFunction = _functions.Single(f => f.FunctionId == functionId);
-                _functions.Remove(removeFunction);
-                removeFunction.CancellationTokenSource.Cancel();
-                if (removeFunction.Timer != null)
-                {
-                    removeFunction.Timer.Dispose();
-                }
-            }
+            UnloadFunction(functionId);
             await Task.Delay(250); // grace time
             var newFunction = await SetupFunction(functionId);
             if (newFunction != null)
@@ -208,6 +209,21 @@ namespace W10Home.App.Shared
             else
             {
                 _log.Error("Error loading new version of function " + functionId);
+            }
+        }
+
+        private void UnloadFunction(string functionId)
+        {
+            if (_functions.Any(f => f.FunctionId == functionId))
+            {
+                _log.Trace("Unloading old instance of function " + functionId);
+                var removeFunction = _functions.Single(f => f.FunctionId == functionId);
+                _functions.Remove(removeFunction);
+                removeFunction.CancellationTokenSource.Cancel();
+                if (removeFunction.Timer != null)
+                {
+                    removeFunction.Timer.Dispose();
+                }
             }
         }
 
@@ -236,7 +252,14 @@ namespace W10Home.App.Shared
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    await Task.Delay(Constants.MessageLoopDelay, cancellationToken);
+                    try
+                    {
+                        await Task.Delay(Constants.MessageLoopDelay, cancellationToken);
+                    }
+                    catch
+                    {
+                        // gulp
+                    }
                 }
             } while (!cancellationToken.IsCancellationRequested);
             _log.Trace("Exit MessageReceiverLoop");

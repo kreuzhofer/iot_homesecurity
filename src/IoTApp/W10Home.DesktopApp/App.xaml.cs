@@ -73,7 +73,7 @@ namespace W10Home.DesktopApp
             }
 
             _coreApp = new CoreApp();
-            _coreApp.Run();
+            _coreApp.RunAsync();
         }
 
         /// <summary>

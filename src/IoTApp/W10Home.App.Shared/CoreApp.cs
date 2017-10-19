@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Practices.ServiceLocation;
@@ -13,28 +12,13 @@ using Restup.Webserver.Rest;
 using Restup.WebServer.Http;
 using W10Home.Core.Configuration;
 using W10Home.Core.Queing;
-using W10Home.Interfaces;
-using W10Home.IoTCoreApp;
 using W10Home.IoTCoreApp.Auth;
 using W10Home.IoTCoreApp.Controllers;
-#if SECVEST
 using IoTHs.Plugin.ABUS.SecVest;
-#endif
-#if AZUREIOTHUB
 using IoTHs.Plugin.AzureIoTHub;
-#endif
-#if ETATOUCH
-#endif
-#if TWILIO
 using IoTHs.Plugin.Twilio;
-#endif
-using System.Linq;
 using Windows.Storage;
 using Windows.System;
-using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Interop;
-using W10Home.App.Shared.Logging;
-using W10Home.Interfaces.Configuration;
 using IoTHs.Api.Shared;
 using IoTHs.Devices.Interfaces;
 using IoTHs.Plugin.ETATouch;
@@ -49,8 +33,11 @@ namespace W10Home.App.Shared
 		private HttpServer _httpServer;
         private readonly ILogger _log = LogManager.GetCurrentClassLogger();
         private Timer _everyMinuteTimer;
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private FunctionsEngine _functionsEngine;
+        private DeviceRegistry _deviceRegistry;
 
-        public async Task Run()
+        public async Task RunAsync()
 	    {
             _log.Trace("Run");
 
@@ -175,45 +162,29 @@ namespace W10Home.App.Shared
 			Debug.WriteLine(configString);
 
 			// init device registry and add devices
-			var deviceRegistry = new DeviceRegistry();
-#if AZUREIOTHUB
-            deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
-#endif
-#if SECVEST
-            deviceRegistry.RegisterDeviceType<SecVestDevice>();
-#endif
-#if ETATOUCH
-            deviceRegistry.RegisterDeviceType<EtaTouchDevice>();
-#endif
-#if TWILIO
-            deviceRegistry.RegisterDeviceType<TwilioDevice>();
-#endif
-            deviceRegistry.RegisterDeviceType<HomeMaticDevice>();
+			_deviceRegistry = new DeviceRegistry();
+            _deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
+            _deviceRegistry.RegisterDeviceType<SecVestDevice>();
+            _deviceRegistry.RegisterDeviceType<EtaTouchDevice>();
+            _deviceRegistry.RegisterDeviceType<TwilioDevice>();
+            _deviceRegistry.RegisterDeviceType<HomeMaticDevice>();
 
 			// add functions engine
-			var functionsEngine = new FunctionsEngine();
+			_functionsEngine = new FunctionsEngine();
 
 			// init IoC
 			var container = new UnityContainer();
 	        container.RegisterInstance<DeviceConfigurationModel>(configurationObject);
 			container.RegisterInstance<IMessageQueue>(new MessageQueue());
 	        container.RegisterType<ChannelValueCache>(new ContainerControlledLifetimeManager());
-			container.RegisterInstance<IDeviceRegistry>(deviceRegistry);
-			container.RegisterInstance(functionsEngine);
+			container.RegisterInstance<IDeviceRegistry>(_deviceRegistry);
+			container.RegisterInstance(_functionsEngine);
 
             // register device instances
-#if AZUREIOTHUB
             container.RegisterType<AzureIoTHubDevice>(new ContainerControlledLifetimeManager());
-#endif
-#if SECVEST
             container.RegisterType<SecVestDevice>(new ContainerControlledLifetimeManager());
-#endif
-#if ETATOUCH
             container.RegisterType<EtaTouchDevice>(new ContainerControlledLifetimeManager());
-#endif
-#if TWILIO
             container.RegisterType<TwilioDevice>(new ContainerControlledLifetimeManager());
-#endif
 	        container.RegisterType<HomeMaticDevice>(new ContainerControlledLifetimeManager());
 
 			// make Unity container available to ServiceLocator
@@ -221,31 +192,70 @@ namespace W10Home.App.Shared
 			ServiceLocator.SetLocatorProvider(() => locator);
 
 			// configure devices
-			await deviceRegistry.InitializeDevicesAsync(configurationObject);
+			await _deviceRegistry.InitializeDevicesAsync(configurationObject);
 
 			// start lua engine
-			functionsEngine.Initialize(configurationObject, CancellationToken.None);
+			_functionsEngine.Initialize(configurationObject);
 			
 			// define cron timers
 			//_everySecondTimer = new Timer(EverySecondTimerCallback, null, 1000, 1000);
 			_everyMinuteTimer = new Timer(EveryMinuteTimerCallbackAsync, null, 60 * 1000, 60 * 1000);
 
-			// start local webserver
-			var authProvider = new BasicAuthorizationProvider("Login", new FixedCredentialsValidator());
-			var restRouteHandler = new RestRouteHandler(authProvider);
-			restRouteHandler.RegisterController<QueueController>();
-			var configuration = new HttpServerConfiguration()
-				.ListenOnPort(80)
-				.RegisterRoute("api", restRouteHandler)
-				.RegisterRoute(new StaticFileRouteHandler(@"Web"))
-				.EnableCors(); // allow cors requests on all origins
-							   //  .EnableCors(x => x.AddAllowedOrigin("http://specificserver:<listen-port>"));
+			await StartWebserverAsync();
+	    }
 
-			var httpServer = new HttpServer(configuration);
-			_httpServer = httpServer;
+        public async Task StartWebserverAsync()
+        {
+// start local webserver
+            var authProvider = new BasicAuthorizationProvider("Login", new FixedCredentialsValidator());
+            var restRouteHandler = new RestRouteHandler(authProvider);
+            restRouteHandler.RegisterController<QueueController>();
+            var configuration = new HttpServerConfiguration()
+                .ListenOnPort(80)
+                .RegisterRoute("api", restRouteHandler)
+                .RegisterRoute(new StaticFileRouteHandler(@"Web"))
+                .EnableCors(); // allow cors requests on all origins
+            //  .EnableCors(x => x.AddAllowedOrigin("http://specificserver:<listen-port>"));
 
-			await _httpServer.StartServerAsync();
-		}
+            var httpServer = new HttpServer(configuration);
+            _httpServer = httpServer;
+
+            await _httpServer.StartServerAsync();
+        }
+
+        public void StopWebserver()
+        {
+            _log.Trace("Stop webserver");
+            if (_httpServer != null)
+            {
+                _httpServer.StopServer();
+                _httpServer = null;
+            }
+        }
+
+        public async Task ShutdownAsync()
+        {
+            _log.Trace("Stop timers");
+            if (_everyMinuteTimer != null)
+            {
+                _everyMinuteTimer.Dispose();
+                _everyMinuteTimer = null;
+            }
+
+            StopWebserver();
+
+            if (_functionsEngine != null)
+            {
+                _functionsEngine.Shutdown();
+                _functionsEngine = null;
+            }
+
+            if (_deviceRegistry != null)
+            {
+                await _deviceRegistry.TeardownDevicesAsync();
+                _deviceRegistry = null;
+            }
+        }
 
         private void EveryMinuteTimerCallbackAsync(object state)
         {

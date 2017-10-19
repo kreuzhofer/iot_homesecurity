@@ -69,7 +69,14 @@ namespace IoTHs.Plugin.HomeMatic
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
-                    await Task.Delay(Constants.MessageLoopDelay, cancellationToken);
+                    try
+                    {
+                        await Task.Delay(Constants.MessageLoopDelay, cancellationToken);
+                    }
+                    catch
+                    {
+                        // gulp
+                    }
                 }
             } while (!cancellationToken.IsCancellationRequested);
             _log.Trace("Exit MessageReceiverLoop");

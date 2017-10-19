@@ -112,11 +112,11 @@ namespace W10Home.IoTCoreApp
             try
             {
                 _coreApp = new CoreApp();
-                await _coreApp.Run();
+                await _coreApp.RunAsync();
             }
             catch (Exception ex)
             {
-                _log.Error("CoreApp Run crashed", ex);
+                _log.Error(ex, "CoreApp Run crashed");
                 throw;
             }
 
@@ -194,10 +194,32 @@ namespace W10Home.IoTCoreApp
 								return;
 							}
 						}
+					    if (message.Key == "restart")
+					    {
+					        try
+					        {
+					            await _coreApp.ShutdownAsync();
+					        }
+					        catch (Exception ex)
+					        {
+                                _log.Error(ex, "CoreApp Shutdown unsuccessful");
+					            throw;
+					        }
+					        try
+					        {
+					            _coreApp = new CoreApp();
+					            await _coreApp.RunAsync();
+					        }
+					        catch (Exception ex)
+					        {
+					            _log.Error(ex, "CoreApp Run crashed");
+					            throw;
+					        }
+                        }
 					}
 					catch (Exception ex)
 					{
-                        _log.Error("MessageLoopWorker", ex);
+                        _log.Error(ex, "MessageLoopWorker");
 					}
 				}
 				await Task.Delay(Constants.MessageLoopDelay);
@@ -207,3 +229,4 @@ namespace W10Home.IoTCoreApp
 
 	}
 }
+

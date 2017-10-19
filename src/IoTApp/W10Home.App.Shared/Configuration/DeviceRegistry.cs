@@ -44,9 +44,11 @@ namespace W10Home.Core.Configuration
 
 		public async Task TeardownDevicesAsync()
 		{
-			foreach (var device in _deviceList)
+            _log.Trace("Shutdown devices");
+			foreach (var device in _deviceList.ToList())
 			{
 				await device.Value.TeardownAsync();
+			    _deviceList.Remove(device.Key);
 			}
 		}
 
