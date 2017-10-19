@@ -64,7 +64,7 @@ namespace IoTHs.Plugin.HomeMatic
                 }
                 catch (Exception ex)
                 {
-                    _log.Error("MessageReceiverLoop", ex);
+                    _log.Error(ex, "MessageReceiverLoop");
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {

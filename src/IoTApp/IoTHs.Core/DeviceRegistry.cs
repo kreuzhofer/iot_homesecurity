@@ -32,7 +32,7 @@ namespace IoTHs.Core
 				}
 				catch (Exception ex)
 				{
-					_log.Error("Error while initializing plugin " + configuration.Name, ex);
+					_log.Error(ex, "Error while initializing plugin " + configuration.Name);
 				}
 			}
 		}
