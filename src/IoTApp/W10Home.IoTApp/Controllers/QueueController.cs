@@ -22,7 +22,7 @@ namespace W10Home.IoTCoreApp.Controllers
     {
         private readonly ILogger _log;
 
-        public QueueController(ILoggerFactory loggerFactory)
+        public QueueController(LoggerFactory loggerFactory)
         {
             _log = loggerFactory.CreateLogger<QueueController>();
         }

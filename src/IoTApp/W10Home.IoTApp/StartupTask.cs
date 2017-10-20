@@ -20,10 +20,6 @@ using IoTHs.Plugin.Twilio;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Restup.Webserver;
-using W10Home.App.Shared.Logging;
-using W10Home.Core;
-using W10Home.IoTCoreApp.Logging;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
@@ -34,7 +30,7 @@ namespace W10Home.IoTCoreApp
         private BackgroundTaskDeferral _deferral;
 	    private CoreApp _coreApp;
         private ILogger _log;
-        private DeviceRegistry _deviceRegistry;
+        private IDeviceRegistry _deviceRegistry;
 
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
@@ -61,14 +57,7 @@ namespace W10Home.IoTCoreApp
                 builder.AddDebug();
             });
 
-            // init device registry and add devices
-            _deviceRegistry = new DeviceRegistry();
-            _deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
-            _deviceRegistry.RegisterDeviceType<SecVestDevice>();
-            _deviceRegistry.RegisterDeviceType<EtaTouchDevice>();
-            _deviceRegistry.RegisterDeviceType<TwilioDevice>();
-            _deviceRegistry.RegisterDeviceType<HomeMaticDevice>();
-            container.AddSingleton<IDeviceRegistry>(_deviceRegistry);
+            container.AddSingleton<IDeviceRegistry, DeviceRegistry>();
 
             container.AddSingleton<IMessageQueue>(new MessageQueue());
             container.AddSingleton<ChannelValueCache>();
@@ -76,9 +65,23 @@ namespace W10Home.IoTCoreApp
             container.AddTransient<CoreApp>();
             container.AddSingleton<FunctionsEngine>();
 
+            container.AddTransient<AzureIoTHubDevice>();
+            container.AddTransient<SecVestDevice>();
+            container.AddTransient<EtaTouchDevice>();
+            container.AddTransient<TwilioDevice>();
+            container.AddTransient<HomeMaticDevice>();
+
             // container available globally
             var locator = container.BuildServiceProvider();
             ServiceLocator.SetLocatorProvider(() => locator);
+
+            // init device registry and add devices
+            _deviceRegistry = locator.GetService<IDeviceRegistry>();
+            _deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
+            _deviceRegistry.RegisterDeviceType<SecVestDevice>();
+            _deviceRegistry.RegisterDeviceType<EtaTouchDevice>();
+            _deviceRegistry.RegisterDeviceType<TwilioDevice>();
+            _deviceRegistry.RegisterDeviceType<HomeMaticDevice>();
 
             _log = locator.GetService<ILoggerFactory>().CreateLogger<StartupTask>();
             _log.LogInformation("Starting");

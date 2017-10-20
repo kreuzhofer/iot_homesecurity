@@ -37,6 +37,7 @@ namespace W10Home.App.Shared
         private FunctionsEngine _functionsEngine;
         private IDeviceRegistry _deviceRegistry;
         private DeviceConfigurationProvider _configurationProvider;
+        private ILoggerFactory _loggerFactory;
 
         public CoreApp(IDeviceRegistry deviceRegistry, FunctionsEngine functionsEngine, ILoggerFactory loggerFactory, DeviceConfigurationProvider configurationProvider)
         {
@@ -44,6 +45,7 @@ namespace W10Home.App.Shared
             _functionsEngine = functionsEngine;
             _log = loggerFactory.CreateLogger<CoreApp>();
             _configurationProvider = configurationProvider;
+            _loggerFactory = loggerFactory;
         }
 
         public async Task RunAsync()
@@ -194,7 +196,7 @@ namespace W10Home.App.Shared
 // start local webserver
             var authProvider = new BasicAuthorizationProvider("Login", new FixedCredentialsValidator());
             var restRouteHandler = new RestRouteHandler(authProvider);
-            restRouteHandler.RegisterController<QueueController>();
+            restRouteHandler.RegisterController<QueueController>(_loggerFactory);
             var configuration = new HttpServerConfiguration()
                 .ListenOnPort(80)
                 .RegisterRoute("api", restRouteHandler)
