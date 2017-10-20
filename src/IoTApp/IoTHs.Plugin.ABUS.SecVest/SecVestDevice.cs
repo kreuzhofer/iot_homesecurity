@@ -34,7 +34,9 @@ namespace IoTHs.Plugin.ABUS.SecVest
             get { return _type; }
         }
 
+#pragma warning disable 1998
         public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
+#pragma warning restore 1998
         {
             _name = configuration.Name;
             _type = configuration.Type;
@@ -58,7 +60,9 @@ namespace IoTHs.Plugin.ABUS.SecVest
 		    return _channels;
 	    }
 
+#pragma warning disable 1998
 	    public override async Task TeardownAsync()
+#pragma warning restore 1998
 	    {
 	    }
     }

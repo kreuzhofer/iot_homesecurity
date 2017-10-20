@@ -11,8 +11,8 @@ using Windows.Web.Http;
 using Windows.Web.Http.Filters;
 using IoTHs.Core;
 using IoTHs.Core.Queing;
-using Microsoft.Practices.ServiceLocation;
-using NLog;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace IoTHs.Plugin.HomeMatic
 {
@@ -21,14 +21,21 @@ namespace IoTHs.Plugin.HomeMatic
         private string _name;
         private string _type;
         private List<IDeviceChannel> _channels = new List<IDeviceChannel>();
-        private readonly ILogger _log = LogManager.GetCurrentClassLogger();
+        private readonly ILogger _log;
         private string _connectionString;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+        public HomeMaticDevice(ILoggerFactory loggerFactory)
+        {
+            _log = loggerFactory.CreateLogger<HomeMaticDevice>();
+        }
 
         public override string Name => _name;
         public override string Type => _type;
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             _connectionString = configuration.Properties["ConnectionString"];
             _name = configuration.Name;
@@ -42,7 +49,9 @@ namespace IoTHs.Plugin.HomeMatic
             return _channels.AsEnumerable();
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public override async Task TeardownAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             _cancellationTokenSource.Cancel();
         }
@@ -53,7 +62,7 @@ namespace IoTHs.Plugin.HomeMatic
             {
                 try
                 {
-                    var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+                    var queue = ServiceLocator.Current.GetService<IMessageQueue>();
                     if (queue.TryDeque(_name, out QueueMessage queuemessage))
                     {
                         if (queuemessage.Key == "runprogram")
@@ -64,7 +73,7 @@ namespace IoTHs.Plugin.HomeMatic
                 }
                 catch (Exception ex)
                 {
-                    _log.Error(ex, "MessageReceiverLoop");
+                    _log.LogError(ex, "MessageReceiverLoop");
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
@@ -78,7 +87,7 @@ namespace IoTHs.Plugin.HomeMatic
                     }
                 }
             } while (!cancellationToken.IsCancellationRequested);
-            _log.Trace("Exit MessageReceiverLoop");
+            _log.LogTrace("Exit MessageReceiverLoop");
         }
 
         private async Task RunProgram(string programId)

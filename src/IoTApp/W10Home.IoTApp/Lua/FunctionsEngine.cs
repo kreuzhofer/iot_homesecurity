@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Security.Cryptography.Certificates;
-using Microsoft.Practices.ServiceLocation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using W10Home.Interfaces;
@@ -20,25 +19,34 @@ using IoTHs.Core;
 using IoTHs.Core.Queing;
 using IoTHs.Plugin.AzureIoTHub;
 using Microsoft.Azure.Devices.Shared;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using W10Home.App.Shared.Lua;
-using NLog;
 using W10Home.Core;
 
 namespace W10Home.App.Shared
 {
 	internal class FunctionsEngine
     {
-        private readonly ILogger _log = LogManager.GetCurrentClassLogger();
+        private readonly ILogger _log;
         private readonly List<FunctionInstance> _functions = new List<FunctionInstance>();
-        CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-	    public async void Initialize(DeviceConfigurationModel configuration)
+        CancellationTokenSource _cancellationTokenSource;
+        private ILoggerFactory _loggerFactory;
+
+        public FunctionsEngine(ILoggerFactory loggerFactory)
+        {
+            UserData.RegistrationPolicy = InteropRegistrationPolicy.Automatic;
+            _log = loggerFactory.CreateLogger<FunctionsEngine>();
+            _loggerFactory = loggerFactory;
+        }
+
+        public async void Initialize(DeviceConfigurationModel configuration)
 		{
 			if (configuration.DeviceFunctionIds == null)
 			{
 				return;
 			}
-			UserData.RegistrationPolicy = InteropRegistrationPolicy.Automatic;
 			foreach (var functionId in configuration.DeviceFunctionIds)
 			{
 			    var functionInstance = await SetupFunction(functionId);
@@ -47,13 +55,14 @@ namespace W10Home.App.Shared
 			        _functions.Add(functionInstance);
 			    }
 			}
+            _cancellationTokenSource = new CancellationTokenSource();
             // setup message receiver loop
             MessageReceiverLoop(_cancellationTokenSource.Token);
         }
 
         public void Shutdown()
         {
-            _log.Trace("Shutdown functions engine");
+            _log.LogTrace("Shutdown functions engine");
             _cancellationTokenSource.Cancel();
             foreach (var functionInstance in _functions.ToList())
             {
@@ -91,21 +100,21 @@ namespace W10Home.App.Shared
                 }
                 catch (Exception ex)
                 {
-                    _log.Error(ex, "Error compiling script " + function.Name);
+                    _log.LogError(ex, "Error compiling script " + function.Name);
                     return null;
                 }
                 var timer = new Timer(state =>
                 {
                     lock (script)
                     {
-                        _log.Trace("Running timer triggered function " + function.Name);
+                        _log.LogTrace("Running timer triggered function " + function.Name);
                         try
                         {
                             script.Call(script.Globals["run"]);
                         }
                         catch (Exception ex)
                         {
-                            _log.Error(ex, "Error running function " + function.Name);
+                            _log.LogError(ex, "Error running function " + function.Name);
                         }
                     }
                 }, null, function.Interval, function.Interval);
@@ -122,17 +131,17 @@ namespace W10Home.App.Shared
                 }
                 catch (Exception ex)
                 {
-                    _log.Error(ex, "Error compiling script " + function.Name);
+                    _log.LogError(ex, "Error compiling script " + function.Name);
                     return null;
                 }
                 var task = Task.Factory.StartNew(async () =>
                 {
-                    var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+                    var queue = ServiceLocator.Current.GetService<IMessageQueue>();
                     do
                     {
                         if (queue.TryDeque(function.QueueName, out QueueMessage message))
                         {
-                            _log.Trace("Running message triggered function " + function.Name);
+                            _log.LogTrace("Running message triggered function " + function.Name);
                             try
                             {
                                 // call function
@@ -140,7 +149,7 @@ namespace W10Home.App.Shared
                             }
                             catch (Exception ex)
                             {
-                                _log.Error(ex, "Error running function " + function.Name);
+                                _log.LogError(ex, "Error running function " + function.Name);
                             }
                         }
                         await Task.Delay(IoTHsConstants.MessageLoopDelay, functionInstance.CancellationTokenSource.Token);
@@ -164,13 +173,13 @@ namespace W10Home.App.Shared
                 function = JsonConvert.DeserializeObject<DeviceFunctionModel>(configFileContent);
                 if (function == null)
                 {
-                    _log.Error("Invalid function file for function " + functionId);
+                    _log.LogError("Invalid function file for function " + functionId);
                     return function;
                 }
             }
             else
             {
-                _log.Error("Function file not found for function " + functionId);
+                _log.LogError("Function file not found for function " + functionId);
                 return function;
             }
             return function;
@@ -178,8 +187,8 @@ namespace W10Home.App.Shared
 
         private Script SetupNewLuaScript(string name)
 	    {
-		    var registry = ServiceLocator.Current.GetInstance<IDeviceRegistry>();
-		    var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+		    var registry = ServiceLocator.Current.GetService<IDeviceRegistry>();
+		    var queue = ServiceLocator.Current.GetService<IMessageQueue>();
 
 		    var script = new Script(CoreModules.Preset_Complete);
 
@@ -187,28 +196,28 @@ namespace W10Home.App.Shared
 		    script.Globals.Set("registry", registryDynValue);
 		    var messageQueueDynValue = UserData.Create(queue);
 		    script.Globals.Set("queue", messageQueueDynValue);
-	        var log = LogManager.GetLogger("FunctionsEngine|" + name);
+	        var log = _loggerFactory.CreateLogger("FunctionsEngine|" + name);
 	        var logDynValue = UserData.Create(log);
             script.Globals.Set("log", logDynValue);
 
-		    script.Options.DebugPrint = s => { log.Debug(s); };
+		    script.Options.DebugPrint = s => { log.LogDebug(s); };
 			return script;
 	    }
 
         private async Task ReloadFunction(string functionId)
         {
-            _log.Trace("Reloading function "+functionId);
+            _log.LogTrace("Reloading function "+functionId);
             UnloadFunction(functionId);
             await Task.Delay(250); // grace time
             var newFunction = await SetupFunction(functionId);
             if (newFunction != null)
             {
                 _functions.Add(newFunction);
-                _log.Trace("New version of function " + functionId + " started");
+                _log.LogTrace("New version of function " + functionId + " started");
             }
             else
             {
-                _log.Error("Error loading new version of function " + functionId);
+                _log.LogError("Error loading new version of function " + functionId);
             }
         }
 
@@ -216,14 +225,14 @@ namespace W10Home.App.Shared
         {
             if (_functions.Any(f => f.FunctionId == functionId))
             {
-                _log.Trace("Unloading old instance of function " + functionId);
+                _log.LogTrace("Unloading old instance of function " + functionId);
                 var removeFunction = _functions.Single(f => f.FunctionId == functionId);
                 _functions.Remove(removeFunction);
-                removeFunction.CancellationTokenSource.Cancel();
                 if (removeFunction.Timer != null)
                 {
                     removeFunction.Timer.Dispose();
                 }
+                removeFunction.CancellationTokenSource.Cancel();
             }
         }
 
@@ -233,7 +242,7 @@ namespace W10Home.App.Shared
             {
                 try
                 {
-                    var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+                    var queue = ServiceLocator.Current.GetService<IMessageQueue>();
                     if (queue.TryDeque("functionsengine", out QueueMessage queuemessage))
                     {
                         if (queuemessage.Key == "reloadfunction")
@@ -248,7 +257,7 @@ namespace W10Home.App.Shared
                 }
                 catch (Exception ex)
                 {
-                    _log.Error(ex, "MessageReceiverLoop");
+                    _log.LogError(ex, "MessageReceiverLoop");
                 }
                 if (!cancellationToken.IsCancellationRequested)
                 {
@@ -262,17 +271,17 @@ namespace W10Home.App.Shared
                     }
                 }
             } while (!cancellationToken.IsCancellationRequested);
-            _log.Trace("Exit MessageReceiverLoop");
+            _log.LogTrace("Exit MessageReceiverLoop");
         }
 
         private async Task CheckVersionsAndUpdateAsync(string functionsAndVersions)
         {
             string[] functionVersionPairs = functionsAndVersions.Split(',');
-            var configuration = ServiceLocator.Current.GetInstance<DeviceConfigurationModel>();
+            var configuration = ServiceLocator.Current.GetService<DeviceConfigurationModel>();
             var baseUrl = configuration.ServiceBaseUrl;
             var deviceId = configuration.DeviceId;
 
-            var apiKey = ServiceLocator.Current.GetInstance<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>("iothub").ApiKey;
+            var apiKey = ServiceLocator.Current.GetService<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>("iothub").ApiKey;
 
             foreach (var functionVersionPair in functionVersionPairs)
             {

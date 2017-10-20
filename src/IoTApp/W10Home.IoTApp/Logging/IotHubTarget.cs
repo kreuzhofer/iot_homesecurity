@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using IoTHs.Core;
 using IoTHs.Core.Queing;
-using Microsoft.Practices.ServiceLocation;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using NLog.Targets;
-using NLog;
 
 namespace W10Home.App.Shared.Logging
 {
@@ -19,7 +18,7 @@ namespace W10Home.App.Shared.Logging
         {
             if (ServiceLocator.IsLocationProviderSet)
             {
-                ServiceLocator.Current.GetInstance<IMessageQueue>().Enqueue("iothublog", logEvent.Level.Name, this.RenderLogEvent(this.Layout, logEvent)
+                ServiceLocator.Current.GetService<IMessageQueue>().Enqueue("iothublog", logEvent.Level.Name, this.RenderLogEvent(this.Layout, logEvent)
                     , "json");
             }
         }

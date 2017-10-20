@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using IoTHs.Api.Shared;
 
 namespace IoTHs.Devices.Interfaces
 {
@@ -13,5 +14,6 @@ namespace IoTHs.Devices.Interfaces
 		Task TeardownDevicesAsync();
 		object GetDevice(string name);
 	    IEnumerable<IDevice> GetDevices();
+	    Task InitializeDevicesAsync(DeviceConfigurationModel configurationObject);
 	}
 }

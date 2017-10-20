@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Practices.ServiceLocation;
-using Microsoft.Practices.Unity;
 using Newtonsoft.Json;
 using Restup.Webserver.File;
 using Restup.Webserver.Http;
@@ -20,26 +18,37 @@ using Windows.System;
 using IoTHs.Api.Shared;
 using IoTHs.Core;
 using IoTHs.Core.Channels;
+using IoTHs.Core.Configuration;
 using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
 using IoTHs.Plugin.ETATouch;
 using IoTHs.Plugin.HomeMatic;
-using NLog;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace W10Home.App.Shared
 {
     internal class CoreApp
     {
 		private HttpServer _httpServer;
-        private readonly ILogger _log = LogManager.GetCurrentClassLogger();
+        private ILogger _log;
         private Timer _everyMinuteTimer;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private FunctionsEngine _functionsEngine;
-        private DeviceRegistry _deviceRegistry;
+        private IDeviceRegistry _deviceRegistry;
+        private DeviceConfigurationProvider _configurationProvider;
+
+        public CoreApp(IDeviceRegistry deviceRegistry, FunctionsEngine functionsEngine, ILoggerFactory loggerFactory, DeviceConfigurationProvider configurationProvider)
+        {
+            _deviceRegistry = deviceRegistry;
+            _functionsEngine = functionsEngine;
+            _log = loggerFactory.CreateLogger<CoreApp>();
+            _configurationProvider = configurationProvider;
+        }
 
         public async Task RunAsync()
 	    {
-            _log.Trace("Run");
+            _log.LogTrace("Run");
 
             // Build configuration object to configure all devices
 			DeviceConfigurationModel configurationObject = new DeviceConfigurationModel();
@@ -71,125 +80,101 @@ namespace W10Home.App.Shared
 			    });
 		    }
 
-			//configurationObject.DeviceConfigurations = new List<DeviceConfiguration>(new[]
-			//{
-			//	// by default iot hub configuration now uses TPM chip
-			//	new DeviceConfiguration
-			//	{
-			//		Name = "iothub",
-			//		Type = "AzureIoTHubDevice",
-			//		Properties = new Dictionary<string, string>()
-			//		{
-			//			//{ "ConnectionString", ""}
-			//		}
-			//	},
-			//	//new DeviceConfiguration()
-			//	//{
-			//	//	Name = "secvest",
-			//	//	Type = "SecVestDevice",
-			//	//	Properties = new Dictionary<string, string>()
-			//	//	{
-			//	//		{"ConnectionString", "https://192.168.0.22:4433/" },
-			//	//		{"Username", "1234" },
-			//	//		{"Password", "1234" }
-			//	//	}
-			//	//},
-			//	//new DeviceConfiguration()
-			//	//{
-			//	//	Name = "cam1",
-			//	//	Type = ""
-			//	//}
-			//});
-			//configurationObject.Functions = new List<FunctionDeclaration>(new FunctionDeclaration[]
-			//{
-			//	//new FunctionDeclaration()
-			//	//{
-			//	//	TriggerType = FunctionTriggerType.RecurringIntervalTimer,
-			//	//	Name = "PollSecvestEveryMinute",
-			//	//	Interval = 10*1000, // polling interval measured in miliseconds
-			//	//	Code = @"
-			//	//	function run()
-			//	//		-- get status from secvest every minute
-			//	//		secvest = registry.getDevice(""secvest"");
-			//	//		statusChannel = secvest.getChannel(""status"");
-			//	//		statusValue = statusChannel.read();
-			//	//		if(statusValue != nil) then
-			//	//			-- send status to iothub queue
-			//	//			queue.enqueue(""iothub"", ""status@secvest"", statusValue, ""json"");
-			//	//			end;
-			//	//		return 0;
-			//	//	end;
-			//	//	"
-			//	//},
-			//	new FunctionDeclaration()
-			//	{
-			//		TriggerType = FunctionTriggerType.MessageQueue,
-			//		Name = "WindSensorQueueHandler",
-			//		QueueName = "windsensor",
-			//		Code = @"
-			//		function run(message)
-			//			if(message.Key == ""Wind"") then
-			//				message.Key = ""windspeed@windsensor"";
-			//				message.Tag = ""windspeed_kmh""
-			//			end;
-			//			if(message.Key == ""Temperature"") then
-			//				message.Key = ""temperature@windsensor"";
-			//				message.Tag = ""temperature_celsius""
-			//			end;
+#region manual scripting
 
-			//			queue.enqueue(""iothub"", message); -- simply forward to iot hub message queue
-			//			return 0;
-			//		end;
-			//		"
-			//	},
-			//	new FunctionDeclaration()
-			//	{
-			//		TriggerType = FunctionTriggerType.MessageQueue,
-			//		Name = "SecvestOutputSwitchHandler",
-			//		QueueName = "secvestoutput",
-			//		Code = @"
-			//		function run(message)
-			//			secvest = registry.getDevice(""secvest"");
-			//			statusChannel = secvest.getChannel(""status"");
-			//			statusChannel.setOutput(message.Key, message.Value);
-			//			return 0;
-			//		end;
-			//		"
-			//	}
-			//});
+            //configurationObject.DeviceConfigurations = new List<DeviceConfiguration>(new[]
+            //{
+            //	// by default iot hub configuration now uses TPM chip
+            //	new DeviceConfiguration
+            //	{
+            //		Name = "iothub",
+            //		Type = "AzureIoTHubDevice",
+            //		Properties = new Dictionary<string, string>()
+            //		{
+            //			//{ "ConnectionString", ""}
+            //		}
+            //	},
+            //	//new DeviceConfiguration()
+            //	//{
+            //	//	Name = "secvest",
+            //	//	Type = "SecVestDevice",
+            //	//	Properties = new Dictionary<string, string>()
+            //	//	{
+            //	//		{"ConnectionString", "https://192.168.0.22:4433/" },
+            //	//		{"Username", "1234" },
+            //	//		{"Password", "1234" }
+            //	//	}
+            //	//},
+            //	//new DeviceConfiguration()
+            //	//{
+            //	//	Name = "cam1",
+            //	//	Type = ""
+            //	//}
+            //});
+            //configurationObject.Functions = new List<FunctionDeclaration>(new FunctionDeclaration[]
+            //{
+            //	//new FunctionDeclaration()
+            //	//{
+            //	//	TriggerType = FunctionTriggerType.RecurringIntervalTimer,
+            //	//	Name = "PollSecvestEveryMinute",
+            //	//	Interval = 10*1000, // polling interval measured in miliseconds
+            //	//	Code = @"
+            //	//	function run()
+            //	//		-- get status from secvest every minute
+            //	//		secvest = registry.getDevice(""secvest"");
+            //	//		statusChannel = secvest.getChannel(""status"");
+            //	//		statusValue = statusChannel.read();
+            //	//		if(statusValue != nil) then
+            //	//			-- send status to iothub queue
+            //	//			queue.enqueue(""iothub"", ""status@secvest"", statusValue, ""json"");
+            //	//			end;
+            //	//		return 0;
+            //	//	end;
+            //	//	"
+            //	//},
+            //	new FunctionDeclaration()
+            //	{
+            //		TriggerType = FunctionTriggerType.MessageQueue,
+            //		Name = "WindSensorQueueHandler",
+            //		QueueName = "windsensor",
+            //		Code = @"
+            //		function run(message)
+            //			if(message.Key == ""Wind"") then
+            //				message.Key = ""windspeed@windsensor"";
+            //				message.Tag = ""windspeed_kmh""
+            //			end;
+            //			if(message.Key == ""Temperature"") then
+            //				message.Key = ""temperature@windsensor"";
+            //				message.Tag = ""temperature_celsius""
+            //			end;
 
-			var configString = JsonConvert.SerializeObject(configurationObject, Formatting.Indented);
+            //			queue.enqueue(""iothub"", message); -- simply forward to iot hub message queue
+            //			return 0;
+            //		end;
+            //		"
+            //	},
+            //	new FunctionDeclaration()
+            //	{
+            //		TriggerType = FunctionTriggerType.MessageQueue,
+            //		Name = "SecvestOutputSwitchHandler",
+            //		QueueName = "secvestoutput",
+            //		Code = @"
+            //		function run(message)
+            //			secvest = registry.getDevice(""secvest"");
+            //			statusChannel = secvest.getChannel(""status"");
+            //			statusChannel.setOutput(message.Key, message.Value);
+            //			return 0;
+            //		end;
+            //		"
+            //	}
+            //});
+
+#endregion
+
+            var configString = JsonConvert.SerializeObject(configurationObject, Formatting.Indented);
 			Debug.WriteLine(configString);
 
-			// init device registry and add devices
-			_deviceRegistry = new DeviceRegistry();
-            _deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
-            _deviceRegistry.RegisterDeviceType<SecVestDevice>();
-            _deviceRegistry.RegisterDeviceType<EtaTouchDevice>();
-            _deviceRegistry.RegisterDeviceType<TwilioDevice>();
-            _deviceRegistry.RegisterDeviceType<HomeMaticDevice>();
-
-			// add functions engine
-			_functionsEngine = new FunctionsEngine();
-
-			// init IoC
-			var container = new UnityContainer();
-	        container.RegisterInstance<DeviceConfigurationModel>(configurationObject);
-			container.RegisterInstance<IMessageQueue>(new MessageQueue());
-	        container.RegisterType<ChannelValueCache>(new ContainerControlledLifetimeManager());
-			container.RegisterInstance<IDeviceRegistry>(_deviceRegistry);
-			container.RegisterInstance(_functionsEngine);
-
-            // register device instances
-            container.RegisterType<AzureIoTHubDevice>(new ContainerControlledLifetimeManager());
-            container.RegisterType<SecVestDevice>(new ContainerControlledLifetimeManager());
-            container.RegisterType<EtaTouchDevice>(new ContainerControlledLifetimeManager());
-            container.RegisterType<TwilioDevice>(new ContainerControlledLifetimeManager());
-	        container.RegisterType<HomeMaticDevice>(new ContainerControlledLifetimeManager());
-
-			// make Unity container available to ServiceLocator
-			var locator = new UnityServiceLocator(container);
-			ServiceLocator.SetLocatorProvider(() => locator);
+	        _configurationProvider.SetConfiguration(configurationObject);
 
 			// configure devices
 			await _deviceRegistry.InitializeDevicesAsync(configurationObject);
@@ -225,7 +210,7 @@ namespace W10Home.App.Shared
 
         public void StopWebserver()
         {
-            _log.Trace("Stop webserver");
+            _log.LogTrace("Stop webserver");
             if (_httpServer != null)
             {
                 _httpServer.StopServer();
@@ -235,7 +220,7 @@ namespace W10Home.App.Shared
 
         public async Task ShutdownAsync()
         {
-            _log.Trace("Stop timers");
+            _log.LogTrace("Stop timers");
             if (_everyMinuteTimer != null)
             {
                 _everyMinuteTimer.Dispose();
@@ -261,8 +246,8 @@ namespace W10Home.App.Shared
         {
             // report memory usage every minute
             var usageReport = MemoryManager.GetAppMemoryReport();
-            var messageQueue = ServiceLocator.Current.GetInstance<IMessageQueue>();
-            _log.Trace("Memory usage: "+usageReport.TotalCommitUsage+" of max "+usageReport.TotalCommitLimit+ " ~ "+String.Format("{0:P2}",usageReport.TotalCommitUsage/usageReport.TotalCommitLimit));
+            var messageQueue = ServiceLocator.Current.GetService<IMessageQueue>();
+            _log.LogTrace("Memory usage: "+usageReport.TotalCommitUsage+" of max "+usageReport.TotalCommitLimit+ " ~ "+String.Format("{0:P2}",usageReport.TotalCommitUsage/usageReport.TotalCommitLimit));
             messageQueue.Enqueue("iothub", "appmemory", $"{usageReport.TotalCommitUsage}", ChannelType.None.ToString());
         }
     }

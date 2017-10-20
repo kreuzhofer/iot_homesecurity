@@ -30,8 +30,10 @@ namespace IoTHs.Plugin.Twilio
 	        get { return _type; }
 	    }
 
-	    public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
-	    {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
 	        _name = configuration.Name;
 	        _type = configuration.Type;
 			_accountSid = configuration.Properties["AccountSid"];
@@ -39,8 +41,10 @@ namespace IoTHs.Plugin.Twilio
 			_channels.Add(new TwilioSmsChannel(_accountSid, _authToken, configuration.Properties["OutgoingPhone"], configuration.Properties["ReceiverPhone"]));
 		}
 
-		public override async Task TeardownAsync()
-		{
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public override async Task TeardownAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
 		}
 	}
 }

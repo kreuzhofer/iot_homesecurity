@@ -29,7 +29,9 @@ namespace IoTHs.Plugin.MqttClient
             get { return _type; }
         }
 
+#pragma warning disable 1998
         public async Task SendMessageToIoTHubAsync(string deviceId, string location, string key, object value)
+#pragma warning restore 1998
         {
             try
             {
@@ -56,7 +58,9 @@ namespace IoTHs.Plugin.MqttClient
             }
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             _name = configuration.Name;
             _type = configuration.Type;
@@ -91,8 +95,10 @@ namespace IoTHs.Plugin.MqttClient
 			throw new NotImplementedException();
 		}
 
-		public override async Task TeardownAsync()
-		{
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public override async Task TeardownAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
 			if (_mqttclient != null)
 			{
 				_mqttclient.MqttMsgPublishReceived -= Mqttclient_MqttMsgPublishReceived;

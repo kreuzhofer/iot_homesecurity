@@ -8,14 +8,19 @@ using System.Threading.Tasks;
 using DotNetty.Common.Concurrency;
 using IoTHs.Api.Shared;
 using IoTHs.Core;
+using IoTHs.Core.Channels;
+using IoTHs.Core.Configuration;
 using IoTHs.Core.Queing;
+using IoTHs.Devices.Interfaces;
+using IoTHs.Plugin.ABUS.SecVest;
+using IoTHs.Plugin.AzureIoTHub;
+using IoTHs.Plugin.ETATouch;
+using IoTHs.Plugin.HomeMatic;
+using IoTHs.Plugin.Twilio;
 using Microsoft.ApplicationInsights;
-using Microsoft.Practices.ServiceLocation;
-using NLog;
-using NLog.Config;
-using NLog.Layouts;
-using NLog.Targets;
-using NLog.Targets.Wrappers;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Restup.Webserver;
 using W10Home.App.Shared.Logging;
 using W10Home.Core;
 using W10Home.IoTCoreApp.Logging;
@@ -29,6 +34,7 @@ namespace W10Home.IoTCoreApp
         private BackgroundTaskDeferral _deferral;
 	    private CoreApp _coreApp;
         private ILogger _log;
+        private DeviceRegistry _deviceRegistry;
 
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
@@ -44,86 +50,62 @@ namespace W10Home.IoTCoreApp
             // Init Application Insights
             var telemetryClient = new TelemetryClient();
             telemetryClient.InstrumentationKey = "4e4ea96b-6b69-4aba-919b-558b4a4583ae";
-            
+
             // configure logging first
-            Target.Register<CustomDebuggerTarget>("CustomDebugger");
 
-            var singleLineLayoutFormat = @"${date:universalTime=true}|${pad:padding=5:inner=${level:uppercase=true}}|${logger}|${message}";
+            // init IoC
+            var container = new ServiceCollection();
 
-            var logConfig = new LoggingConfiguration();
+            container.AddLogging(builder =>
+            {
+                builder.AddDebug();
+            });
 
-            var debugTarget = new CustomDebuggerTarget();
-            debugTarget.Layout = singleLineLayoutFormat;
-            logConfig.AddTarget("debug", debugTarget);
-            var rule1 = new LoggingRule("*", LogLevel.Trace, debugTarget);
-            logConfig.LoggingRules.Add(rule1);
+            // init device registry and add devices
+            _deviceRegistry = new DeviceRegistry();
+            _deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
+            _deviceRegistry.RegisterDeviceType<SecVestDevice>();
+            _deviceRegistry.RegisterDeviceType<EtaTouchDevice>();
+            _deviceRegistry.RegisterDeviceType<TwilioDevice>();
+            _deviceRegistry.RegisterDeviceType<HomeMaticDevice>();
+            container.AddSingleton<IDeviceRegistry>(_deviceRegistry);
 
-            //var fileTarget = new FileTarget();
-            //fileTarget.Layout = singleLineLayoutFormat;
-            //fileTarget.FileName = "log.txt";
-            //fileTarget.ArchiveFileName = "log.{#}.txt";
-            //fileTarget.ArchiveNumbering = ArchiveNumberingMode.Date;
-            //fileTarget.ArchiveEvery = FileArchivePeriod.Day;
-            //fileTarget.ArchiveDateFormat = "yyyyMMdd";
-            //fileTarget.MaxArchiveFiles = 30;
-            //fileTarget.KeepFileOpen = false;
-            //logConfig.AddTarget("file", fileTarget);
-            //var rule2 = new LoggingRule("*", LogLevel.Trace, fileTarget);
-            //logConfig.LoggingRules.Add(rule2);
+            container.AddSingleton<IMessageQueue>(new MessageQueue());
+            container.AddSingleton<ChannelValueCache>();
+            container.AddSingleton<DeviceConfigurationProvider>();
+            container.AddTransient<CoreApp>();
+            container.AddSingleton<FunctionsEngine>();
 
-            var applicationInsightsTarget = new ApplicationInsightsTarget(telemetryClient);
-            logConfig.AddTarget("appinsights", applicationInsightsTarget);
-            var rule3 = new LoggingRule("*", LogLevel.Info, applicationInsightsTarget);
-            logConfig.LoggingRules.Add(rule3);
+            // container available globally
+            var locator = container.BuildServiceProvider();
+            ServiceLocator.SetLocatorProvider(() => locator);
 
-            var iotHubTarget = new IotHubTarget();
-            logConfig.AddTarget("iothub", iotHubTarget);
-            var rule4 = new LoggingRule("*", LogLevel.Trace, iotHubTarget);
-            logConfig.LoggingRules.Add(rule4);
-
-            //var customFileTarget = new CustomFileTarget();
-            //logConfig.AddTarget("customfile", customFileTarget);
-            //var rule5 = new LoggingRule("*", LogLevel.Trace, customFileTarget);
-            //logConfig.LoggingRules.Add(rule5);
-
-            LogManager.Configuration = logConfig;
-            
-            //LogManagerFactory.DefaultConfiguration = new LoggingConfiguration();
-            //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new DebugTarget());
-            //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new EtwTarget());
-            //var streamingFileTarget = new StreamingFileTarget() {KeepLogFilesOpenForWrite = false};
-            //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, streamingFileTarget);
-            //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Info, LogLevel.Fatal, new ApplicationInsightsTarget(telemetryClient));
-            //// init custom metrolog logger for iot hub
-            //LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Info, LogLevel.Fatal, new IotHubTarget());
-
-
-            _log = LogManager.GetCurrentClassLogger();
-            _log.Info("Starting");
+            _log = locator.GetService<ILoggerFactory>().CreateLogger<StartupTask>();
+            _log.LogInformation("Starting");
             // send package version to iot hub for tracking device software version
             var package = Windows.ApplicationModel.Package.Current;
             var packageId = package.Id;
             var version = packageId.Version;
-            _log.Info("Package version: "+version.Major+"."+version.Minor+"."+version.Build);
+            _log.LogInformation("Package version: "+version.Major+"."+version.Minor+"."+version.Build);
 
-            _log.Trace("Launching CoreApp");
-            _log.Trace("Local data folder: " + Windows.Storage.ApplicationData.Current.LocalFolder.Path);
+            _log.LogTrace("Launching CoreApp");
+            _log.LogTrace("Local data folder: " + Windows.Storage.ApplicationData.Current.LocalFolder.Path);
 
             try
             {
-                _coreApp = new CoreApp();
+                _coreApp = locator.GetService<CoreApp>();
                 await _coreApp.RunAsync();
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "CoreApp Run crashed");
+                _log.LogError(ex, "CoreApp Run crashed");
                 throw;
             }
 
             // The message Loop Worker runs in the background and checks for specific messages
 			// which tell the CoreApp to either reboot the device or exit the app, which should
 			// restart of the app
-            _log.Trace("Launching MessageLoopWorker");
+            _log.LogTrace("Launching MessageLoopWorker");
 	        MessageLoopWorker();
 
 	        // Dont release deferral, otherwise app will stop
@@ -137,7 +119,7 @@ namespace W10Home.IoTCoreApp
 
         private void TaskInstance_Canceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
         {
-            _log.Info("StartupTask terminated for reason "+reason.ToString());
+            _log.LogInformation("StartupTask terminated for reason "+reason.ToString());
             //a few reasons that you may be interested in.
             switch (reason)
             {
@@ -157,7 +139,7 @@ namespace W10Home.IoTCoreApp
 
         private async void MessageLoopWorker()
 		{
-            _log.Trace("MessageLoopWorker");
+            _log.LogTrace("MessageLoopWorker");
 			IMessageQueue queue = null;
 			do
 			{
@@ -165,7 +147,7 @@ namespace W10Home.IoTCoreApp
 				{
 					try
 					{
-						queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+						queue = ServiceLocator.Current.GetService<IMessageQueue>();
 					}
 					catch
 					{
@@ -181,12 +163,12 @@ namespace W10Home.IoTCoreApp
 					{
 						if (message.Key == "reboot")
 						{
-                            _log.Info("Rebooting");
+                            _log.LogInformation("Rebooting");
 							ShutdownManager.BeginShutdown(ShutdownKind.Restart, TimeSpan.Zero);
 						}
 						else if (message.Key == "exit")
 						{
-                            _log.Info("Exiting");
+                            _log.LogInformation("Exiting");
 							if (_deferral != null)
 							{
 								_deferral.Complete();
@@ -202,24 +184,24 @@ namespace W10Home.IoTCoreApp
 					        }
 					        catch (Exception ex)
 					        {
-                                _log.Error(ex, "CoreApp Shutdown unsuccessful");
+                                _log.LogError(ex, "CoreApp Shutdown unsuccessful");
 					            throw;
 					        }
 					        try
 					        {
-					            _coreApp = new CoreApp();
+					            _coreApp = ServiceLocator.Current.GetService<CoreApp>();
 					            await _coreApp.RunAsync();
 					        }
 					        catch (Exception ex)
 					        {
-					            _log.Error(ex, "CoreApp Run crashed");
+					            _log.LogError(ex, "CoreApp Run crashed");
 					            throw;
 					        }
                         }
 					}
 					catch (Exception ex)
 					{
-                        _log.Error(ex, "MessageLoopWorker");
+                        _log.LogError(ex, "MessageLoopWorker");
 					}
 				}
 				await Task.Delay(IoTHsConstants.MessageLoopDelay);
