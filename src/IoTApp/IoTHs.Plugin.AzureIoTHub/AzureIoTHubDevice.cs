@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
@@ -24,6 +25,7 @@ using Microsoft.Azure.Devices.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using HttpClient = Windows.Web.Http.HttpClient;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
 #if USE_TPM
@@ -433,7 +435,12 @@ namespace IoTHs.Plugin.AzureIoTHub
 		    _log.LogDebug("Downloading new configuration from " + configUri);
 			var httpClient = new HttpClient(aHBPF);
             httpClient.DefaultRequestHeaders.Add("apikey", apiKey);
-			var configFileContent = await httpClient.GetStringAsync(new Uri(configUri));
+			var response = await httpClient.GetAsync(new Uri(configUri));
+		    if (!response.IsSuccessStatusCode)
+		    {
+		        throw new HttpRequestException(response.ReasonPhrase);
+		    }
+		    var configFileContent = await response.Content.ReadAsStringAsync();
 
 			// save config file to disk
 			var localStorage = ApplicationData.Current.LocalFolder;

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
-using Windows.Web.Http;
 using IoTHs.Devices.Interfaces;
 using IoTHs.Plugin.ABUS.SecVest.Models;
 using Newtonsoft.Json;
@@ -125,7 +126,7 @@ namespace IoTHs.Plugin.ABUS.SecVest
 		{
 			T result = default(T);
 
-			var content = new HttpStringContent(body, Windows.Storage.Streams.UnicodeEncoding.Utf8, "application/json");
+			var content = new StringContent(body, Encoding.UTF8, "application/json");
 			var uri = new Uri(_baseUrl + query);
 			HttpResponseMessage response = await _client.PutAsync(uri, content);
 			if (response.IsSuccessStatusCode)

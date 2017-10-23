@@ -63,7 +63,10 @@ namespace W10Home.App.Shared
         public void Shutdown()
         {
             _log.LogTrace("Shutdown functions engine");
-            _cancellationTokenSource.Cancel();
+            if (_cancellationTokenSource != null)
+            {
+                _cancellationTokenSource.Cancel();
+            }
             foreach (var functionInstance in _functions.ToList())
             {
                 UnloadFunction(functionInstance.FunctionId);

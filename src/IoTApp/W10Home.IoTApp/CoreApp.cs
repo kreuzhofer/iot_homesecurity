@@ -3,30 +3,25 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.System;
+using IoTHs.Api.Shared;
+using IoTHs.Core;
+using IoTHs.Core.Configuration;
+using IoTHs.Core.Queing;
+using IoTHs.Devices.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Restup.Webserver.File;
 using Restup.Webserver.Http;
 using Restup.Webserver.Rest;
 using Restup.WebServer.Http;
+using W10Home.App.Shared;
 using W10Home.IoTCoreApp.Auth;
 using W10Home.IoTCoreApp.Controllers;
-using IoTHs.Plugin.ABUS.SecVest;
-using IoTHs.Plugin.AzureIoTHub;
-using IoTHs.Plugin.Twilio;
-using Windows.Storage;
-using Windows.System;
-using IoTHs.Api.Shared;
-using IoTHs.Core;
-using IoTHs.Core.Channels;
-using IoTHs.Core.Configuration;
-using IoTHs.Core.Queing;
-using IoTHs.Devices.Interfaces;
-using IoTHs.Plugin.ETATouch;
-using IoTHs.Plugin.HomeMatic;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
-namespace W10Home.App.Shared
+namespace W10Home.IoTCoreApp
 {
     internal class CoreApp
     {

@@ -13,10 +13,15 @@ using IoTHs.Core.Configuration;
 using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
 using IoTHs.Plugin.ABUS.SecVest;
+#if ABUS
+using IoTHs.Plugin.ABUS;
+#endif
 using IoTHs.Plugin.AzureIoTHub;
 using IoTHs.Plugin.ETATouch;
 using IoTHs.Plugin.HomeMatic;
+#if TWILIO
 using IoTHs.Plugin.Twilio;
+#endif
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -31,6 +36,7 @@ namespace W10Home.IoTCoreApp
 	    private CoreApp _coreApp;
         private ILogger _log;
         private IDeviceRegistry _deviceRegistry;
+        private TelemetryClient _telemetryClient;
 
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
@@ -44,8 +50,7 @@ namespace W10Home.IoTCoreApp
             //TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
             // Init Application Insights
-            var telemetryClient = new TelemetryClient();
-            telemetryClient.InstrumentationKey = "4e4ea96b-6b69-4aba-919b-558b4a4583ae";
+            _telemetryClient = new TelemetryClient {InstrumentationKey = "4e4ea96b-6b69-4aba-919b-558b4a4583ae"};
 
             // configure logging first
 
@@ -67,9 +72,13 @@ namespace W10Home.IoTCoreApp
             container.AddSingleton<FunctionsEngine>();
 
             container.AddTransient<AzureIoTHubDevice>();
+#if ABUS
             container.AddTransient<SecVestDevice>();
+#endif
             container.AddTransient<EtaTouchDevice>();
+#if TWILIO
             container.AddTransient<TwilioDevice>();
+#endif
             container.AddTransient<HomeMaticDevice>();
 
             // container available globally
@@ -79,9 +88,13 @@ namespace W10Home.IoTCoreApp
             // init device registry and add devices
             _deviceRegistry = locator.GetService<IDeviceRegistry>();
             _deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
+#if ABUS
             _deviceRegistry.RegisterDeviceType<SecVestDevice>();
+#endif
             _deviceRegistry.RegisterDeviceType<EtaTouchDevice>();
+#if TWILIO
             _deviceRegistry.RegisterDeviceType<TwilioDevice>();
+#endif
             _deviceRegistry.RegisterDeviceType<HomeMaticDevice>();
 
             _log = locator.GetService<ILoggerFactory>().CreateLogger<StartupTask>();
