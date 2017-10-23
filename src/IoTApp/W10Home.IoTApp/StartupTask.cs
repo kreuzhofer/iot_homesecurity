@@ -55,6 +55,7 @@ namespace W10Home.IoTCoreApp
             container.AddLogging(builder =>
             {
                 builder.AddDebug();
+                builder.SetMinimumLevel(LogLevel.Trace);
             });
 
             container.AddSingleton<IDeviceRegistry, DeviceRegistry>();
