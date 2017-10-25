@@ -29,7 +29,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\ARM\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;AZUREIOTHUB;ETATOUCH;SECVEST;CODE_ANALYSIS;CODE_ANALYSIS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;AZUREIOTHUB;ETATOUCH;SECVEST;MQTTBROKER</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>ARM</PlatformTarget>
@@ -219,6 +219,10 @@
     <ProjectReference Include="..\IoTHs.Plugin.HomeMatic\IoTHs.Plugin.HomeMatic.csproj">
       <Project>{b500eb85-8a90-45bc-aa6e-448dabb187cc}</Project>
       <Name>IoTHs.Plugin.HomeMatic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.MQTTBroker\IoTHs.Plugin.MQTTBroker.csproj">
+      <Project>{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}</Project>
+      <Name>IoTHs.Plugin.MQTTBroker</Name>
     </ProjectReference>
     <ProjectReference Include="..\IoTHs.Plugin.MqttClient\IoTHs.Plugin.MqttClient.csproj">
       <Project>{174a9f97-1dd6-4d50-8cd4-2052c525ef5a}</Project>

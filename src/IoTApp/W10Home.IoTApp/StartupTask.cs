@@ -19,6 +19,9 @@ using IoTHs.Plugin.ABUS;
 using IoTHs.Plugin.AzureIoTHub;
 using IoTHs.Plugin.ETATouch;
 using IoTHs.Plugin.HomeMatic;
+#if MQTTBROKER
+using IoTHs.Plugin.MQTTBroker;
+#endif
 #if TWILIO
 using IoTHs.Plugin.Twilio;
 #endif
@@ -80,6 +83,9 @@ namespace W10Home.IoTCoreApp
             container.AddTransient<TwilioDevice>();
 #endif
             container.AddTransient<HomeMaticDevice>();
+#if MQTTBROKER
+            container.AddTransient<MQTTBrokerPlugin>();
+#endif
 
             // container available globally
             var locator = container.BuildServiceProvider();
@@ -96,6 +102,9 @@ namespace W10Home.IoTCoreApp
             _deviceRegistry.RegisterDeviceType<TwilioDevice>();
 #endif
             _deviceRegistry.RegisterDeviceType<HomeMaticDevice>();
+#if MQTTBROKER
+            _deviceRegistry.RegisterDeviceType<MQTTBrokerPlugin>();
+#endif
 
             _log = locator.GetService<ILoggerFactory>().CreateLogger<StartupTask>();
             _log.LogInformation("Starting");

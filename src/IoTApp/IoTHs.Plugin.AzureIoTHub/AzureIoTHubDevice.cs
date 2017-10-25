@@ -413,11 +413,11 @@ namespace IoTHs.Plugin.AzureIoTHub
             }
 		    if (desiredProperties.Contains("apikey"))
 		    {
-		        _apiKey = desiredProperties["apikey"].ToString();
+		        _apiKey = desiredProperties["apikey"];
 		    }
             if (desiredProperties.Contains("serviceBaseUrl"))
 		    {
-		        _serviceBaseUrl = desiredProperties["serviceBaseUrl"].ToString();
+		        _serviceBaseUrl = desiredProperties["serviceBaseUrl"];
 		        await DownloadConfigAndRestartAsync(_serviceBaseUrl, _apiKey, desiredProperties.Version);
 		    }
         }

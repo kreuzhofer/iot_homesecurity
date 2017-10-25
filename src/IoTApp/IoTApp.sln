@@ -21,7 +21,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTHs.Plugin.MqttClient", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTHs.Plugin.HomeMatic", "IoTHs.Plugin.HomeMatic\IoTHs.Plugin.HomeMatic.csproj", "{B500EB85-8A90-45BC-AA6E-448DABB187CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTHs.Plugin.ABUS", "IoTHs.Plugin.ABUS\IoTHs.Plugin.ABUS.csproj", "{37B2EC12-B0F0-4E17-B0A8-6C8568B71524}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTHs.Plugin.ABUS", "IoTHs.Plugin.ABUS\IoTHs.Plugin.ABUS.csproj", "{37B2EC12-B0F0-4E17-B0A8-6C8568B71524}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTHs.Plugin.MQTTBroker", "IoTHs.Plugin.MQTTBroker\IoTHs.Plugin.MQTTBroker.csproj", "{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -200,6 +202,22 @@ Global
 		{37B2EC12-B0F0-4E17-B0A8-6C8568B71524}.Release|x64.Build.0 = Release|Any CPU
 		{37B2EC12-B0F0-4E17-B0A8-6C8568B71524}.Release|x86.ActiveCfg = Release|Any CPU
 		{37B2EC12-B0F0-4E17-B0A8-6C8568B71524}.Release|x86.Build.0 = Release|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Debug|ARM.Build.0 = Debug|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Debug|x64.Build.0 = Debug|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Debug|x86.Build.0 = Debug|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Release|ARM.ActiveCfg = Release|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Release|ARM.Build.0 = Release|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Release|x64.ActiveCfg = Release|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Release|x64.Build.0 = Release|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Release|x86.ActiveCfg = Release|Any CPU
+		{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
