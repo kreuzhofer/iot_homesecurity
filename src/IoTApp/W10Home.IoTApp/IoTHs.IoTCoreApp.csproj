@@ -29,7 +29,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\ARM\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;AZUREIOTHUB;ETATOUCH;TWILIO;SECVEST;CODE_ANALYSIS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;AZUREIOTHUB;ETATOUCH;SECVEST;MQTTBROKER</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>ARM</PlatformTarget>
@@ -39,7 +39,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <OutputPath>bin\ARM\Release\</OutputPath>
-    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;AZUREIOTHUB;ETATOUCH</DefineConstants>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;AZUREIOTHUB;ETATOUCH;CODE_ANALYSIS;TWILIO;ABUS</DefineConstants>
     <Optimize>true</Optimize>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
@@ -119,13 +119,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Auth\FixedCredentialsValidator.cs" />
-    <Compile Include="Config.cs" />
     <Compile Include="Controllers\QueueController.cs" />
     <Compile Include="CoreApp.cs" />
     <Compile Include="Logging\ApplicationInsightsTarget.cs" />
     <Compile Include="Logging\CustomDebuggerTarget.cs" />
     <Compile Include="Logging\CustomFileTarget.cs" />
-    <Compile Include="Logging\IotHubTarget.cs" />
     <Compile Include="Lua\FunctionInstance.cs" />
     <Compile Include="Lua\FunctionsEngine.cs" />
     <Compile Include="PacketForwardingWorker.cs" />
@@ -205,9 +203,9 @@
       <Project>{000c0e13-fbe4-4815-b30b-35ade072e45f}</Project>
       <Name>IoTHs.Devices.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IoTHs.Plugin.ABUS.SecVest\IoTHs.Plugin.ABUS.SecVest.csproj">
-      <Project>{0acaf795-9493-4251-ae48-2a11edc483ba}</Project>
-      <Name>IoTHs.Plugin.ABUS.SecVest</Name>
+    <ProjectReference Include="..\IoTHs.Plugin.ABUS\IoTHs.Plugin.ABUS.csproj">
+      <Project>{37B2EC12-B0F0-4E17-B0A8-6C8568B71524}</Project>
+      <Name>IoTHs.Plugin.ABUS</Name>
     </ProjectReference>
     <ProjectReference Include="..\IoTHs.Plugin.AzureIoTHub\IoTHs.Plugin.AzureIoTHub.csproj">
       <Project>{7be70b2c-fd65-4769-a810-f8681e4478e4}</Project>
@@ -221,17 +219,21 @@
       <Project>{b500eb85-8a90-45bc-aa6e-448dabb187cc}</Project>
       <Name>IoTHs.Plugin.HomeMatic</Name>
     </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.MQTTBroker\IoTHs.Plugin.MQTTBroker.csproj">
+      <Project>{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}</Project>
+      <Name>IoTHs.Plugin.MQTTBroker</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IoTHs.Plugin.MqttClient\IoTHs.Plugin.MqttClient.csproj">
       <Project>{174a9f97-1dd6-4d50-8cd4-2052c525ef5a}</Project>
       <Name>IoTHs.Plugin.MqttClient</Name>
     </ProjectReference>
-    <ProjectReference Include="..\IoTHs.Plugin.Twilio\IoTHs.Plugin.Twilio.csproj">
-      <Project>{213D13F8-91BF-4EEF-AC5E-53F37B631810}</Project>
-      <Name>IoTHs.Plugin.Twilio</Name>
-    </ProjectReference>
     <ProjectReference Include="..\IoTHs.Core\IoTHs.Core.csproj">
       <Project>{c3c103ff-8993-420d-8f50-979eca9c7d73}</Project>
       <Name>IoTHs.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IoTHs.Plugin.Twilio\IoTHs.Plugin.Twilio.csproj">
+      <Project>{213d13f8-91bf-4eef-ac5e-53f37b631810}</Project>
+      <Name>IoTHs.Plugin.Twilio</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -255,6 +257,15 @@
     <PackageReference Include="Microsoft.ApplicationInsights">
       <Version>2.4.0</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection">
+      <Version>2.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging">
+      <Version>2.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug">
+      <Version>2.0.0</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.0.1</Version>
     </PackageReference>
@@ -264,17 +275,8 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>10.0.3</Version>
     </PackageReference>
-    <PackageReference Include="NLog">
-      <Version>5.0.0-beta11</Version>
-    </PackageReference>
     <PackageReference Include="System.Reactive">
       <Version>4.0.0-preview00001</Version>
-    </PackageReference>
-    <PackageReference Include="Unity">
-      <Version>4.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="Unity.ServiceLocator">
-      <Version>2.0.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

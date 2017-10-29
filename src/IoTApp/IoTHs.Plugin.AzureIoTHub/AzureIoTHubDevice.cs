@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
@@ -21,9 +22,10 @@ using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Shared;
-using Microsoft.Practices.ServiceLocation;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using NLog;
+using HttpClient = Windows.Web.Http.HttpClient;
 using UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding;
 
 #if USE_TPM
@@ -41,7 +43,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 	    private CancellationTokenSource _threadCancellation;
 	    private string _connectionString;
 	    private const int CLIENT_TIMEOUT = 59; // timeout in minutes before the iot hub client gets renewed (max 60 minutes)
-	    private readonly ILogger _log = LogManager.GetCurrentClassLogger();
+	    private readonly ILogger _log;
 	    private List<IDeviceChannel> _channels = new List<IDeviceChannel>();
 	    private IDeviceRegistry _deviceRegistry;
 	    private string _name;
@@ -72,11 +74,12 @@ namespace IoTHs.Plugin.AzureIoTHub
 	        get { return _apiKey; }
 	    }
 
-        public AzureIoTHubDevice(IMessageQueue messageQueue, IDeviceRegistry deviceRegistry)
+        public AzureIoTHubDevice(IMessageQueue messageQueue, IDeviceRegistry deviceRegistry, ILoggerFactory loggerFactory)
 	    {
 	        _channels.Add(new IotHubDeviceChannel(messageQueue));
             _channels.Add(new IotHubLogChannel(messageQueue));
 	        _deviceRegistry = deviceRegistry;
+	        _log = loggerFactory.CreateLogger<AzureIoTHubDevice>();
 	    }
 
 #if USE_TPM
@@ -156,13 +159,13 @@ namespace IoTHs.Plugin.AzureIoTHub
 				};
 
                 // cache last value
-			    ServiceLocator.Current.GetInstance<ChannelValueCache>().Set(key, strvalue);
+			    ServiceLocator.Current.GetService<ChannelValueCache>().Set(key, strvalue);
 
 				return await SendMessageToIoTHubAsync(message, "Channel");
 			}
 			catch (Exception ex)
 			{
-				_log.Error(ex, "SendChannelMessageToIoTHubAsync");
+				_log.LogError(ex, "SendChannelMessageToIoTHubAsync");
 				return false;
 			}
 		}
@@ -182,12 +185,12 @@ namespace IoTHs.Plugin.AzureIoTHub
 				msg.Properties.Add("MessageType", messageType);
 
 				await _deviceClient.SendEventAsync(msg);
-				_log.Trace(_name + ":"+payload);
+				_log.LogTrace(_name + ":"+payload);
 				return true;
 			}
 			catch (Exception ex)
 			{
-                _log.Error(ex, "SendMessageToIoTHubAsync");
+                _log.LogError(ex, "SendMessageToIoTHubAsync");
 				return false;
 			}
 		}
@@ -235,13 +238,13 @@ namespace IoTHs.Plugin.AzureIoTHub
 			}
 			catch (Exception ex)
 			{
-                _log.Error(ex, "InitializeAsync");
+                _log.LogError(ex, "InitializeAsync");
 			}
 		}
 
 	    private async Task StartupAsync()
 	    {
-            _log.Trace("StartupAsync");
+            _log.LogTrace("StartupAsync");
 	        await Observable.Defer(async () =>
 	        {
 	            await CreateDeviceClientAsync();
@@ -254,7 +257,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 
         private async Task CreateDeviceClientAsync()
 	    {
-            _log.Trace("CreateDeviceClientAsync");
+            _log.LogTrace("CreateDeviceClientAsync");
 
 #if USE_TPM
 // check tpm next
@@ -279,7 +282,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 #endif
 	        await _deviceClient.SetMethodHandlerAsync("getdevices", HandleGetDevicesMethod, null);
 	        await _deviceClient.SetDesiredPropertyUpdateCallbackAsync(DesiredPropertyUpdateCallback, null);
-	        _log.Trace("Device connection established");
+	        _log.LogTrace("Device connection established");
 
 
             _clientTimeoutTimer = new Timer(ClientTimeoutTimerCallback, null, TimeSpan.FromMinutes(CLIENT_TIMEOUT), TimeSpan.Zero);
@@ -295,7 +298,7 @@ namespace IoTHs.Plugin.AzureIoTHub
                     try
                     {
                         // check internal message queue for iot hub messages to be forwarded
-                        var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+                        var queue = ServiceLocator.Current.GetService<IMessageQueue>();
                         if (queue.TryPeek("iothub", out QueueMessage queuemessage))
                         {
                             if (await SendChannelMessageToIoTHubAsync(queuemessage.Key, queuemessage.Value, queuemessage.Tag))
@@ -343,7 +346,7 @@ namespace IoTHs.Plugin.AzureIoTHub
                             }
                             catch (Exception ex)
                             {
-                                _log.Error(ex, "Could not deserialize message from iot hub");
+                                _log.LogError(ex, "Could not deserialize message from iot hub");
                             }
                             if (messageObject == null) // maybe a json incompatible message object -> throw away and continue
                             {
@@ -357,7 +360,7 @@ namespace IoTHs.Plugin.AzureIoTHub
                     }
                     catch (Exception ex)
                     {
-                        _log.Error(ex, "MessageReceiverLoop");
+                        _log.LogError(ex, "MessageReceiverLoop");
                     } 
                 }
 	            if (!cancellationToken.IsCancellationRequested)
@@ -372,20 +375,20 @@ namespace IoTHs.Plugin.AzureIoTHub
 	                }
 	            }
 	        } while (!cancellationToken.IsCancellationRequested);
-            _log.Trace("Exit MessageReceiverLoop");
+            _log.LogTrace("Exit MessageReceiverLoop");
 	        _messageLoopTerminationEvent.Set();
 	    }
 
         private async void ClientTimeoutTimerCallback(object state)
         {
-            _log.Trace("Recreating device client");
+            _log.LogTrace("Recreating device client");
             try
             {
                 await TeardownAsync();
             }
             catch(Exception ex)
             {
-                _log.Error(ex, "ClientTimeoutTimerCallback|Error while shutting down IoTHub client and message loop");
+                _log.LogError(ex, "ClientTimeoutTimerCallback|Error while shutting down IoTHub client and message loop");
             }
             try
             {
@@ -393,28 +396,28 @@ namespace IoTHs.Plugin.AzureIoTHub
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "ClientTimeoutTimerCallback|Error while recreating IoTHub client");
+                _log.LogError(ex, "ClientTimeoutTimerCallback|Error while recreating IoTHub client");
             }
 
         }
 
         private async Task DesiredPropertyUpdateCallback(TwinCollection desiredProperties, object userContext)
 		{
-		    _log.Trace(desiredProperties.ToString());
-		    var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+		    _log.LogTrace(desiredProperties.ToString());
+		    var queue = ServiceLocator.Current.GetService<IMessageQueue>();
 		    if (desiredProperties.Contains("functions"))
 		    {
 		        string functionsAndVersions = desiredProperties["functions"].versions.ToString();
-		        _log.Trace("DesiredPropertyUpdateCallback|Updating functions: "+functionsAndVersions);
+		        _log.LogTrace("DesiredPropertyUpdateCallback|Updating functions: "+functionsAndVersions);
 		        queue.Enqueue("functionsengine", "checkversionsandupdate", functionsAndVersions);
             }
 		    if (desiredProperties.Contains("apikey"))
 		    {
-		        _apiKey = desiredProperties["apikey"].ToString();
+		        _apiKey = desiredProperties["apikey"];
 		    }
             if (desiredProperties.Contains("serviceBaseUrl"))
 		    {
-		        _serviceBaseUrl = desiredProperties["serviceBaseUrl"].ToString();
+		        _serviceBaseUrl = desiredProperties["serviceBaseUrl"];
 		        await DownloadConfigAndRestartAsync(_serviceBaseUrl, _apiKey, desiredProperties.Version);
 		    }
         }
@@ -429,10 +432,15 @@ namespace IoTHs.Plugin.AzureIoTHub
 
             // download file
 		    var configUri = serviceBaseUrl + "DeviceConfiguration/" + _deviceId;
-		    _log.Debug("Downloading new configuration from " + configUri);
+		    _log.LogDebug("Downloading new configuration from " + configUri);
 			var httpClient = new HttpClient(aHBPF);
             httpClient.DefaultRequestHeaders.Add("apikey", apiKey);
-			var configFileContent = await httpClient.GetStringAsync(new Uri(configUri));
+			var response = await httpClient.GetAsync(new Uri(configUri));
+		    if (!response.IsSuccessStatusCode)
+		    {
+		        throw new HttpRequestException(response.ReasonPhrase);
+		    }
+		    var configFileContent = await response.Content.ReadAsStringAsync();
 
 			// save config file to disk
 			var localStorage = ApplicationData.Current.LocalFolder;
@@ -456,7 +464,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 		    reportedProperties["ConfigVersion"] = configVersion;
 		    await _deviceClient.UpdateReportedPropertiesAsync(reportedProperties);
 
-            var queue = ServiceLocator.Current.GetInstance<IMessageQueue>();
+            var queue = ServiceLocator.Current.GetService<IMessageQueue>();
 			queue.Enqueue("management", "restart", null, null); // restart the app, StartupTask takes care of this. External check to restart the app must be in place.
 		}
 
@@ -495,21 +503,23 @@ namespace IoTHs.Plugin.AzureIoTHub
                 }
                 else
                 {
-                    _log.Error("GetConnectionStringFromTpmAsync. Cannot get connection string");
+                    _log.LogError("GetConnectionStringFromTpmAsync. Cannot get connection string");
                     throw new Exception("Cannot get connection string");
                 }
             }
             catch (System.UnauthorizedAccessException)
             {
-                _log.Fatal("Could not launch limpet.exe. Permissions are missing. See https://github.com/Azure/azure-iot-hub-vs-cs/issues/9");
+                _log.LogCritical("Could not launch limpet.exe. Permissions are missing. See https://github.com/Azure/azure-iot-hub-vs-cs/issues/9");
                 throw;
             }
 	    }
 #endif
 
-#region DeviceMethods
-	    private async Task<MethodResponse> HandleGetDevicesMethod(MethodRequest methodrequest, object usercontext)
-	    {
+        #region DeviceMethods
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        private async Task<MethodResponse> HandleGetDevicesMethod(MethodRequest methodrequest, object usercontext)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
             var json = JsonConvert.SerializeObject(_deviceRegistry.GetDevices().ToList(), Formatting.Indented);
 	        var bytes = Encoding.UTF8.GetBytes(json);
 	        return new MethodResponse(bytes, 0);
@@ -524,7 +534,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 
 		public override async Task TeardownAsync()
 		{
-            _log.Trace("TeardownAsync");
+            _log.LogTrace("TeardownAsync");
 		    if (_threadCancellation != null)
 		    {
                 try

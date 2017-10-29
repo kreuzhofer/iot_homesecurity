@@ -4,20 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using IoTHs.Api.Shared;
 using IoTHs.Devices.Interfaces;
-using Microsoft.Extensions.Logging;
+using Microsoft.Practices.ServiceLocation;
+using NLog;
 
 namespace IoTHs.Core
 {
-	public class DeviceRegistry : IDeviceRegistry
+	internal class DeviceRegistry : IDeviceRegistry
 	{
 		private Dictionary<string, Type> _deviceTypes = new Dictionary<string, Type>();
 		private Dictionary<string, IDevice> _deviceList = new Dictionary<string, IDevice>();
-	    private readonly ILogger _log;
-
-	    public DeviceRegistry(ILoggerFactory loggerFactory)
-	    {
-	        _log = loggerFactory.CreateLogger<DeviceRegistry>();
-	    }
+	    private readonly ILogger _log = LogManager.GetCurrentClassLogger();
 
         public void RegisterDeviceType<T>() where T : class, IDevice
 		{
@@ -30,20 +26,20 @@ namespace IoTHs.Core
 			{
 				try
 				{
-					var deviceInstance = (IDevice)ServiceLocator.Current.GetService(_deviceTypes[configuration.Type]);
+					var deviceInstance = (IDevice)ServiceLocator.Current.GetInstance(_deviceTypes[configuration.Type]);
 					_deviceList.Add(configuration.Name, deviceInstance);
 					await deviceInstance.InitializeAsync(configuration);
 				}
 				catch (Exception ex)
 				{
-					_log.LogError(ex, "Error while initializing plugin " + configuration.Name);
+					_log.Error(ex, "Error while initializing plugin " + configuration.Name);
 				}
 			}
 		}
 
 		public async Task TeardownDevicesAsync()
 		{
-            _log.LogTrace("Shutdown devices");
+            _log.Trace("Shutdown devices");
 			foreach (var device in _deviceList.ToList())
 			{
 				await device.Value.TeardownAsync();

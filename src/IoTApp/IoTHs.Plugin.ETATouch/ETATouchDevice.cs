@@ -133,8 +133,10 @@ namespace IoTHs.Plugin.ETATouch
 			return _channels.AsEnumerable();
 		}
 
-	    public override async Task TeardownAsync()
-	    {
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public override async Task TeardownAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
 		    // nothing to do yet
 	    }
     }
