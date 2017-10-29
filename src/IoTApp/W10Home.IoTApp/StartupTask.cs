@@ -10,6 +10,7 @@ using IoTHs.Api.Shared;
 using IoTHs.Core;
 using IoTHs.Core.Channels;
 using IoTHs.Core.Configuration;
+using IoTHs.Core.Logging;
 using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
 using IoTHs.Plugin.ABUS.SecVest;
@@ -63,6 +64,7 @@ namespace W10Home.IoTCoreApp
             container.AddLogging(builder =>
             {
                 builder.AddDebug();
+                builder.AddRest();
                 builder.SetMinimumLevel(LogLevel.Trace);
             });
 

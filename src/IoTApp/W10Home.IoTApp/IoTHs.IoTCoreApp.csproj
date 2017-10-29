@@ -124,7 +124,6 @@
     <Compile Include="Logging\ApplicationInsightsTarget.cs" />
     <Compile Include="Logging\CustomDebuggerTarget.cs" />
     <Compile Include="Logging\CustomFileTarget.cs" />
-    <Compile Include="Logging\IotHubTarget.cs" />
     <Compile Include="Lua\FunctionInstance.cs" />
     <Compile Include="Lua\FunctionsEngine.cs" />
     <Compile Include="PacketForwardingWorker.cs" />
