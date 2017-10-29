@@ -13,9 +13,8 @@ using IoTHs.Core.Configuration;
 using IoTHs.Core.Logging;
 using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
-using IoTHs.Plugin.ABUS.SecVest;
 #if ABUS
-using IoTHs.Plugin.ABUS;
+using IoTHs.Plugin.ABUS.SecVest;
 #endif
 using IoTHs.Plugin.AzureIoTHub;
 using IoTHs.Plugin.ETATouch;
