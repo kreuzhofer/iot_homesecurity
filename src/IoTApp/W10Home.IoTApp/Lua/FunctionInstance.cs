@@ -1,11 +1,7 @@
-﻿using MoonSharp.Interpreter;
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
+using MoonSharp.Interpreter;
 
-namespace W10Home.App.Shared.Lua
+namespace W10Home.IoTCoreApp.Lua
 {
     internal class FunctionInstance
     {

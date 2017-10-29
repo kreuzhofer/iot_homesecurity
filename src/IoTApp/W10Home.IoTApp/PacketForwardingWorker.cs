@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking;
 using Windows.Networking.Sockets;
-using Windows.Storage.Streams;
 
-namespace W10Home.Core
+namespace W10Home.IoTCoreApp
 {
 	internal class PacketForwardingWorker
 	{

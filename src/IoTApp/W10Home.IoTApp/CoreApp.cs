@@ -17,9 +17,9 @@ using Restup.Webserver.File;
 using Restup.Webserver.Http;
 using Restup.Webserver.Rest;
 using Restup.WebServer.Http;
-using W10Home.App.Shared;
 using W10Home.IoTCoreApp.Auth;
 using W10Home.IoTCoreApp.Controllers;
+using W10Home.IoTCoreApp.Lua;
 
 namespace W10Home.IoTCoreApp
 {

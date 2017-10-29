@@ -1,6 +1,5 @@
 ﻿using Windows.ApplicationModel.Background;
 using Windows.System;
-using W10Home.App.Shared;
 using System.Diagnostics;
 using System;
 using System.Text;
@@ -28,6 +27,7 @@ using IoTHs.Plugin.Twilio;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using W10Home.IoTCoreApp.Lua;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 

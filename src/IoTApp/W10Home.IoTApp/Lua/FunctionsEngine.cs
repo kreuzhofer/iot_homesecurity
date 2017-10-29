@@ -1,31 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Security.Cryptography.Certificates;
-using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Interop;
-using W10Home.Interfaces;
-using W10Home.Interfaces.Configuration;
-using IoTHs.Api.Shared;
-using IoTHs.Devices.Interfaces;
 using Windows.Storage;
 using Windows.Web.Http;
 using Windows.Web.Http.Filters;
+using IoTHs.Api.Shared;
 using IoTHs.Core;
 using IoTHs.Core.Queing;
+using IoTHs.Devices.Interfaces;
 using IoTHs.Plugin.AzureIoTHub;
-using Microsoft.Azure.Devices.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MoonSharp.Interpreter;
+using MoonSharp.Interpreter.Interop;
 using Newtonsoft.Json;
-using W10Home.App.Shared.Lua;
-using W10Home.Core;
+using W10Home.Interfaces.Configuration;
 
-namespace W10Home.App.Shared
+namespace W10Home.IoTCoreApp.Lua
 {
 	internal class FunctionsEngine
     {

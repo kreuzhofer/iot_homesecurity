@@ -73,6 +73,8 @@ namespace IoTHs.Plugin.MQTTBroker
             // simple approach, forward to message queue by client id
             var queue = ServiceLocator.Current.GetService<IMessageQueue>();
             queue.Enqueue(mqttApplicationMessageReceivedEventArgs.ClientId, new QueueMessage(message.Topic, body, null));
+
+            var functionEngine = ServiceLocator.Current.GetService<IFunctionsEngine>(); // todo refactor interface out
         }
 
         private MqttConnectReturnCode ConnectionValidator(MqttConnectPacket mqttConnectPacket)
