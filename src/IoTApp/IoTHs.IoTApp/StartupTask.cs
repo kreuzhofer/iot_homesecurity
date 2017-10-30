@@ -60,6 +60,7 @@ namespace W10Home.IoTCoreApp
             // init IoC
             var container = new ServiceCollection();
 
+            // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging?tabs=aspnetcore2x#tabpanel_J929VbWwYc_aspnetcore2x
             container.AddLogging(builder =>
             {
                 builder.AddDebug();
