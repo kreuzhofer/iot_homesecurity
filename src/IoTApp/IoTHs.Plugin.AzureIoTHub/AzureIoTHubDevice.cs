@@ -34,7 +34,7 @@ using Microsoft.Devices.Tpm;
 
 namespace IoTHs.Plugin.AzureIoTHub
 {
-	public class AzureIoTHubDevice : DeviceBase
+	public class AzureIoTHubDevice : DeviceBase, IAzureIoTHubDevice
 	{
 		private DeviceClient _deviceClient;
 		private string _deviceId;

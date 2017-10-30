@@ -3,7 +3,7 @@ using MoonSharp.Interpreter;
 
 namespace W10Home.IoTCoreApp.Lua
 {
-    internal class FunctionInstance
+    public class FunctionInstance
     {
         public FunctionInstance(string functionId)
         {
@@ -11,6 +11,7 @@ namespace W10Home.IoTCoreApp.Lua
         }
 
         public string FunctionId { get; set; }
+        public string Name { get; set; }
 
         public Script LuaScript { get; set; }
         public Timer Timer { get; set; }

@@ -67,7 +67,7 @@ namespace W10Home.IoTCoreApp
 				    new DevicePluginConfigurationModel()
 				    {
 					    Name = "iothub",
-					    Type = "AzureIoTHubDevice",
+					    Type = "IAzureIoTHubDevice",
 					    Properties = new Dictionary<string, string>()
 					    {
 							{ "TryLoadConfiguration", "true" }

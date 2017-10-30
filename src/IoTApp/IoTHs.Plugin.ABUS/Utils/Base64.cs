@@ -1,4 +1,4 @@
-﻿namespace IoTHs.Plugin.ABUS.SecVest.Utils
+﻿namespace IoTHs.Plugin.ABUS.Utils
 {
 	public static class Base64
 	{

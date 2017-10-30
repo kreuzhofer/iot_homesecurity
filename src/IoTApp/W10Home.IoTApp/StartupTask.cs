@@ -75,7 +75,7 @@ namespace W10Home.IoTCoreApp
             container.AddTransient<CoreApp>();
             container.AddSingleton<FunctionsEngine>();
 
-            container.AddTransient<AzureIoTHubDevice>();
+            container.AddTransient<IAzureIoTHubDevice, AzureIoTHubDevice>();
 #if ABUS
             container.AddTransient<SecVestDevice>();
 #endif
@@ -94,7 +94,7 @@ namespace W10Home.IoTCoreApp
 
             // init device registry and add devices
             _deviceRegistry = locator.GetService<IDeviceRegistry>();
-            _deviceRegistry.RegisterDeviceType<AzureIoTHubDevice>();
+            _deviceRegistry.RegisterDeviceType<IAzureIoTHubDevice>();
 #if ABUS
             _deviceRegistry.RegisterDeviceType<SecVestDevice>();
 #endif

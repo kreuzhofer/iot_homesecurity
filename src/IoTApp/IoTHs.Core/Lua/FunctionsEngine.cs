@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Security.Cryptography.Certificates;
-using Windows.Storage;
-using Windows.Web.Http;
-using Windows.Web.Http.Filters;
 using IoTHs.Api.Shared;
 using IoTHs.Core;
+using IoTHs.Core.Http;
 using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
 using IoTHs.Plugin.AzureIoTHub;
@@ -21,7 +19,7 @@ using W10Home.Interfaces.Configuration;
 
 namespace W10Home.IoTCoreApp.Lua
 {
-	internal class FunctionsEngine
+    public class FunctionsEngine
     {
         private readonly ILogger _log;
         private readonly List<FunctionInstance> _functions = new List<FunctionInstance>();
@@ -67,6 +65,11 @@ namespace W10Home.IoTCoreApp.Lua
             }
         }
 
+        public IEnumerable<FunctionInstance> Functions
+        {
+            get { return _functions; }
+        }
+
         private async Task<FunctionInstance> SetupFunction(string functionId)
         {
             var functionInstance =
@@ -81,6 +84,7 @@ namespace W10Home.IoTCoreApp.Lua
             {
                 return null;
             }
+            functionInstance.Name = function.Name;
 
             if (!function.Enabled)
             {
@@ -160,13 +164,14 @@ namespace W10Home.IoTCoreApp.Lua
         private async Task<DeviceFunctionModel> LoadFunctionFromStorageAsync(string functionId)
         {
             // first try to load the function file from the LocalFolder
-            var localStorage = ApplicationData.Current.LocalFolder;
-            var file = await localStorage.TryGetItemAsync("function_" + functionId + ".json");
+            
+            var localStorage = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var filePath = Path.Combine(localStorage, "function_" + functionId + ".json");
             DeviceFunctionModel function = null;
-            if (file != null) // file exists, continue to deserialize into actual object
+            if (File.Exists(filePath)) // file exists, continue to deserialize into actual object
             {
                 // local file content
-                var configFileContent = await FileIO.ReadTextAsync((IStorageFile) file);
+                var configFileContent = File.ReadAllText(filePath);
                 function = JsonConvert.DeserializeObject<DeviceFunctionModel>(configFileContent);
                 if (function == null)
                 {
@@ -278,7 +283,7 @@ namespace W10Home.IoTCoreApp.Lua
             var baseUrl = configuration.ServiceBaseUrl;
             var deviceId = configuration.DeviceId;
 
-            var apiKey = ServiceLocator.Current.GetService<IDeviceRegistry>().GetDevice<AzureIoTHubDevice>("iothub").ApiKey;
+            var apiKey = ServiceLocator.Current.GetService<IDeviceRegistry>().GetDevice<IAzureIoTHubDevice>("iothub").ApiKey;
 
             foreach (var functionVersionPair in functionVersionPairs)
             {
@@ -289,18 +294,14 @@ namespace W10Home.IoTCoreApp.Lua
                 if (localFunctionVersion == null || (localFunctionVersion.Version<functionVersion))
                 {
                     // download function code from webserver
-                    var aHBPF = new HttpBaseProtocolFilter();
-                    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Expired);
-                    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Untrusted);
-                    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
-                    var client = new HttpClient(aHBPF);
-                    client.DefaultRequestHeaders.Add("apikey", apiKey);
-                    var functionContent = await client.GetStringAsync(new Uri(baseUrl + "DeviceFunction/" + deviceId + "/" + functionId));
+                    var client = new LocalHttpClient();
+                    client.Client.DefaultRequestHeaders.Add("apikey", new []{"apiKey"});
+                    var functionContent = await client.Client.GetStringAsync(new Uri(baseUrl + "DeviceFunction/" + deviceId + "/" + functionId));
                     // store function file to disk
-                    var localStorage = ApplicationData.Current.LocalFolder;
-                    string filename = "function_" + functionId + ".json";
-                    var file = await localStorage.CreateFileAsync(filename, CreationCollisionOption.ReplaceExisting);
-                    await FileIO.WriteTextAsync(file, functionContent);
+                    var localStorage = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                    var filePath = Path.Combine(localStorage, "function_" + functionId + ".json");
+                    var file = File.Create(filePath);
+                    File.WriteAllText(filePath, functionContent);
 
                     // (re)load function
                     await ReloadFunction(functionId);

@@ -6,7 +6,6 @@ using IoTHs.Api.Shared;
 using IoTHs.Core;
 using IoTHs.Core.Http;
 using IoTHs.Devices.Interfaces;
-using IoTHs.Plugin.ABUS.SecVest.Utils;
 
 namespace IoTHs.Plugin.ABUS.SecVest
 {

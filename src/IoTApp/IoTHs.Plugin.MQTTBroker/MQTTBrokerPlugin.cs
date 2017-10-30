@@ -16,6 +16,7 @@ using MQTTnet.Core.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MQTTnet.Core.Adapter;
+using W10Home.IoTCoreApp.Lua;
 
 namespace IoTHs.Plugin.MQTTBroker
 {
@@ -74,7 +75,11 @@ namespace IoTHs.Plugin.MQTTBroker
             var queue = ServiceLocator.Current.GetService<IMessageQueue>();
             queue.Enqueue(mqttApplicationMessageReceivedEventArgs.ClientId, new QueueMessage(message.Topic, body, null));
 
-            var functionEngine = ServiceLocator.Current.GetService<IFunctionsEngine>(); // todo refactor interface out
+            var functionsEngine = ServiceLocator.Current.GetService<FunctionsEngine>();
+            if (functionsEngine.Functions.All(f => f.Name != mqttApplicationMessageReceivedEventArgs.ClientId)) // todo no function exists -> notify server to create function for mqtt message processing
+            {
+                
+            }
         }
 
         private MqttConnectReturnCode ConnectionValidator(MqttConnectPacket mqttConnectPacket)
