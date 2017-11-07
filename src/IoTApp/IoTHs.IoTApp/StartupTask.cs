@@ -58,6 +58,9 @@ namespace W10Home.IoTCoreApp
             // configure logging first
 
             // init IoC
+            // see: http://intellitect.com/net-core-dependency-injection/#ActivatorUtilities
+            // and https://stackify.com/net-core-dependency-injection/
+            // and http://derpturkey.com/vnext-dependency-injection-overview/
             var container = new ServiceCollection();
 
             // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging?tabs=aspnetcore2x#tabpanel_J929VbWwYc_aspnetcore2x
