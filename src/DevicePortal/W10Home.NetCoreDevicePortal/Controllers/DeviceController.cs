@@ -170,41 +170,10 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                 deviceFunctionEntity.RowKey, deviceFunctionEntity.Name, deviceFunctionEntity.TriggerType, deviceFunctionEntity.Interval,
                 deviceFunctionEntity.QueueName, deviceFunctionEntity.Enabled, deviceFunctionEntity.Script);
 
-            var functions = await _deviceFunctionService.GetFunctionsAsync(deviceFunctionEntity.PartitionKey);
-            string functionsAndVersions = "";
-            foreach (var function in functions)
-            {
-                functionsAndVersions += function.RowKey + ":" + function.Version + ",";
-            }
-            functionsAndVersions = functionsAndVersions.TrimEnd(',');
-
-            // update device twin
-            var patch = new
-            {
-                properties = new
-                {
-                    desired = new
-                    {
-                        functions = new
-                        {
-                            versions = functionsAndVersions,
-                            baseUrl = _configuration["ExternalBaseUrl"]
-                        }
-                    }
-                }
-            };
-            var registryManager = _deviceManagementService.GlobalRegistryManager;
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-            {
-                CheckAdditionalContent = false
-            };
-            var twin = await registryManager.GetTwinAsync(deviceFunctionEntity.PartitionKey);
-            await registryManager.UpdateTwinAsync(deviceFunctionEntity.PartitionKey, JsonConvert.SerializeObject(patch), twin.ETag);
+            await _deviceManagementService.UpdateFunctionsAndVersionsTwinPropertyAsync(deviceFunctionEntity.PartitionKey);
 
             return await EditFunction(deviceFunctionEntity.PartitionKey, deviceFunctionEntity.RowKey);
         }
-
-
 
         #region Ajax methods
 

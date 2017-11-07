@@ -35,6 +35,7 @@ namespace W10Home.NetCoreDevicePortal
         {
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            // todo: https://wildermuth.com/2017/08/19/Two-AuthorizationSchemes-in-ASP-NET-Core-2
             services.AddAuthentication(sharedOptions =>
             {
                 sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;

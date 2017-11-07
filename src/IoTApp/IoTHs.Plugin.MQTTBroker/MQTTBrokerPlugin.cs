@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -55,6 +56,9 @@ namespace IoTHs.Plugin.MQTTBroker
             {
                 ConnectionValidator = ConnectionValidator
             });
+            // https://github.com/chkr1011/MQTTnet/wiki/Server
+            // https://github.com/Azure/DotNetty
+            // https://github.com/i8beef/HomeAutio.Mqtt.Core
             await _mqttServer.StartAsync();
             _mqttServer.ApplicationMessageReceived += MqttServerOnApplicationMessageReceived;
 
@@ -83,12 +87,11 @@ namespace IoTHs.Plugin.MQTTBroker
         {
             var message = mqttApplicationMessageReceivedEventArgs.ApplicationMessage;
             var body = Encoding.UTF8.GetString(message.Payload);
-            // simple approach, forward to message queue by client id
             var queue = ServiceLocator.Current.GetService<IMessageQueue>();
             var rootTopic = message.Topic.Split('/').First();
+            // simple approach, forward to message queue by root topic
             queue.Enqueue(rootTopic, new QueueMessage(message.Topic, body, null));
             _log.LogTrace("{0}|{1}", message.Topic, body);
-
 
             var functionsEngine = ServiceLocator.Current.GetService<FunctionsEngine>();
             lock (_lockObj)
@@ -119,6 +122,9 @@ function run(message)
 ";
                         deviceDetected = true;
                     }
+
+                    var watch = Stopwatch.StartNew();
+                    watch.ElapsedMilliseconds
 
                     if (deviceDetected) // only create a function if device was detected correctly
                     {

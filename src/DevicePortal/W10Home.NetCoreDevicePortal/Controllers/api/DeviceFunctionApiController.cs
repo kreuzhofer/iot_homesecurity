@@ -8,6 +8,7 @@ using W10Home.NetCoreDevicePortal.DataAccess;
 using W10Home.NetCoreDevicePortal.DataAccess.Entities;
 using W10Home.NetCoreDevicePortal.Models;
 using IoTHs.Api.Shared;
+using W10Home.DevicePortal.IotHub;
 using W10Home.NetCoreDevicePortal.DataAccess.Interfaces;
 using W10Home.NetCoreDevicePortal.Security;
 
@@ -20,10 +21,12 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
     public class DeviceFunctionApiController : Controller
     {
         private IDeviceFunctionService _deviceFunctionService;
+        private DeviceManagementService _deviceManagementService;
 
-        public DeviceFunctionApiController(IDeviceFunctionService deviceFunctionService)
+        public DeviceFunctionApiController(IDeviceFunctionService deviceFunctionService, DeviceManagementService deviceManagementService)
         {
             _deviceFunctionService = deviceFunctionService;
+            _deviceManagementService = deviceManagementService;
         }
 
         // GET: api/DeviceFunction/DeviceId
@@ -46,6 +49,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
         public async Task<IActionResult> CreateNew(string deviceId, string functionId, [FromBody]DeviceFunctionModel functionModel)
         {
             await _deviceFunctionService.SaveFunctionAsync(deviceId, functionId, functionModel.Name, functionModel.TriggerType.ToString(), functionModel.Interval, functionModel.QueueName, functionModel.Enabled, functionModel.Script);
+            await _deviceManagementService.UpdateFunctionsAndVersionsTwinPropertyAsync(deviceId);
             return Ok();
         }
     }

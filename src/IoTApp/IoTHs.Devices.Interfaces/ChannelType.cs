@@ -6,6 +6,7 @@
 		Notification,
 		Temperature,
         Message,
-        Log
+        Log,
+        OnOffSwitch
 	}
 }
