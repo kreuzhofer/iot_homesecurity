@@ -76,7 +76,7 @@ namespace W10Home.IoTCoreApp
             container.AddTransient<CoreApp>();
             container.AddSingleton<FunctionsEngine>();
 
-            container.AddTransient<IAzureIoTHubDevice, AzureIoTHubDevice>();
+            container.AddSingleton<IAzureIoTHubDevice, AzureIoTHubDevice>();
 #if ABUS
             container.AddTransient<SecVestDevice>();
 #endif

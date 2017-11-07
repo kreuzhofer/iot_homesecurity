@@ -279,9 +279,9 @@ namespace W10Home.IoTCoreApp.Lua
         private async Task CheckVersionsAndUpdateAsync(string functionsAndVersions)
         {
             string[] functionVersionPairs = functionsAndVersions.Split(',');
-            var configuration = ServiceLocator.Current.GetService<DeviceConfigurationModel>();
-            var baseUrl = configuration.ServiceBaseUrl;
-            var deviceId = configuration.DeviceId;
+            var iotHub = ServiceLocator.Current.GetService<IAzureIoTHubDevice>();
+            var baseUrl = iotHub.ServiceBaseUrl;
+            var deviceId = iotHub.DeviceId;
 
             var apiKey = ServiceLocator.Current.GetService<IDeviceRegistry>().GetDevice<IAzureIoTHubDevice>("iothub").ApiKey;
 
@@ -295,12 +295,11 @@ namespace W10Home.IoTCoreApp.Lua
                 {
                     // download function code from webserver
                     var client = new LocalHttpClient();
-                    client.Client.DefaultRequestHeaders.Add("apikey", new []{"apiKey"});
+                    client.Client.DefaultRequestHeaders.Add("apikey", apiKey);
                     var functionContent = await client.Client.GetStringAsync(new Uri(baseUrl + "DeviceFunction/" + deviceId + "/" + functionId));
                     // store function file to disk
                     var localStorage = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                     var filePath = Path.Combine(localStorage, "function_" + functionId + ".json");
-                    var file = File.Create(filePath);
                     File.WriteAllText(filePath, functionContent);
 
                     // (re)load function

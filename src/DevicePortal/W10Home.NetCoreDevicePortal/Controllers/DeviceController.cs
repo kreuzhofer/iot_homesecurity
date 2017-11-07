@@ -121,6 +121,11 @@ namespace W10Home.NetCoreDevicePortal.Controllers
 
             // get device management client to send the twin update
             var registryManager = _deviceManagementService.GlobalRegistryManager;
+            // todo temporary fix, see https://github.com/Azure/azure-iot-sdk-csharp/issues/213
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                CheckAdditionalContent = false
+            };
             var twin = await registryManager.GetTwinAsync(data.Id);
             await registryManager.UpdateTwinAsync(data.Id, JsonConvert.SerializeObject(patch), twin.ETag);
 
@@ -189,6 +194,10 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                 }
             };
             var registryManager = _deviceManagementService.GlobalRegistryManager;
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                CheckAdditionalContent = false
+            };
             var twin = await registryManager.GetTwinAsync(deviceFunctionEntity.PartitionKey);
             await registryManager.UpdateTwinAsync(deviceFunctionEntity.PartitionKey, JsonConvert.SerializeObject(patch), twin.ETag);
 
@@ -197,15 +206,19 @@ namespace W10Home.NetCoreDevicePortal.Controllers
 
 
 
-#region Ajax methods
+        #region Ajax methods
 
-        //[HttpPost]
-        //public async Task<IActionResult> SendMessage(string id, string message)
-        //{
-        //    var client = _deviceManagementService.ServiceClient;
-        //    await client.SendAsync(id, new Message(Encoding.UTF8.GetBytes(message)));
-        //    return Json("message sent");
-        //}
+        [HttpPost]
+        public async Task<IActionResult> SendMessage(string id, string message)
+        {
+            if (!await IsMyDevice(id))
+            {
+                return NotFound();
+            }
+            var client = _deviceManagementService.ServiceClient;
+            await client.SendAsync(id, new Message(Encoding.UTF8.GetBytes(message)));
+            return Json("message sent");
+        }
 
         //[HttpPost]
         //public async Task<ActionResult> CallMethod(string id, string method, string payload)

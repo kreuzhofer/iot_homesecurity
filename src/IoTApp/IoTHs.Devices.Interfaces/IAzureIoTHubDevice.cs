@@ -11,6 +11,7 @@ namespace IoTHs.Plugin.AzureIoTHub
         string Type { get; }
         string ServiceBaseUrl { get; }
         string ApiKey { get; }
+        string DeviceId { get; }
         IEnumerable<IDeviceChannel> Channels { get; }
         Task InitializeAsync(DevicePluginConfigurationModel configuration);
         IEnumerable<IDeviceChannel> GetChannels();

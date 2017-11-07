@@ -41,5 +41,12 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
             var result = await _deviceFunctionService.GetFunctionAsync(deviceId, functionId);
             return result.ToDeviceFunctionModel();
         }
+
+        [HttpPost("{deviceId}/{functionId}")]
+        public async Task<IActionResult> CreateNew(string deviceId, string functionId, [FromBody]DeviceFunctionModel functionModel)
+        {
+            await _deviceFunctionService.SaveFunctionAsync(deviceId, functionId, functionModel.Name, functionModel.TriggerType.ToString(), functionModel.Interval, functionModel.QueueName, functionModel.Enabled, functionModel.Script);
+            return Ok();
+        }
     }
 }

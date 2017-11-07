@@ -74,6 +74,8 @@ namespace IoTHs.Plugin.AzureIoTHub
 	        get { return _apiKey; }
 	    }
 
+        public string DeviceId { get => _deviceId; }
+
         public AzureIoTHubDevice(IMessageQueue messageQueue, IDeviceRegistry deviceRegistry, ILoggerFactory loggerFactory)
 	    {
 	        _channels.Add(new IotHubDeviceChannel(messageQueue));
@@ -407,7 +409,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 		    var queue = ServiceLocator.Current.GetService<IMessageQueue>();
 		    if (desiredProperties.Contains("functions"))
 		    {
-		        string functionsAndVersions = desiredProperties["functions"].versions.ToString();
+		        string functionsAndVersions = desiredProperties["functions"].versions;
 		        _log.LogTrace("DesiredPropertyUpdateCallback|Updating functions: "+functionsAndVersions);
 		        queue.Enqueue("functionsengine", "checkversionsandupdate", functionsAndVersions);
             }
