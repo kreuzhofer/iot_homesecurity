@@ -190,6 +190,7 @@
             <th>Channel</th>
             <th>ChannelType</th>
             <th>Value</th>
+            <th>Last change</th>
             <th>Chart</th>
         </tr>
         
@@ -204,6 +205,9 @@
                 </td>
                 <td id="@item.ChannelKey">
                     @Html.DisplayFor(modelItem => item.ChannelValue)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LocalTimestamp)
                 </td>
                 <td>
                     @{
