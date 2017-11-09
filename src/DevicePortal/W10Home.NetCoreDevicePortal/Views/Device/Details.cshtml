@@ -50,6 +50,9 @@
                 myTextArea.stop().css("background-color", "green")
                     .animate({ backgroundColor: "#FFFFFF" }, 500);
 
+                var myTimestamp = $('#' + item.channelKey + "_timestamp");
+                myTimestamp.html(item.localTimestamp);
+
                 var chart = window["chart_" + item.channelKey];
                 if (chart)
                 {
@@ -206,7 +209,7 @@
                 <td id="@item.ChannelKey">
                     @Html.DisplayFor(modelItem => item.ChannelValue)
                 </td>
-                <td>
+                <td id="@(item.ChannelKey + "_timestamp")">
                     @Html.DisplayFor(modelItem => item.LocalTimestamp)
                 </td>
                 <td>

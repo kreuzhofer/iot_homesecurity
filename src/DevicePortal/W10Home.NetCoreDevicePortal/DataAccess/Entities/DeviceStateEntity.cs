@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
+﻿using System;
+using Microsoft.WindowsAzure.Storage.Table;
 
 namespace W10Home.NetCoreDevicePortal.DataAccess.Entities
 {
@@ -9,6 +10,6 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Entities
 		public string ChannelValue { get; set; }
 		public string DeviceId { get; set; }
 		public string DeviceType { get; set; }
-		public string LocalTimestamp { get; set; }
+		public DateTime LocalTimestamp { get; set; }
 	}
 }

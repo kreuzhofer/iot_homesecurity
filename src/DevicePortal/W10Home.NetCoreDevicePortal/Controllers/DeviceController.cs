@@ -73,6 +73,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers
 
             var deviceData = new DeviceData(device, userDevice);
             var deviceStateList = await _deviceStateService.GetDeviceState(id);
+            deviceStateList.ForEach(i=>i.LocalTimestamp = i.LocalTimestamp.ToLocalTime());
             deviceData.StateList = deviceStateList;
 
             var deviceFunctions = await _deviceFunctionService.GetFunctionsAsync(id);
