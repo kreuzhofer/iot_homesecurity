@@ -17,10 +17,10 @@ using MQTTnet.Core.Server;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MQTTnet.Core.Adapter;
-using W10Home.IoTCoreApp.Lua;
 using IoTHs.Core.Http;
 using IoTHs.Plugin.AzureIoTHub;
 using System.Net.Http;
+using IoTHs.Core.Lua;
 using Newtonsoft.Json;
 
 namespace IoTHs.Plugin.MQTTBroker
@@ -122,10 +122,7 @@ function run(message)
 ";
                         deviceDetected = true;
                     }
-
-                    var watch = Stopwatch.StartNew();
-                    watch.ElapsedMilliseconds
-
+                    
                     if (deviceDetected) // only create a function if device was detected correctly
                     {
                         var model = new DeviceFunctionModel()

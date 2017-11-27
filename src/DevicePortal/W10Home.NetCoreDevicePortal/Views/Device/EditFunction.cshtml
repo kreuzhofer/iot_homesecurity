@@ -99,11 +99,8 @@
 <div class="form-group">
     <div class="col-md-offset-0 col-md-10">
         <input type="button" value="Save" class="btn btn-default" onclick="copyCodeToHiddenField();" />
+        <input type="button" value="Back to device details" class="btn btn-default" onclick="window.document.location='@Url.Action("Details", new { id = Model.PartitionKey })'" />
     </div>
-</div>
-
-<div>
-    @Html.ActionLink("Back to device details", "Details", new { id = Model.PartitionKey })
 </div>
 
 <environment include="Development">

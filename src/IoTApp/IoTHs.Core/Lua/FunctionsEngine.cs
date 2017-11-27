@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using IoTHs.Api.Shared;
-using IoTHs.Core;
 using IoTHs.Core.Http;
 using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
@@ -17,7 +16,7 @@ using MoonSharp.Interpreter.Interop;
 using Newtonsoft.Json;
 using W10Home.Interfaces.Configuration;
 
-namespace W10Home.IoTCoreApp.Lua
+namespace IoTHs.Core.Lua
 {
     public class FunctionsEngine
     {
@@ -201,6 +200,7 @@ namespace W10Home.IoTCoreApp.Lua
 	        var log = _loggerFactory.CreateLogger("FunctionsEngine|" + name);
 	        var logDynValue = UserData.Create(log);
             script.Globals.Set("log", logDynValue);
+            script.Globals.Set("DateTime", UserData.Create(new DateTime()));
 
 		    script.Options.DebugPrint = s => { log.LogDebug(s); };
 			return script;

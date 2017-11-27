@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using MoonSharp.Interpreter;
 
-namespace W10Home.IoTCoreApp.Lua
+namespace IoTHs.Core.Lua
 {
     public class FunctionInstance
     {

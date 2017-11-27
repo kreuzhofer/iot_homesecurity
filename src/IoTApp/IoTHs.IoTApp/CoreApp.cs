@@ -8,6 +8,7 @@ using Windows.System;
 using IoTHs.Api.Shared;
 using IoTHs.Core;
 using IoTHs.Core.Configuration;
+using IoTHs.Core.Lua;
 using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +20,6 @@ using Restup.Webserver.Rest;
 using Restup.WebServer.Http;
 using W10Home.IoTCoreApp.Auth;
 using W10Home.IoTCoreApp.Controllers;
-using W10Home.IoTCoreApp.Lua;
 
 namespace W10Home.IoTCoreApp
 {

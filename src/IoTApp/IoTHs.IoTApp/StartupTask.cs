@@ -10,6 +10,7 @@ using IoTHs.Core;
 using IoTHs.Core.Channels;
 using IoTHs.Core.Configuration;
 using IoTHs.Core.Logging;
+using IoTHs.Core.Lua;
 using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
 #if ABUS
@@ -27,7 +28,6 @@ using IoTHs.Plugin.Twilio;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using W10Home.IoTCoreApp.Lua;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
