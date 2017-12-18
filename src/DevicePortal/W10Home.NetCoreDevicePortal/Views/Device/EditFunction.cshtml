@@ -35,6 +35,18 @@
         $('#Script').val(code);
         $('form').submit();
     }
+
+    function deleteFunction() {
+    if (confirm('Are you sure?')) {
+        $.ajax({
+            type: "DELETE",
+            url: '/api/devicefunction/@Model.PartitionKey/@Model.RowKey',
+            cache: false,
+            success: function(data) { window.location.href = '@Url.Action("Details", "Device", new {id = @Model.PartitionKey})'; },
+            error: function (){ alert("error"); }
+            });
+        }
+    }
 </script>
 
 <h2>Edit Device Function</h2>
@@ -99,6 +111,7 @@
 <div class="form-group">
     <div class="col-md-offset-0 col-md-10">
         <input type="button" value="Save" class="btn btn-default" onclick="copyCodeToHiddenField();" />
+        <input type="button" value="Delete" class="btn" onclick="deleteFunction();" />
     </div>
 </div>
 

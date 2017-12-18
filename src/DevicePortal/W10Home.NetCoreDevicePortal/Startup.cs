@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Http;
 using W10Home.NetCoreDevicePortal.DataAccess.Interfaces;
 using W10Home.NetCoreDevicePortal.Hubs;
 using WebApp_OpenIDConnect_DotNet;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace W10Home.NetCoreDevicePortal
 {
@@ -42,7 +44,19 @@ namespace W10Home.NetCoreDevicePortal
                 sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
             .AddAzureAdB2C(options => Configuration.Bind("Authentication:AzureAdB2C", options))
-            .AddCookie();
+            .AddCookie()
+            .AddJwtBearer(cfg =>
+            {
+                cfg.RequireHttpsMetadata = false;
+                cfg.SaveToken = true;
+
+                cfg.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidIssuer = Configuration["Authentication:Tokens:Issuer"],
+                    ValidAudience = Configuration["Authentication:Tokens:Issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:Tokens:Key"]))
+                };
+            });
 
             services.AddMvc();
 
