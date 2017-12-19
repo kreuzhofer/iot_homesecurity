@@ -125,11 +125,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System.Reactive">
-      <HintPath>C:\Users\daniel\.nuget\packages\System.Reactive\4.0.0-preview00001\lib\uap10.0\System.Reactive.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Devices.Client">
       <Version>1.5.1</Version>
     </PackageReference>
@@ -150,6 +145,11 @@
     <SDKReference Include="WindowsIoT, Version=10.0.16299.0">
       <Name>Windows IoT Extensions for the UWP</Name>
     </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Reactive">
+      <HintPath>..\..\..\..\..\..\..\Users\dkreu\.nuget\packages\system.reactive\4.0.0-preview00001\lib\uap10.0\System.Reactive.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

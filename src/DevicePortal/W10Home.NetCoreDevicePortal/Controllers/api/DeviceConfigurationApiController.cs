@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using IoTHs.Api.Shared;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +17,7 @@ using W10Home.NetCoreDevicePortal.Security;
 
 namespace W10Home.NetCoreDevicePortal.Controllers.api
 {
-    [ApiKeyAuthentication()]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme + "," + CookieAuthenticationDefaults.AuthenticationScheme)]
     [Produces("application/json")]
     [Route("api/DeviceConfiguration")]
     public class DeviceConfigurationApiController : Controller
@@ -22,14 +26,17 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
         private DevicePluginService _devicePluginService;
         private DevicePluginPropertyService _devicePluginPropertyService;
         private IConfiguration _configuration;
+        private IDeviceConfigurationService _deviceConfigurationService;
 
-        public DeviceConfigurationApiController(IDeviceFunctionService deviceFunctionService, DevicePluginService devicePluginService, DevicePluginPropertyService devicePluginPropertyService,
-            IConfiguration configuration)
+        public DeviceConfigurationApiController(IDeviceFunctionService deviceFunctionService, DevicePluginService devicePluginService, 
+            DevicePluginPropertyService devicePluginPropertyService, IConfiguration configuration,
+            IDeviceConfigurationService deviceConfigurationService)
         {
             _deviceFunctionService = deviceFunctionService;
             _devicePluginService = devicePluginService;
             _devicePluginPropertyService = devicePluginPropertyService;
             _configuration = configuration;
+            _deviceConfigurationService = deviceConfigurationService;
         }
 
         // GET: api/DeviceConfiguration/{deviceId}
@@ -67,6 +74,22 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
                 });
             }
             return result;
+        }
+
+        [HttpPost("{deviceId}/{configurationKey}")]
+        public async Task<IActionResult> Post(string deviceId, string configurationKey, [FromBody]dynamic body)
+        {
+            string value = body.configurationValue;
+            await _deviceConfigurationService.SaveConfigAsync(deviceId, configurationKey, value);
+            return Accepted();
+        }
+
+        [HttpPost("{deviceId}/{devicePluginId}/{devicePluginConfigurationKey}")]
+        public async Task<IActionResult> Post(string deviceId, string devicePluginId, string devicePluginConfigurationKey)
+        {
+            string value = await(new StreamReader(this.Request.Body)).ReadToEndAsync();
+            await _devicePluginPropertyService.SavePropertyAsync(devicePluginId, devicePluginConfigurationKey, value);
+            return Accepted();
         }
     }
 }

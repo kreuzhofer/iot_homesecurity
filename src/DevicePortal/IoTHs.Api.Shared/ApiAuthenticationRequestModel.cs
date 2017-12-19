@@ -2,7 +2,8 @@
 {
     public class ApiAuthenticationRequestModel
     {
-        public string SharedKey { get; set; }
         public string DeviceId { get; set; }
+        public string ApiKey { get; set; }
+
     }
 }

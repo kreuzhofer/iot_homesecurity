@@ -51,6 +51,7 @@ namespace IoTHs.Plugin.MQTTBroker
         {
             _name = configuration.Name;
             _type = configuration.Type;
+            var channelConfigs = configuration.Properties.Select(c => c.Key.StartsWith("channel:")).ToList();
 
             _mqttServer = new MqttServerFactory().CreateMqttServer(new MqttServerOptions()
             {
@@ -96,7 +97,7 @@ namespace IoTHs.Plugin.MQTTBroker
             var functionsEngine = ServiceLocator.Current.GetService<FunctionsEngine>();
             lock (_lockObj)
             {
-                if (functionsEngine.Functions.All(f => f.Name != rootTopic) && _requestedFunctions.All(f => f != rootTopic)) // todo no function exists -> notify server to create function for mqtt message processing
+                if (functionsEngine.Functions.All(f => f.Name != rootTopic) && _requestedFunctions.All(f => f != rootTopic))
                 {
                     var iotHub = ServiceLocator.Current.GetService<IAzureIoTHubDevice>();
                     if (String.IsNullOrEmpty(iotHub.ServiceBaseUrl))
@@ -120,9 +121,20 @@ function run(message)
     return 0;
     end;
 ";
+                        var configuration = new
+                        {
+                            ChannelType = ChannelType.OnOffSwitch.ToString(),
+                            OnOffTopic = rootTopic + "/cmnd/POWER",
+                            OnMessage = "ON",
+                            OffMessage = "OFF"
+                        };
+                        string configBody = JsonConvert.SerializeObject(configuration, Formatting.Indented);
+                        var task = httpClient.Client.PostAsync(iotHub.ServiceBaseUrl + "DeviceConfiguration/" + iotHub.DeviceId + "/" + _name + "/channel:" + rootTopic, new StringContent(configBody, Encoding.UTF8, "application/json"));
+                        Task.WaitAll(task);
+                        var result = task.Result;
                         deviceDetected = true;
                     }
-                    
+
                     if (deviceDetected) // only create a function if device was detected correctly
                     {
                         var model = new DeviceFunctionModel()

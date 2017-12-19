@@ -12,5 +12,15 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Services
         public DevicePluginPropertyService(IConfiguration configuration) : base(configuration)
         {
         }
+
+        public async Task SavePropertyAsync(string pluginId, string propertyId, string value)
+        {
+            await InsertOrReplaceAsync(new DevicePluginPropertyEntity
+            {
+                PartitionKey = pluginId,
+                RowKey = propertyId,
+                Value = value,
+            });
+        }
     }
 }

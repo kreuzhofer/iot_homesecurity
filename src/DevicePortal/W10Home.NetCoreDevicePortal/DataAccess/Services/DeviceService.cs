@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
@@ -32,6 +33,16 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Services
             TableQuery<DeviceEntity> query = new TableQuery<DeviceEntity>().Where(finalCondition);
             var result = await TableRef.ExecuteQuerySegmentedAsync<DeviceEntity>(query, null);
             return result.Results;
+        }
+
+        public async Task<DeviceEntity> GetWithApiKeyAsync(string deviceId, string apiKey)
+        {
+            var keyCondition = TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, deviceId);
+            var sharedKeyCondition = TableQuery.GenerateFilterCondition("ApiKey", QueryComparisons.Equal, apiKey);
+            var finalCondition = TableQuery.CombineFilters(keyCondition, TableOperators.And, sharedKeyCondition);
+            TableQuery<DeviceEntity> query = new TableQuery<DeviceEntity>().Where(finalCondition);
+            var result = await TableRef.ExecuteQuerySegmentedAsync<DeviceEntity>(query, null);
+            return result.Results.FirstOrDefault();
         }
     }
 }

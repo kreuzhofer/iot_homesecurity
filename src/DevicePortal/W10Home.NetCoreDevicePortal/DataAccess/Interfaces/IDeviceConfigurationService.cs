@@ -6,6 +6,6 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Interfaces
     public interface IDeviceConfigurationService
     {
         Task<DeviceConfigurationEntity> LoadConfig(string deviceId, string configurationKey);
-        Task SaveConfig(string deviceId, string configurationKey, string configurationJson);
+        Task SaveConfigAsync(string deviceId, string configurationKey, string configurationJson);
     }
 }

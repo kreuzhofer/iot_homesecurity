@@ -19,7 +19,7 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Services
 			_deviceConfigTableRef.CreateIfNotExistsAsync();
 		}
 
-		public async Task SaveConfig(string deviceId, string configurationKey, string configurationJson)
+		public async Task SaveConfigAsync(string deviceId, string configurationKey, string configurationJson)
 		{
 			var entity = new DeviceConfigurationEntity()
 			{

@@ -11,10 +11,13 @@ using IoTHs.Api.Shared;
 using W10Home.DevicePortal.IotHub;
 using W10Home.NetCoreDevicePortal.DataAccess.Interfaces;
 using W10Home.NetCoreDevicePortal.Security;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace W10Home.NetCoreDevicePortal.Controllers.api
 {
-    [ApiKeyAuthentication()]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme + "," + CookieAuthenticationDefaults.AuthenticationScheme)]
     [Produces("application/json")]
     [Route("api/DeviceFunction")]
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
@@ -34,7 +37,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
         public async Task<List<DeviceFunctionModel>> Get(string deviceId)
         {
             var result = await _deviceFunctionService.GetFunctionsAsync(deviceId);
-            return result.Select(a=>a.ToDeviceFunctionModel()).ToList();
+            return result.Select(a => a.ToDeviceFunctionModel()).ToList();
         }
 
         // GET: api/DeviceFunction/DeviceId/FunctionId
@@ -49,6 +52,14 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
         public async Task<IActionResult> CreateNew(string deviceId, string functionId, [FromBody]DeviceFunctionModel functionModel)
         {
             await _deviceFunctionService.SaveFunctionAsync(deviceId, functionId, functionModel.Name, functionModel.TriggerType.ToString(), functionModel.Interval, functionModel.QueueName, functionModel.Enabled, functionModel.Script);
+            await _deviceManagementService.UpdateFunctionsAndVersionsTwinPropertyAsync(deviceId);
+            return Ok();
+        }
+
+        [HttpDelete("{deviceId}/{functionId}")]
+        public async Task<IActionResult> Delete(string deviceId, string functionId)
+        {
+            await _deviceFunctionService.DeleteFunctionAsync(deviceId, functionId);
             await _deviceManagementService.UpdateFunctionsAndVersionsTwinPropertyAsync(deviceId);
             return Ok();
         }
