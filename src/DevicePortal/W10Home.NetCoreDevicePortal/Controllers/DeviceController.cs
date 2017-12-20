@@ -103,9 +103,10 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(DeviceData data)
         {
-            if (!await IsMyDevice(data.Id))
+            var userDevice = await GetMyDevice(data.Id);
+            if (userDevice == null)
             {
-                return NotFound();
+                return NotFound(); // no matter if this device does not exist or you just don't have the access rights. Don't give a hint...
             }
 
             var patch = new
@@ -115,7 +116,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                     desired = new
                     {
                         serviceBaseUrl = _configuration["ExternalBaseUrl"],
-                        apikey = _configuration["ApiKey"]
+                        apikey = userDevice.ApiKey
                     }
                 }
             };
@@ -145,7 +146,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                 await _deviceManagementService.ServiceClient.SendAsync(data.Id, new Message(bytes));
             }
 
-            return await Edit(data.Id);
+            return await Details(data.Id);
         }
 
         public async Task<IActionResult> EditFunction(string deviceId, string functionName)

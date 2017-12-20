@@ -120,6 +120,7 @@ namespace IoTHs.Plugin.AzureIoTHub
                 aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
                 var client = new HttpClient(aHBPF);
                 client.DefaultRequestHeaders.Add("apikey", _apiKey);
+                client.DefaultRequestHeaders.Add("deviceid", _deviceId);
                 var content = new HttpStringContent(JsonConvert.SerializeObject(messageObj, Formatting.Indented), UnicodeEncoding.Utf8, "application/json");
                 var result = await client.PostAsync(new Uri(_serviceBaseUrl + "Logging/" + _deviceId), content);
                 return result.IsSuccessStatusCode;
@@ -228,7 +229,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 			    }
                 if(twin.Properties.Desired.Version>_configVersion)
                 {                
-					await DownloadConfigAndRestartAsync(_serviceBaseUrl, _apiKey, twin.Properties.Desired.Version);
+					await DownloadConfigAndRestartAsync(_serviceBaseUrl, _apiKey, _deviceId, twin.Properties.Desired.Version);
                 }
 
 
@@ -420,11 +421,11 @@ namespace IoTHs.Plugin.AzureIoTHub
             if (desiredProperties.Contains("serviceBaseUrl"))
 		    {
 		        _serviceBaseUrl = desiredProperties["serviceBaseUrl"];
-		        await DownloadConfigAndRestartAsync(_serviceBaseUrl, _apiKey, desiredProperties.Version);
+		        await DownloadConfigAndRestartAsync(_serviceBaseUrl, _apiKey, _deviceId, desiredProperties.Version);
 		    }
         }
 
-		private async Task DownloadConfigAndRestartAsync(string serviceBaseUrl, string apiKey, long configVersion)
+		private async Task DownloadConfigAndRestartAsync(string serviceBaseUrl, string apiKey, string deviceId, long configVersion)
 		{
             // create http base protocol filter to be able to download from untrusted https address in internal network
 		    var aHBPF = new HttpBaseProtocolFilter();
@@ -432,12 +433,30 @@ namespace IoTHs.Plugin.AzureIoTHub
 		    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Untrusted);
 		    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
 
+            // create client token
+		    var tokenRequestUrl = serviceBaseUrl + "ApiAuthentication/";
+            _log.LogDebug("Get api token");
+		    var httpClient = new HttpClient(aHBPF);
+		    httpClient.DefaultRequestHeaders.Add("apikey", apiKey);
+		    httpClient.DefaultRequestHeaders.Add("deviceid", deviceId);
+		    var tokenResponse = await httpClient.PostAsync(new Uri(tokenRequestUrl), null);
+		    if (!tokenResponse.IsSuccessStatusCode)
+		    {
+		        throw new HttpRequestException(tokenResponse.ReasonPhrase);
+		    }
+            // get token from response
+		    var tokenReponseContent = await tokenResponse.Content.ReadAsStringAsync();
+		    dynamic tokenJsonObj = JsonConvert.DeserializeObject(tokenReponseContent);
+		    string token = tokenJsonObj.token;
+
             // download file
-		    var configUri = serviceBaseUrl + "DeviceConfiguration/" + _deviceId;
+            var configUri = serviceBaseUrl + "DeviceConfiguration/" + _deviceId;
 		    _log.LogDebug("Downloading new configuration from " + configUri);
-			var httpClient = new HttpClient(aHBPF);
-            httpClient.DefaultRequestHeaders.Add("apikey", apiKey);
-			var response = await httpClient.GetAsync(new Uri(configUri));
+
+		    httpClient = new HttpClient(aHBPF);
+		    httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer "+token);
+
+            var response = await httpClient.GetAsync(new Uri(configUri));
 		    if (!response.IsSuccessStatusCode)
 		    {
 		        throw new HttpRequestException(response.ReasonPhrase);
@@ -455,8 +474,8 @@ namespace IoTHs.Plugin.AzureIoTHub
 		    {
 		        var functionUri = serviceBaseUrl + "DeviceFunction/" + _deviceId + "/" + functionId;
                 httpClient = new HttpClient(aHBPF);
-		        httpClient.DefaultRequestHeaders.Add("apikey", apiKey);
-		        var functionContent = await httpClient.GetStringAsync(new Uri(functionUri));
+		        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                var functionContent = await httpClient.GetStringAsync(new Uri(functionUri));
                 // store function file to disk
 		        file = await localStorage.CreateFileAsync("function_"+functionId+".json", CreationCollisionOption.ReplaceExisting);
 		        await FileIO.WriteTextAsync(file, functionContent);

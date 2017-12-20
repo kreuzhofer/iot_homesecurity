@@ -13,7 +13,7 @@ using W10Home.NetCoreDevicePortal.Security;
 
 namespace W10Home.NetCoreDevicePortal.Controllers.api
 {
-    [ApiKeyAuthentication()]
+    [ApiKeyAuthentication]
     [Produces("application/json")]
     [Route("api/ApiAuthentication")]
     public class ApiAuthenticationController : Controller
@@ -28,15 +28,15 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
         }
 
         [HttpPost]
-        public async Task<IActionResult> GenerateToken([FromBody] ApiAuthenticationRequestModel model)
+        public async Task<IActionResult> GenerateToken([FromHeader]string apiKey, [FromHeader] string deviceId)
         {
             if (ModelState.IsValid)
             {
-                var device = await _deviceService.GetWithApiKeyAsync(model.DeviceId, model.ApiKey);
+                var device = await _deviceService.GetWithApiKeyAsync(deviceId, apiKey);
 
                 if (device != null)
                 {
-                    if (device.ApiKey == model.ApiKey)
+                    if (device.ApiKey == apiKey)
                     {
                         var claims = new[]
                         {

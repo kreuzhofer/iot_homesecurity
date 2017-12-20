@@ -6,28 +6,29 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using W10Home.NetCoreDevicePortal.DataAccess.Interfaces;
 
 namespace W10Home.NetCoreDevicePortal.Security
 {
     public class ApiKeyAuthenticationAttribute : ActionFilterAttribute
     {
-        public string BasicRealm { get; set; }
-        protected string ApiKey { get; set; }
-
-        public override void OnActionExecuting(ActionExecutingContext actionContext)
+        public override async void OnActionExecuting(ActionExecutingContext actionContext)
         {
-            var configuration = actionContext.HttpContext.RequestServices.GetService<IConfiguration>();
-            this.ApiKey = configuration["ApiKey"];
-
-            base.OnActionExecuting(actionContext);
-
-            if (actionContext.HttpContext.Request.Headers.All(h => h.Key.ToLower() != "apikey"))
+            if (actionContext.HttpContext.Request.Headers.All(h => h.Key.ToLower() != "apikey") ||
+                actionContext.HttpContext.Request.Headers.All(h => h.Key.ToLower() != "deviceid"))
             {
                 actionContext.Result = new UnauthorizedResult();
                 return;
             }
-            var apiKey = actionContext.HttpContext.Request.Headers.SingleOrDefault(h=>h.Key.ToLower() == "apikey").Value.FirstOrDefault();
-            if (String.IsNullOrEmpty(apiKey) || apiKey != this.ApiKey)
+            var apiKey = actionContext.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.ToLower() == "apikey").Value.FirstOrDefault();
+            var deviceId = actionContext.HttpContext.Request.Headers.SingleOrDefault(h => h.Key.ToLower() == "deviceid").Value.FirstOrDefault();
+
+            var deviceService = actionContext.HttpContext.RequestServices.GetService<IDeviceService>();
+            var device = await deviceService.GetWithApiKeyAsync(deviceId, apiKey);
+
+            base.OnActionExecuting(actionContext);
+
+            if (String.IsNullOrEmpty(apiKey) || apiKey != device.ApiKey || String.IsNullOrEmpty(deviceId) || deviceId != device.RowKey)
             {
                 actionContext.Result = new UnauthorizedResult();
             }
