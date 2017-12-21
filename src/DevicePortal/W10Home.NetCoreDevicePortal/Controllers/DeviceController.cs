@@ -20,7 +20,7 @@ using W10Home.NetCoreDevicePortal.Models;
 namespace W10Home.NetCoreDevicePortal.Controllers
 {
     [Authorize]
-    public class DeviceController : Controller
+    public class DeviceController : ControllerBase
     {
         private DeviceManagementService _deviceManagementService;
         private IDeviceStateService _deviceStateService;
@@ -28,11 +28,10 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         private IDeviceFunctionService _deviceFunctionService;
         private IConfiguration _configuration;
         private DevicePluginService _devicePluginService;
-        private IDeviceService _deviceService;
 
         public DeviceController(IConfiguration configuration, DeviceManagementService deviceManagementService, IDeviceStateService deviceStateService, 
             IDeviceConfigurationService deviceConfigurationService, IDeviceFunctionService deviceFunctionService, DevicePluginService devicePluginService,
-            IDeviceService deviceService)
+            IDeviceService deviceService) : base(deviceService)
         {
             _deviceManagementService = deviceManagementService;
             _deviceStateService = deviceStateService;
@@ -40,7 +39,6 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             _deviceFunctionService = deviceFunctionService;
             _configuration = configuration;
             _devicePluginService = devicePluginService;
-            _deviceService = deviceService;
         }
 
         // GET: Device
@@ -149,34 +147,6 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             return await Details(data.Id);
         }
 
-        public async Task<IActionResult> EditFunction(string deviceId, string functionName)
-        {
-            if (!await IsMyDevice(deviceId))
-            {
-                return NotFound();
-            }
-
-            var function = await _deviceFunctionService.GetFunctionAsync(deviceId, functionName);
-            return View(function);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> EditFunction(DeviceFunctionEntity deviceFunctionEntity)
-        {
-            if (!await IsMyDevice(deviceFunctionEntity.PartitionKey))
-            {
-                return NotFound();
-            }
-
-            await _deviceFunctionService.SaveFunctionAsync(deviceFunctionEntity.PartitionKey,
-                deviceFunctionEntity.RowKey, deviceFunctionEntity.Name, deviceFunctionEntity.TriggerType, deviceFunctionEntity.Interval,
-                deviceFunctionEntity.QueueName, deviceFunctionEntity.Enabled, deviceFunctionEntity.Script);
-
-            await _deviceManagementService.UpdateFunctionsAndVersionsTwinPropertyAsync(deviceFunctionEntity.PartitionKey);
-
-            return await EditFunction(deviceFunctionEntity.PartitionKey, deviceFunctionEntity.RowKey);
-        }
-
         #region Ajax methods
 
         [HttpPost]
@@ -254,30 +224,5 @@ namespace W10Home.NetCoreDevicePortal.Controllers
         }
 
         #endregion
-
-        /// <summary>
-        /// Checks whether the given device id exists and is assigned to the current user
-        /// </summary>
-        /// <param name="deviceId"></param>
-        /// <returns></returns>
-        private async Task<bool> IsMyDevice(string deviceId)
-        {
-            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            var userDevice = await _deviceService.GetAsync(userId, deviceId);
-            return userDevice != null;
-        }
-
-        /// <summary>
-        /// Checks if the device is owned by the current user. Returns the device if it exists and is assigned to the user account.
-        /// </summary>
-        /// <param name="deviceId"></param>
-        /// <returns></returns>
-        private async Task<DeviceEntity> GetMyDevice(string deviceId)
-        {
-            var userId = User.Claims.Single(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            var userDevice = await _deviceService.GetAsync(userId, deviceId);
-            return userDevice;
-        }
-
     }
 }

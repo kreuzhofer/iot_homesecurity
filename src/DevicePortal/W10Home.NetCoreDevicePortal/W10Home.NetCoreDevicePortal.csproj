@@ -227,6 +227,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Pages\" />
     <Folder Include="wwwroot\lib\jquery-color\test\qunit\" />
   </ItemGroup>
 

@@ -24,7 +24,7 @@
     //        '<script type="text/javascript" src="lib/signalr-client/signalr-msgpackprotocol.js"><\/script>');
     //}
 
-    let logger = new signalR.ConsoleLogger(signalR.LogLevel.Information);
+    logger = new signalR.ConsoleLogger(signalR.LogLevel.Information);
     logConnection = new signalR.HubConnection('/log', { logger: logger });
     channelConnection = new signalR.HubConnection('/devicestate', { logger: logger });
 
@@ -284,12 +284,12 @@
                     @Html.DisplayFor(modelItem => item.Enabled)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "EditFunction", new { deviceId = item.PartitionKey, functionName = item.RowKey })
+                    @Html.ActionLink("Edit", "Edit", "Function", new { deviceId = item.PartitionKey, functionName = item.RowKey })
                 </td>
             </tr>
         }
         <tr>
-            <td>@Html.ActionLink("+", "Add")</td>
+            <td>@Html.ActionLink("+", "Add", "Function", new{deviceId = Model.Id})</td>
         </tr>
     </table>
 </div>
