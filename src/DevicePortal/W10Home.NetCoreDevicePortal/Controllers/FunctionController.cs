@@ -45,6 +45,10 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             {
                 return NotFound();
             }
+            if (String.IsNullOrEmpty(deviceFunctionEntity.RowKey))
+            {
+                deviceFunctionEntity.RowKey = Guid.NewGuid().ToString();
+            }
 
             if (deviceFunctionEntity.TriggerType == FunctionTriggerType.CronSchedule.ToString())
             {
@@ -77,11 +81,8 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                 Language = FunctionLanguage.Lua.ToString(),
                 Name = "New function",
                 PartitionKey = deviceId,
-                RowKey = Guid.NewGuid().ToString(),
                 QueueName = "triggerqueue",
-                Script = @"
-function run(message)
-    end;",
+                Script = "function run(message) end;",
                 TriggerType = FunctionTriggerType.MessageQueue.ToString()
             };
             return View("Edit", deviceFunction);

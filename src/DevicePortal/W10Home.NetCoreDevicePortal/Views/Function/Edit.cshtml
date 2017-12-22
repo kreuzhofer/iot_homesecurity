@@ -12,24 +12,33 @@
 
 <script language="javascript">
     require.config({ paths: { 'vs': '/lib/monaco-editor/min/vs' } });
-    require(['vs/editor/editor.main'], function() {
-        $.ajax({
-            type: "POST",
-            dataType: "json",
-            url: '@Url.Action("GetFunction", "Device")',
-            data: {deviceId: '@Model.PartitionKey', functionId: '@Model.RowKey'},
-            success: function(data) {
-                var codeSnippet = data.script;
-                window.editor = monaco.editor.create(document.getElementById('codecontainer'), {
-                    value: codeSnippet,
-                    language: 'lua',
-                    theme: "vs-dark",
+    require(['vs/editor/editor.main'],
+        function() {
+            var partitionKey = '@Model.RowKey';
+            if (partitionKey == '') {
+                var codeSnippet = '@Model.Script';
+                startEditor(codeSnippet);
+            } else {
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: '@Url.Action("GetFunction", "Device")',
+                    data: { deviceId: '@Model.PartitionKey', functionId: '@Model.RowKey' },
+                    success: function(data) {
+                        var codeSnippet = data.script;
+                        startEditor(codeSnippet);
+                    }
                 });
             }
         });
 
-
-    });
+    function startEditor(codeSnippet) {
+        window.editor = monaco.editor.create(document.getElementById('codecontainer'), {
+            value: codeSnippet,
+            language: 'lua',
+            theme: "vs-dark",
+        });
+    }
 
     function copyCodeToHiddenField() {
         var code = window.editor.getValue();
@@ -52,7 +61,7 @@
 
 <h2>Edit Device Function</h2>
 
-@using (Html.BeginForm("Edit"))
+@using (Html.BeginForm("Edit", "Function"))
 {
     @Html.AntiForgeryToken()
 
@@ -98,29 +107,28 @@
             @Html.EditorFor(model => model.Interval, new { htmlAttributes = new { @class = "form-control" } })
         </div>
     </div>
-
     <div class="form-group">
         @Html.LabelFor(model => model.CronSchedule, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             @Html.EditorFor(model => model.CronSchedule, new { htmlAttributes = new { @class = "form-control" } })
         </div>
     </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.QueueName, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.QueueName, new { htmlAttributes = new { @class = "form-control" } })
+        <div class="form-group">
+            @Html.LabelFor(model => model.QueueName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.QueueName, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
         </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Enabled, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Enabled, new { htmlAttributes = new { @class = "form-control" } })
+        
+        <div class="form-group">
+            @Html.LabelFor(model => model.Enabled, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Enabled, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
         </div>
-    </div>
-
-    @Html.HiddenFor(model => model.Script)
+        
+        @Html.HiddenFor(model => model.Script)
+        @Html.HiddenFor(model=>model.Language);
 
 
 </div>
