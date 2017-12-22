@@ -3,6 +3,7 @@
 	public enum FunctionTriggerType
 	{
 		MessageQueue,
-		RecurringIntervalTimer
+		RecurringIntervalTimer,
+        CronSchedule
 	}
 }

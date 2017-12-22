@@ -10,6 +10,7 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Entities
         public string TriggerType { get; set; }
         public string QueueName { get; set; }
         public int Interval { get; set; }
+        public string CronSchedule { get; set; }
         public string Script { get; set; }
         public string Language { get; set; }
         public bool Enabled { get; set; }
@@ -24,6 +25,7 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Entities
                 DeviceId = PartitionKey,
                 FunctionId = RowKey,
                 Interval = Interval,
+                CronSchedule = CronSchedule,
                 Language = Language,
                 Name = Name,
                 QueueName = QueueName,

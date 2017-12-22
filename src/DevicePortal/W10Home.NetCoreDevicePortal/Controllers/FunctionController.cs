@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IoTHs.Api.Shared;
+using IoTHs.Api.Shared.CronJobs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
@@ -45,6 +46,14 @@ namespace W10Home.NetCoreDevicePortal.Controllers
                 return NotFound();
             }
 
+            if (deviceFunctionEntity.TriggerType == FunctionTriggerType.CronSchedule.ToString())
+            {
+                if (!new CronSchedule().IsValid(deviceFunctionEntity.CronSchedule))
+                {
+                    ModelState.AddModelError("CronSchedule", "Invalid cron schedule");
+                }
+            }
+
             await _deviceFunctionService.SaveFunctionAsync(deviceFunctionEntity.PartitionKey,
                 deviceFunctionEntity.RowKey, deviceFunctionEntity.Name, deviceFunctionEntity.TriggerType, deviceFunctionEntity.Interval,
                 deviceFunctionEntity.QueueName, deviceFunctionEntity.Enabled, deviceFunctionEntity.Script);
@@ -64,6 +73,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers
             {
                 Enabled = true,
                 Interval = 0,
+                CronSchedule = "* * * * *",
                 Language = FunctionLanguage.Lua.ToString(),
                 Name = "New function",
                 PartitionKey = deviceId,
