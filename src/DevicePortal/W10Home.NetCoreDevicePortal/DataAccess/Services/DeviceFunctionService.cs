@@ -20,7 +20,7 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Services
             _scriptTableRef.CreateIfNotExistsAsync();
         }
 
-        public async Task SaveFunctionAsync(string deviceId, string functionId, string functionName, string triggerType, int interval, string queueName, bool enabled, string scriptContent)
+        public async Task SaveFunctionAsync(string deviceId, string functionId, string functionName, string triggerType, int interval, string cronSchedule, string queueName, bool enabled, string scriptContent)
         {
             DeviceFunctionEntity entity;
             entity = await GetFunctionAsync(deviceId, functionId);
@@ -34,6 +34,7 @@ namespace W10Home.NetCoreDevicePortal.DataAccess.Services
             entity.Language = "Lua";
             entity.Script = scriptContent;
             entity.Interval = interval;
+            entity.CronSchedule = cronSchedule;
             entity.QueueName = queueName;
             entity.TriggerType = triggerType;
             entity.Enabled = enabled;

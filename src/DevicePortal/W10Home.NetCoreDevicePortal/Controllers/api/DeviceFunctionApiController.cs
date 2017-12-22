@@ -51,7 +51,9 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
         [HttpPost("{deviceId}/{functionId}")]
         public async Task<IActionResult> CreateNew(string deviceId, string functionId, [FromBody]DeviceFunctionModel functionModel)
         {
-            await _deviceFunctionService.SaveFunctionAsync(deviceId, functionId, functionModel.Name, functionModel.TriggerType.ToString(), functionModel.Interval, functionModel.QueueName, functionModel.Enabled, functionModel.Script);
+            await _deviceFunctionService.SaveFunctionAsync(deviceId, functionId, functionModel.Name, 
+                functionModel.TriggerType.ToString(), functionModel.Interval, functionModel.CronSchedule, 
+                functionModel.QueueName, functionModel.Enabled, functionModel.Script);
             await _deviceManagementService.UpdateFunctionsAndVersionsTwinPropertyAsync(deviceId);
             return Ok();
         }

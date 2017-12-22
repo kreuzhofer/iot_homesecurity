@@ -60,7 +60,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers
 
             await _deviceFunctionService.SaveFunctionAsync(deviceFunctionEntity.PartitionKey,
                 deviceFunctionEntity.RowKey, deviceFunctionEntity.Name, deviceFunctionEntity.TriggerType, deviceFunctionEntity.Interval,
-                deviceFunctionEntity.QueueName, deviceFunctionEntity.Enabled, deviceFunctionEntity.Script);
+                deviceFunctionEntity.CronSchedule ,deviceFunctionEntity.QueueName, deviceFunctionEntity.Enabled, deviceFunctionEntity.Script);
 
             await _deviceManagementService.UpdateFunctionsAndVersionsTwinPropertyAsync(deviceFunctionEntity.PartitionKey);
 
