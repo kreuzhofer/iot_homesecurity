@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using IoTHs.Api.Shared;
+using IoTHs.Api.Shared.CronJobs;
 using IoTHs.Core.Http;
 using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
@@ -121,6 +123,46 @@ namespace IoTHs.Core.Lua
                 functionInstance.Timer = timer;
                 functionInstance.LuaScript = script;
             }
+            else if (function.TriggerType == FunctionTriggerType.CronSchedule)
+            {
+                var script = SetupNewLuaScript(function.Name);
+                functionInstance.LastMinute = DateTime.Now;
+                // try to compile script
+                try
+                {
+                    script.DoString(function.Script);
+                }
+                catch (Exception ex)
+                {
+                    _log.LogError(ex, "Error compiling script " + function.Name);
+                    return null;
+                }
+                var timer = new Timer(state =>
+                {
+                    var func = (FunctionInstance) state;
+                    var newMinute = DateTime.Now;
+                    if (newMinute.Minute != func.LastMinute.Minute && func.CronSchedule.IsTime(newMinute))
+                    {
+                        func.LastMinute = newMinute;
+                        lock (script)
+                        {
+                            _log.LogTrace("Running cronschedule triggered function " + function.Name);
+                            try
+                            {
+                                script.Call(script.Globals["run"]);
+                            }
+                            catch (Exception ex)
+                            {
+                                _log.LogError(ex, "Error running function " + function.Name);
+                            }
+                        }
+                    }
+                }, functionInstance, 30000, 30000);
+                functionInstance.Timer = timer;
+                functionInstance.CronSchedule = new CronSchedule(function.CronSchedule);
+                functionInstance.LuaScript = script;
+            }
+
             else if (function.TriggerType == FunctionTriggerType.MessageQueue)
             {
                 var script = SetupNewLuaScript(function.Name);
@@ -285,6 +327,22 @@ namespace IoTHs.Core.Lua
 
             var apiKey = ServiceLocator.Current.GetService<IDeviceRegistry>().GetDevice<IAzureIoTHubDevice>("iothub").ApiKey;
 
+            // create client token
+            var tokenClient = new LocalHttpClient();
+            var tokenRequestUrl = baseUrl + "ApiAuthentication/";
+            _log.LogDebug("Get api token");
+            tokenClient.Client.DefaultRequestHeaders.Add("apikey", apiKey);
+            tokenClient.Client.DefaultRequestHeaders.Add("deviceid", deviceId);
+            var tokenResponse = await tokenClient.Client.PostAsync(new Uri(tokenRequestUrl), null);
+            if (!tokenResponse.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException(tokenResponse.ReasonPhrase);
+            }
+            // get token from response
+            var tokenReponseContent = await tokenResponse.Content.ReadAsStringAsync();
+            dynamic tokenJsonObj = JsonConvert.DeserializeObject(tokenReponseContent);
+            string token = tokenJsonObj.token;
+
             foreach (var functionVersionPair in functionVersionPairs)
             {
                 var functionId = functionVersionPair.Split(':')[0];
@@ -295,7 +353,7 @@ namespace IoTHs.Core.Lua
                 {
                     // download function code from webserver
                     var client = new LocalHttpClient();
-                    client.Client.DefaultRequestHeaders.Add("apikey", apiKey);
+                    client.Client.DefaultRequestHeaders.Add("Authorization", "Bearer "+token);
                     var functionContent = await client.Client.GetStringAsync(new Uri(baseUrl + "DeviceFunction/" + deviceId + "/" + functionId));
                     // store function file to disk
                     var localStorage = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);

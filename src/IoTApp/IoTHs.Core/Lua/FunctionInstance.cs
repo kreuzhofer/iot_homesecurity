@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
+using IoTHs.Api.Shared.CronJobs;
 using MoonSharp.Interpreter;
 
 namespace IoTHs.Core.Lua
@@ -16,6 +18,7 @@ namespace IoTHs.Core.Lua
         public Script LuaScript { get; set; }
         public Timer Timer { get; set; }
         public CancellationTokenSource CancellationTokenSource { get; set; }
-
+        public CronSchedule CronSchedule { get; set; }
+        public DateTime LastMinute { get; set; }
     }
 }
