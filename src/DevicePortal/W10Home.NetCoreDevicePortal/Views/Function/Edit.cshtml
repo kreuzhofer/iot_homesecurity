@@ -111,7 +111,26 @@
         @Html.LabelFor(model => model.CronSchedule, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             @Html.EditorFor(model => model.CronSchedule, new { htmlAttributes = new { @class = "form-control" } })
+            <textarea style="font-family: monospace; min-width: 500px;" rows="17" readonly="readonly">
+* * * * *
+┬ ┬ ┬ ┬ ┬
+│ │ │ │ │
+│ │ │ │ │
+│ │ │ │ └───── day of week (0 - 6) (Sunday=0 )
+│ │ │ └────────── month (1 - 12)
+│ │ └─────────────── day of month (1 - 31)
+│ └──────────────────── hour (0 - 23)
+└───────────────────────── min (0 - 59)
+
+`* * * * *` Every minute.
+`0 * * * *` Top of every hour.
+`0,1,2 * * * *` Every hour at minutes 0, 1, and 2.
+`*/2 * * * *` Every two minutes.
+`1-55 * * * *` Every minute through the 55th minute.
+`* 1,10,20 * * *` Every 1st, 10th, and 20th hours.
+            </textarea>
         </div>
+
     </div>
         <div class="form-group">
             @Html.LabelFor(model => model.QueueName, htmlAttributes: new { @class = "control-label col-md-2" })
