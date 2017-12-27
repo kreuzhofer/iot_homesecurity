@@ -14,6 +14,10 @@ namespace IoTHs.Core.Logging
                 throw new ArgumentNullException(nameof(formatter));
             }
             var message = formatter(state, exception);
+            if (exception != null && message != null)
+            {
+                message += "\n" + exception.Message;
+            }
             if (ServiceLocator.IsLocationProviderSet)
             {
                 ServiceLocator.Current.GetService<IMessageQueue>().Enqueue("iothublog", logLevel.ToString(), message, "json");

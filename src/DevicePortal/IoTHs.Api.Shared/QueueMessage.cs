@@ -5,6 +5,10 @@ namespace IoTHs.Api.Shared
 {
     public class QueueMessage
     {
+        public static QueueMessage Create()
+        {
+            return new QueueMessage();
+        }
         public QueueMessage() { }
 		public QueueMessage(string key, string value, string tag)
 		{

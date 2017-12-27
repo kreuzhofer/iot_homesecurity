@@ -262,14 +262,13 @@
             <th>Interval</th>
             <th>QueueName</th>
             <th>Enabled</th>
-            <th></th>
         </tr>
 
         @foreach (var item in Model.DeviceFunctions)
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.ActionLink(item.Name, "Edit", "Function", new { deviceId = item.PartitionKey, functionName = item.RowKey })
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.TriggerType)
@@ -282,9 +281,6 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Enabled)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", "Function", new { deviceId = item.PartitionKey, functionName = item.RowKey })
                 </td>
             </tr>
         }

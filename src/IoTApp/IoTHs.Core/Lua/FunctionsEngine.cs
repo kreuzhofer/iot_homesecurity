@@ -245,6 +245,8 @@ namespace IoTHs.Core.Lua
             script.Globals.Set("DateTime", UserData.Create(new DateTime()));
 
 		    script.Options.DebugPrint = s => { log.LogDebug(s); };
+
+            script.Globals.Set("QueueMessage", UserData.Create(new QueueMessage()));
 			return script;
 	    }
 

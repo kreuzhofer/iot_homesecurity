@@ -65,7 +65,8 @@ namespace W10Home.NetCoreDevicePortal
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromHours(1);
-                options.CookieHttpOnly = true;
+                options.Cookie.HttpOnly = true;
+                options.Cookie.Expiration = TimeSpan.FromDays(30);
             });
 
             services.AddSignalR();
