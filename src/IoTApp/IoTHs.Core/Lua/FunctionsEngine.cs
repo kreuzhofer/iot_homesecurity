@@ -127,6 +127,7 @@ namespace IoTHs.Core.Lua
             {
                 var script = SetupNewLuaScript(function.Name);
                 functionInstance.LastMinute = DateTime.Now;
+                functionInstance.IsRunning = false;
                 // try to compile script
                 try
                 {
@@ -144,8 +145,9 @@ namespace IoTHs.Core.Lua
                     if (newMinute.Minute != func.LastMinute.Minute && func.CronSchedule.IsTime(newMinute))
                     {
                         func.LastMinute = newMinute;
-                        lock (script)
+                        if (!func.IsRunning)
                         {
+                            func.IsRunning = true;
                             _log.LogTrace("Running cronschedule triggered function " + function.Name);
                             try
                             {
@@ -155,6 +157,14 @@ namespace IoTHs.Core.Lua
                             {
                                 _log.LogError(ex, "Error running function " + function.Name);
                             }
+                            finally
+                            {
+                                func.IsRunning = false;
+                            }
+                        }
+                        else
+                        {
+                            _log.LogWarning("Still running ronschedule triggered function " + function.Name+ ". Better check your schedule.");
                         }
                     }
                 }, functionInstance, 30000, 30000);

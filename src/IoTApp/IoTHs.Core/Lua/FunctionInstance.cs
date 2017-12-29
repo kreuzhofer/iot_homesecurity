@@ -20,5 +20,6 @@ namespace IoTHs.Core.Lua
         public CancellationTokenSource CancellationTokenSource { get; set; }
         public CronSchedule CronSchedule { get; set; }
         public DateTime LastMinute { get; set; }
+        public bool IsRunning { get; set; }
     }
 }
