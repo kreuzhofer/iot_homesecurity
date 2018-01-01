@@ -9,14 +9,14 @@ using IoTHs.Devices.Interfaces;
 
 namespace IoTHs.Plugin.ABUS.SecVest
 {
-    public class SecVestDevice : DeviceBase
+    public class SecVestDevicePlugin : DevicePluginBase
     {
 		private LocalHttpClient _httpClient;
 		private List<IDeviceChannel> _channels = new List<IDeviceChannel>();
         private string _name;
         private string _type;
 
-        public SecVestDevice()
+        public SecVestDevicePlugin()
 	    {
 		    Debug.WriteLine("SecVestDevice Instance created.");
 	    }

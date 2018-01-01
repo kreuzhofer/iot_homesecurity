@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using IoTHs.Devices.Interfaces;
 using MQTTnet.Core;
 using MQTTnet.Core.Protocol;
@@ -39,5 +40,7 @@ namespace IoTHs.Plugin.MQTTBroker
             _mqttServer.Publish(new MqttApplicationMessage(_name + "/cmnd/POWER", Encoding.UTF8.GetBytes(onOff ? "ON" : "OFF"), MqttQualityOfServiceLevel.AtMostOnce, false));
             _lastState = onOff;
         }
+
+        public IEnumerable<IChannelDatapoint> Datapoints { get; }
     }
 }

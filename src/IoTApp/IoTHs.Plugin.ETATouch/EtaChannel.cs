@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using IoTHs.Core.Channels;
 using IoTHs.Devices.Interfaces;
 
@@ -33,5 +34,7 @@ namespace IoTHs.Plugin.ETATouch
 		{
 			throw new NotImplementedException();
 		}
+
+	    public IEnumerable<IChannelDatapoint> Datapoints { get; }
 	}
 }

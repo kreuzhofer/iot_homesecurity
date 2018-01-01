@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using IoTHs.Devices.Interfaces;
 
 namespace IoTHs.Plugin.ABUS.SecVest
@@ -20,5 +21,6 @@ namespace IoTHs.Plugin.ABUS.SecVest
 		public abstract ChannelType ChannelType { get; }
 		public abstract object Read();
 		public abstract void Write(object value);
+	    public abstract IEnumerable<IChannelDatapoint> Datapoints { get; }
 	}
 }

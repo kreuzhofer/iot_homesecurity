@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using IoTHs.Core.Channels;
+using IoTHs.Devices.Interfaces;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
@@ -49,5 +51,7 @@ namespace IoTHs.Plugin.Twilio
 		{
 			throw new NotImplementedException();
 		}
+
+	    public override IEnumerable<IChannelDatapoint> Datapoints { get; }
 	}
 }

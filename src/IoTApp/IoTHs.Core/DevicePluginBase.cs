@@ -6,7 +6,7 @@ using IoTHs.Devices.Interfaces;
 
 namespace IoTHs.Core
 {
-	public abstract class DeviceBase : IDevice
+	public abstract class DevicePluginBase : IDevicePlugin
 	{
 	    public abstract string Name { get; }
 	    public abstract string Type { get; }

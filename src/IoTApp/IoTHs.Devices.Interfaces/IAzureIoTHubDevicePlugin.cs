@@ -5,7 +5,7 @@ using IoTHs.Devices.Interfaces;
 
 namespace IoTHs.Plugin.AzureIoTHub
 {
-    public interface IAzureIoTHubDevice : IDevice
+    public interface IAzureIoTHubDevicePlugin : IDevicePlugin
     {
         string Name { get; }
         string Type { get; }

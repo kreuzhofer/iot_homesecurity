@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using IoTHs.Api.Shared;
 using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
@@ -34,5 +35,7 @@ namespace IoTHs.Plugin.AzureIoTHub
                 throw new InvalidCastException("Expected Type QueueMessage in device channel.");
             }
         }
+
+        public IEnumerable<IChannelDatapoint> Datapoints { get; }
     }
 }

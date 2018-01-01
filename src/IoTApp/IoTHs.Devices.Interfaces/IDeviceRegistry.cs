@@ -6,14 +6,14 @@ namespace IoTHs.Devices.Interfaces
 {
 	public interface IDeviceRegistry
 	{
-		void RegisterDeviceType<T>() where T : class, IDevice;
+		void RegisterDeviceType<T>() where T : class, IDevicePlugin;
 
-		IEnumerable<T> GetDevices<T>() where T : class, IDevice;
-		T GetDevice<T>() where T : class, IDevice;
-		T GetDevice<T>(string name) where T : class, IDevice;
+		IEnumerable<T> GetDevices<T>() where T : class, IDevicePlugin;
+		T GetDevice<T>() where T : class, IDevicePlugin;
+		T GetDevice<T>(string name) where T : class, IDevicePlugin;
 		Task TeardownDevicesAsync();
 		object GetDevice(string name);
-	    IEnumerable<IDevice> GetDevices();
+	    IEnumerable<IDevicePlugin> GetDevices();
 	    Task InitializeDevicesAsync(DeviceConfigurationModel configurationObject);
 	}
 }

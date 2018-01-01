@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace IoTHs.Devices.Interfaces
@@ -12,5 +14,6 @@ namespace IoTHs.Devices.Interfaces
         ChannelType ChannelType { get; }
 		object Read();
 		void Write(object value);
+        IEnumerable<IChannelDatapoint> Datapoints { get; }
 	}
 }

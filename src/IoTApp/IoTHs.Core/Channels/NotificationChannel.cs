@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using IoTHs.Devices.Interfaces;
 
 namespace IoTHs.Core.Channels
@@ -12,5 +13,6 @@ namespace IoTHs.Core.Channels
 		public abstract Task<bool> NotifyAsync(string messageBody);
 		public abstract object Read();
 		public abstract void Write(object value);
+	    public abstract IEnumerable<IChannelDatapoint> Datapoints { get; }
 	}
 }

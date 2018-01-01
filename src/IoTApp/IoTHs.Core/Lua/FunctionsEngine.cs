@@ -333,11 +333,11 @@ namespace IoTHs.Core.Lua
         private async Task CheckVersionsAndUpdateAsync(string functionsAndVersions)
         {
             string[] functionVersionPairs = functionsAndVersions.Split(',');
-            var iotHub = ServiceLocator.Current.GetService<IAzureIoTHubDevice>();
+            var iotHub = ServiceLocator.Current.GetService<IAzureIoTHubDevicePlugin>();
             var baseUrl = iotHub.ServiceBaseUrl;
             var deviceId = iotHub.DeviceId;
 
-            var apiKey = ServiceLocator.Current.GetService<IDeviceRegistry>().GetDevice<IAzureIoTHubDevice>("iothub").ApiKey;
+            var apiKey = ServiceLocator.Current.GetService<IDeviceRegistry>().GetDevice<IAzureIoTHubDevicePlugin>("iothub").ApiKey;
 
             // create client token
             var tokenClient = new LocalHttpClient();

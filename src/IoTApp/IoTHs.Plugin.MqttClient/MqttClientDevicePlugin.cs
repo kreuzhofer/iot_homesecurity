@@ -11,7 +11,7 @@ using uPLibrary.Networking.M2Mqtt;
 
 namespace IoTHs.Plugin.MqttClient
 {
-    public class MqttClientDevice : DeviceBase
+    public class MqttClientDevicePlugin : DevicePluginBase
     {
 	    private uPLibrary.Networking.M2Mqtt.MqttClient _mqttclient;
 	    private string _deviceid;

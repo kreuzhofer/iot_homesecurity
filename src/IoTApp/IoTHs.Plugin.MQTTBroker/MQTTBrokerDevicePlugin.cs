@@ -25,7 +25,7 @@ using Newtonsoft.Json;
 
 namespace IoTHs.Plugin.MQTTBroker
 {
-    public class MQTTBrokerPlugin : DeviceBase
+    public class MQTTBrokerDevicePlugin : DevicePluginBase
     {
         private IEnumerable<IDeviceChannel> _channels;
         private IMqttServer _mqttServer;
@@ -36,15 +36,15 @@ namespace IoTHs.Plugin.MQTTBroker
 
         private CancellationTokenSource _threadCancellation;
         private Task _messageReceiverTask;
-        private ILogger<MQTTBrokerPlugin> _log;
+        private ILogger<MQTTBrokerDevicePlugin> _log;
 
         public override string Name => _name;
 
         public override string Type => _type;
 
-        public MQTTBrokerPlugin(ILoggerFactory loggerFactory)
+        public MQTTBrokerDevicePlugin(ILoggerFactory loggerFactory)
         {
-            _log = loggerFactory.CreateLogger<MQTTBrokerPlugin>();
+            _log = loggerFactory.CreateLogger<MQTTBrokerDevicePlugin>();
         }
 
         public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
@@ -99,7 +99,7 @@ namespace IoTHs.Plugin.MQTTBroker
             {
                 if (functionsEngine.Functions.All(f => f.Name != rootTopic) && _requestedFunctions.All(f => f != rootTopic))
                 {
-                    var iotHub = ServiceLocator.Current.GetService<IAzureIoTHubDevice>();
+                    var iotHub = ServiceLocator.Current.GetService<IAzureIoTHubDevicePlugin>();
                     if (String.IsNullOrEmpty(iotHub.ServiceBaseUrl))
                     {
                         return;

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace IoTHs.Devices.Interfaces
 {
-	public interface IDevice
+	public interface IDevicePlugin
 	{
         string Name { get; }
         string Type { get; }

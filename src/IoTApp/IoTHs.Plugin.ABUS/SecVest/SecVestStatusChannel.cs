@@ -46,7 +46,9 @@ namespace IoTHs.Plugin.ABUS.SecVest
 			throw new NotImplementedException();
 		}
 
-		public SecVestOutput SetOutput(string outputId, string value)
+	    public override IEnumerable<IChannelDatapoint> Datapoints { get; }
+
+	    public SecVestOutput SetOutput(string outputId, string value)
 		{
 			try
 			{

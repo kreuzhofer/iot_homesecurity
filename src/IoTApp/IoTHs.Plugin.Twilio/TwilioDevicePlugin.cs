@@ -7,7 +7,7 @@ using IoTHs.Devices.Interfaces;
 
 namespace IoTHs.Plugin.Twilio
 {
-	public class TwilioDevice : DeviceBase
+	public class TwilioDevicePlugin : DevicePluginBase
 	{
 		private string _accountSid;
 		private string _authToken;
