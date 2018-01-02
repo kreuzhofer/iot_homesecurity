@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 using W10Home.DevicePortal.IotHub;
-using W10Home.Interfaces.Configuration;
 using W10Home.NetCoreDevicePortal.DataAccess.Entities;
 using W10Home.NetCoreDevicePortal.DataAccess.Interfaces;
 

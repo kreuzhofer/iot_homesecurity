@@ -3,7 +3,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using IoTHs.Api.Shared;
-using IoTHs.Plugin.AzureIoTHub;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

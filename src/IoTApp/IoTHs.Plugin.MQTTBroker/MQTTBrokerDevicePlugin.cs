@@ -98,6 +98,7 @@ namespace IoTHs.Plugin.MQTTBroker
             {
                 if (functionsEngine.Functions.All(f => f.Name != rootTopic) && _requestedFunctions.All(f => f != rootTopic))
                 {
+                    _log.LogInformation("No function found for topic "+rootTopic+". Creating function.");
                     var iotHub = ServiceLocator.Current.GetService<IAzureIoTHubDevicePlugin>();
                     if (String.IsNullOrEmpty(iotHub.ServiceBaseUrl))
                     {
@@ -131,10 +132,14 @@ function run(message)
                         var task = httpClient.Client.PostAsync(iotHub.ServiceBaseUrl + "DeviceConfiguration/" + iotHub.DeviceId + "/" + _name + "/channel:" + rootTopic, new StringContent(configBody, Encoding.UTF8, "application/json"));
                         Task.WaitAll(task);
                         var result = task.Result;
+                        if (!result.IsSuccessStatusCode)
+                        {
+                            _log.LogError("Error creating device configuration: "+result.ReasonPhrase);
+                        }
                         deviceDetected = true;
                     }
 
-                    if (deviceDetected) // only create a function if device was detected correctly
+                    if (deviceDetected) // only create a function if device was detected correctly. TODO create a setting for mqttbrokerplugin whether functions should be created automatically or not.
                     {
                         var model = new DeviceFunctionModel()
                         {
@@ -154,6 +159,10 @@ function run(message)
                         if (result.IsSuccessStatusCode)
                         {
                             _requestedFunctions.Add(rootTopic);
+                        }
+                        else
+                        {
+                            _log.LogError("Error creating device function: " + result.ReasonPhrase);
                         }
                     }
                 }

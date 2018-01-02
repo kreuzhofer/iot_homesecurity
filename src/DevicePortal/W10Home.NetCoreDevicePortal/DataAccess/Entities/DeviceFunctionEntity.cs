@@ -1,6 +1,5 @@
 using IoTHs.Api.Shared;
 using Microsoft.WindowsAzure.Storage.Table;
-using W10Home.Interfaces.Configuration;
 
 namespace W10Home.NetCoreDevicePortal.DataAccess.Entities
 {

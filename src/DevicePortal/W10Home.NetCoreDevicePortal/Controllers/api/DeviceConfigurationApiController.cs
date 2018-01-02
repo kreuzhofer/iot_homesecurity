@@ -54,7 +54,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
                     new DevicePluginConfigurationModel // default iot hub configuration for tpm
                     {
                         Name = "iothub",
-                        Type = "IAzureIoTHubDevice",
+                        Type = "IAzureIoTHubDevicePlugin",
                         Properties = new Dictionary<string, string>()
                     }
                 },
