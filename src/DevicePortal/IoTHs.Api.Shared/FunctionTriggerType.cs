@@ -1,4 +1,4 @@
-﻿namespace W10Home.Interfaces.Configuration
+﻿namespace IoTHs.Api.Shared
 {
 	public enum FunctionTriggerType
 	{

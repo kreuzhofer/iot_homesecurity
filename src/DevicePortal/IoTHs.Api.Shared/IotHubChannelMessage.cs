@@ -1,4 +1,4 @@
-﻿namespace IoTHs.Plugin.AzureIoTHub
+﻿namespace IoTHs.Api.Shared
 {
 	public class IotHubChannelMessage
 	{

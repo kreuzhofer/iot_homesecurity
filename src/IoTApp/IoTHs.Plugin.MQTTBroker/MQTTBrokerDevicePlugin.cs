@@ -18,7 +18,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MQTTnet.Core.Adapter;
 using IoTHs.Core.Http;
-using IoTHs.Plugin.AzureIoTHub;
 using System.Net.Http;
 using IoTHs.Core.Lua;
 using Newtonsoft.Json;
@@ -142,7 +141,7 @@ function run(message)
                             DeviceId = iotHub.DeviceId,
                             FunctionId = Guid.NewGuid().ToString(),
                             Name = rootTopic,
-                            TriggerType = W10Home.Interfaces.Configuration.FunctionTriggerType.MessageQueue,
+                            TriggerType = FunctionTriggerType.MessageQueue,
                             Interval = 0,
                             QueueName = rootTopic,
                             Enabled = true,

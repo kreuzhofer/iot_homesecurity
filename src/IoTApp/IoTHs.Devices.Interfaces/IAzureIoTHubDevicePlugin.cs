@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using IoTHs.Api.Shared;
-using IoTHs.Devices.Interfaces;
 
-namespace IoTHs.Plugin.AzureIoTHub
+namespace IoTHs.Devices.Interfaces
 {
     public interface IAzureIoTHubDevicePlugin : IDevicePlugin
     {

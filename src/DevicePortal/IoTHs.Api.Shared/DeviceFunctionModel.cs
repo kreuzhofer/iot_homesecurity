@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using W10Home.Interfaces.Configuration;
 
 namespace IoTHs.Api.Shared
 {

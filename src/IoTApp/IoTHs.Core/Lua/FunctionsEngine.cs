@@ -10,13 +10,11 @@ using IoTHs.Api.Shared.CronJobs;
 using IoTHs.Core.Http;
 using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
-using IoTHs.Plugin.AzureIoTHub;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using Newtonsoft.Json;
-using W10Home.Interfaces.Configuration;
 
 namespace IoTHs.Core.Lua
 {
