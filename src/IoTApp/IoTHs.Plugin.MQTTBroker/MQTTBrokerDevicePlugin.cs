@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 using MQTTnet.Core.Adapter;
 using IoTHs.Core.Http;
 using System.Net.Http;
+using IoTHs.Core.Authentication;
 using IoTHs.Core.Lua;
 using Newtonsoft.Json;
 
@@ -36,14 +37,16 @@ namespace IoTHs.Plugin.MQTTBroker
         private CancellationTokenSource _threadCancellation;
         private Task _messageReceiverTask;
         private ILogger<MQTTBrokerDevicePlugin> _log;
+        private IApiAuthenticationService _apiAuthenticationService;
 
         public override string Name => _name;
 
         public override string Type => _type;
 
-        public MQTTBrokerDevicePlugin(ILoggerFactory loggerFactory)
+        public MQTTBrokerDevicePlugin(ILoggerFactory loggerFactory, IApiAuthenticationService apiAuthenticationService)
         {
             _log = loggerFactory.CreateLogger<MQTTBrokerDevicePlugin>();
+            _apiAuthenticationService = apiAuthenticationService;
         }
 
         public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
@@ -98,20 +101,18 @@ namespace IoTHs.Plugin.MQTTBroker
             {
                 if (functionsEngine.Functions.All(f => f.Name != rootTopic) && _requestedFunctions.All(f => f != rootTopic))
                 {
-                    _log.LogInformation("No function found for topic "+rootTopic+". Creating function.");
                     var iotHub = ServiceLocator.Current.GetService<IAzureIoTHubDevicePlugin>();
                     if (String.IsNullOrEmpty(iotHub.ServiceBaseUrl))
                     {
                         return;
                     }
-                    var httpClient = new LocalHttpClient();
-                    httpClient.Client.DefaultRequestHeaders.Add("apikey", iotHub.ApiKey);
 
                     string deviceScript = "";
                     bool deviceDetected = false;
                     // find out, if the message tells us, which device we have here
                     if (message.Topic.Contains("INFO1") && body.Contains("S20 Socket"))
                     {
+                        _log.LogInformation("No function found for topic " + rootTopic + ". Creating function.");
                         deviceScript = @"
 function run(message)
     if(string.match(message.Key, 'stat/POWER') != nil) then
@@ -121,6 +122,11 @@ function run(message)
     return 0;
     end;
 ";
+                        var tokenTask = _apiAuthenticationService.GetTokenAsync();
+                        Task.WaitAll(tokenTask);
+                        var token = tokenTask.Result;
+                        var httpClient = new LocalHttpClient(token);
+
                         var configuration = new
                         {
                             ChannelType = ChannelType.OnOffSwitch.ToString(),
@@ -141,6 +147,11 @@ function run(message)
 
                     if (deviceDetected) // only create a function if device was detected correctly. TODO create a setting for mqttbrokerplugin whether functions should be created automatically or not.
                     {
+                        var tokenTask = _apiAuthenticationService.GetTokenAsync();
+                        Task.WaitAll(tokenTask);
+                        var token = tokenTask.Result;
+                        var httpClient = new LocalHttpClient(token);
+
                         var model = new DeviceFunctionModel()
                         {
                             DeviceId = iotHub.DeviceId,

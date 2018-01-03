@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DotNetty.Common.Concurrency;
 using IoTHs.Api.Shared;
 using IoTHs.Core;
+using IoTHs.Core.Authentication;
 using IoTHs.Core.Channels;
 using IoTHs.Core.Configuration;
 using IoTHs.Core.Logging;
@@ -78,6 +79,7 @@ namespace W10Home.IoTCoreApp
             container.AddSingleton<DeviceConfigurationProvider>();
             container.AddTransient<CoreApp>();
             container.AddSingleton<FunctionsEngine>();
+            container.AddSingleton<IApiAuthenticationService, ApiAuthenticationService>();
 
             container.AddSingleton<IAzureIoTHubDevicePlugin, AzureIoTHubDevicePlugin>();
 #if ABUS

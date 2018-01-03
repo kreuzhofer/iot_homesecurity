@@ -13,6 +13,11 @@ namespace IoTHs.Core.Http
             Client = new HttpClient(handler);
         }
 
+        public LocalHttpClient(string bearerToken) : this()
+        {
+            Client.DefaultRequestHeaders.Add("Authorization", "Bearer " + bearerToken);
+        }
+
         public HttpClient Client { get; }
 
         private bool ServerCertificateCustomValidationCallback(HttpRequestMessage httpRequestMessage, X509Certificate2 x509Certificate2, X509Chain arg3, SslPolicyErrors arg4)
