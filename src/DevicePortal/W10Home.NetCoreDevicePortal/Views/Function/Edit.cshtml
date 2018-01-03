@@ -8,6 +8,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<script type="text/javascript" src="~/lib/signalr-client/signalr-client-1.0.0-alpha2-final.min.js"></script>
+<script type="text/javascript" src="~/lib/signalr-client/signalr-msgpackprotocol-1.0.0-alpha2-final.min.js"></script>
 <script src="~/lib/monaco-editor/min/vs/loader.js"></script>
 
 <script language="javascript">
@@ -40,6 +42,32 @@
         });
     }
 
+    logger = new signalR.ConsoleLogger(signalR.LogLevel.Information);
+    logConnection = new signalR.HubConnection('/log', { logger: logger });
+    channelConnection = new signalR.HubConnection('/devicestate', { logger: logger });
+
+    function startStreamingLogs() {
+        logConnection.stream("Logs", "@Model.PartitionKey").subscribe({
+            next: function (item) {
+                var source = item.source;
+                if (source && source.endsWith("@Model.RowKey"))
+                {
+                    var myTextArea = $('#log');
+                    myTextArea.val(myTextArea.val() + '\n' + item.message);
+                    // https://stackoverflow.com/questions/7373081/how-to-have-a-textarea-to-keep-scrolled-to-the-bottom-when-updated
+                    $('#log').scrollTop($('#log')[0].scrollHeight);
+                }
+            },
+            error: function (err) {
+                logger.log(err);
+            }
+        });
+    }
+
+    logConnection.start().then(function () {
+        startStreamingLogs();
+    });
+
     function copyCodeToHiddenField() {
         var code = window.editor.getValue();
         $('#Script').val(code);
@@ -65,25 +93,25 @@
 {
     @Html.AntiForgeryToken()
 
-<div class="form-horizontal">
-    <h4>Device Function</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.HiddenFor(model => model.PartitionKey)
-    @Html.HiddenFor(model => model.RowKey)
+    <div class="form-horizontal">
+        <h4>Device Function</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.PartitionKey)
+        @Html.HiddenFor(model => model.RowKey)
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
         </div>
-    </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.TriggerType, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.DropDownListFor(model => model.TriggerType, new[]
-                 {
+        <div class="form-group">
+            @Html.LabelFor(model => model.TriggerType, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.TriggerType, new[]
+                               {
                 new SelectListItem()
                 {
                     Text = FunctionTriggerType.MessageQueue.ToString(),
@@ -98,20 +126,20 @@
                     Value = FunctionTriggerType.CronSchedule.ToString()
                 }
             }, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
         </div>
-    </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Interval, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Interval, new { htmlAttributes = new { @class = "form-control" } })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Interval, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Interval, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.CronSchedule, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.CronSchedule, new { htmlAttributes = new { @class = "form-control" } })
-            <textarea style="font-family: monospace; min-width: 500px;" rows="17" readonly="readonly">
+        <div class="form-group">
+            @Html.LabelFor(model => model.CronSchedule, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CronSchedule, new { htmlAttributes = new { @class = "form-control" } })
+                <textarea style="font-family: monospace; min-width: 500px;" rows="17" readonly="readonly">
 * * * * *
 ┬ ┬ ┬ ┬ ┬
 │ │ │ │ │
@@ -129,28 +157,28 @@
 `1-55 * * * *` Every minute through the 55th minute.
 `* 1,10,20 * * *` Every 1st, 10th, and 20th hours.
             </textarea>
-        </div>
+            </div>
 
-    </div>
+        </div>
         <div class="form-group">
             @Html.LabelFor(model => model.QueueName, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.QueueName, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
-        
+
         <div class="form-group">
             @Html.LabelFor(model => model.Enabled, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Enabled, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
-        
+
         @Html.HiddenFor(model => model.Script)
-        @Html.HiddenFor(model=>model.Language)
+        @Html.HiddenFor(model => model.Language)
 
 
-</div>
+    </div>
 }
 
 <div>
@@ -158,7 +186,13 @@
 </div>
 <div id="codecontainer" style="height: 600px; width: 800px; margin-top: 10px;"></div>
 
-<div class="form-group">
+<div style="width: 100%; padding-top: 20px;">
+    <h4>Logs</h4>
+    <hr />
+    <textarea readonly="readonly" class="form-control" id="log" style="min-width: 100%; min-height: 250px; font-family: monospace; font-size: small;"></textarea>
+</div>
+
+<div class="form-group" style="margin-top: 20px;">
     <div class="col-md-offset-0 col-md-10">
         <input type="button" value="Save" class="btn btn-default" onclick="copyCodeToHiddenField();" />
         <input type="button" value="Delete" class="btn" onclick="deleteFunction();" />

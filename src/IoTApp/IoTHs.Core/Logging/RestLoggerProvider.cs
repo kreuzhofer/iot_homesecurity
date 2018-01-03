@@ -10,7 +10,7 @@ namespace IoTHs.Core.Logging
 
         public ILogger CreateLogger(string categoryName)
         {
-            return new RestLogger();
+            return new RestLogger(categoryName);
         }
     }
 }

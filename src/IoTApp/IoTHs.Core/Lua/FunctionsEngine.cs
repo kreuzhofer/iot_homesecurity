@@ -92,7 +92,7 @@ namespace IoTHs.Core.Lua
 
             if (function.TriggerType == FunctionTriggerType.RecurringIntervalTimer)
             {
-                var script = SetupNewLuaScript(function.Name);
+                var script = SetupNewLuaScript(function.Name, functionId);
                 // try to compile script
                 try
                 {
@@ -123,7 +123,7 @@ namespace IoTHs.Core.Lua
             }
             else if (function.TriggerType == FunctionTriggerType.CronSchedule)
             {
-                var script = SetupNewLuaScript(function.Name);
+                var script = SetupNewLuaScript(function.Name, functionId);
                 functionInstance.LastMinute = DateTime.Now;
                 functionInstance.IsRunning = false;
                 // try to compile script
@@ -173,7 +173,7 @@ namespace IoTHs.Core.Lua
 
             else if (function.TriggerType == FunctionTriggerType.MessageQueue)
             {
-                var script = SetupNewLuaScript(function.Name);
+                var script = SetupNewLuaScript(function.Name, functionId);
                 // try to compile script
                 try
                 {
@@ -236,7 +236,7 @@ namespace IoTHs.Core.Lua
             return function;
         }
 
-        private Script SetupNewLuaScript(string name)
+        private Script SetupNewLuaScript(string name, string functionId)
 	    {
 		    var registry = ServiceLocator.Current.GetService<IDeviceRegistry>();
 		    var queue = ServiceLocator.Current.GetService<IMessageQueue>();
@@ -247,7 +247,7 @@ namespace IoTHs.Core.Lua
 		    script.Globals.Set("registry", registryDynValue);
 		    var messageQueueDynValue = UserData.Create(queue);
 		    script.Globals.Set("queue", messageQueueDynValue);
-	        var log = _loggerFactory.CreateLogger("FunctionsEngine|" + name);
+	        var log = _loggerFactory.CreateLogger("DeviceFunction." + functionId);
 	        var logDynValue = UserData.Create(log);
             script.Globals.Set("log", logDynValue);
             script.Globals.Set("DateTime", UserData.Create(new DateTime()));

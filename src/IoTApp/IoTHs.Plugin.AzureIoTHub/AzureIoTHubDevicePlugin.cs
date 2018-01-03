@@ -99,7 +99,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 		}
 #endif
 
-        private async Task<bool> SendLogMessageToIoTHubAsync(string severity, string message)
+        private async Task<bool> SendLogMessageToIoTHubAsync(string severity, string message, string tag)
 		{
 		    if (String.IsNullOrEmpty(_serviceBaseUrl) || String.IsNullOrEmpty(_apiKey))
 		    {
@@ -112,7 +112,8 @@ namespace IoTHs.Plugin.AzureIoTHub
                     DeviceId = _deviceId,
                     Severity = severity,
                     Message = message,
-                    LocalTimestamp = $"{DateTime.Now.ToUniversalTime():O}"
+                    LocalTimestamp = $"{DateTime.Now.ToUniversalTime():O}",
+                    Source = tag
                 };
                 var aHBPF = new HttpBaseProtocolFilter();
                 aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Expired);
@@ -311,7 +312,7 @@ namespace IoTHs.Plugin.AzureIoTHub
                         }
                         if (queue.TryPeek("iothublog", out QueueMessage logmessage))
                         {
-                            if (await SendLogMessageToIoTHubAsync(logmessage.Key, logmessage.Value))
+                            if (await SendLogMessageToIoTHubAsync(logmessage.Key, logmessage.Value, logmessage.Tag))
                             {
                                 queue.TryDeque("iothublog", out QueueMessage pop);
                             };

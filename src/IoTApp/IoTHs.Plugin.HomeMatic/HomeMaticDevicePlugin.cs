@@ -74,6 +74,23 @@ namespace IoTHs.Plugin.HomeMatic
             _cancellationTokenSource.Cancel();
         }
 
+        public object GetDatapointValue(string datapointId)
+        {
+            var httpClient = new LocalHttpClient();
+            var task = httpClient.Client.GetStringAsync(new Uri(_connectionString + "state.cgi?datapoint_id=" + datapointId));
+            Task.WaitAll(task);
+            var result = task.Result;
+            var xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(result);
+            var value = xmlDocument.DocumentElement.FirstChild.Attributes["value"].Value;
+            double doubleResult;
+            if (Double.TryParse(value, out doubleResult))
+            {
+                return doubleResult;
+            }
+            return value;
+        }
+
         private async void MessageReceiverLoop(CancellationToken cancellationToken)
         {
             do

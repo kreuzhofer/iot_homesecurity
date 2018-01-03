@@ -7,6 +7,13 @@ namespace IoTHs.Core.Logging
 {
     public class RestLogger : ILogger
     {
+        private string _categoryName;
+
+        public RestLogger(string categoryName)
+        {
+            _categoryName = categoryName;
+        }
+
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             if (formatter == null)
@@ -20,7 +27,7 @@ namespace IoTHs.Core.Logging
             }
             if (ServiceLocator.IsLocationProviderSet)
             {
-                ServiceLocator.Current.GetService<IMessageQueue>().Enqueue("iothublog", logLevel.ToString(), message, "json");
+                ServiceLocator.Current.GetService<IMessageQueue>().Enqueue("iothublog", logLevel.ToString(), message, _categoryName);
             }
         }
 
