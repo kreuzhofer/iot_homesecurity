@@ -90,31 +90,32 @@ namespace IoTHs.Core.Lua
                 return null;
             }
 
+            ILogger scriptLogger;
+            var script = SetupNewLuaScript(function.Name, functionId, out scriptLogger);
+            // try to compile script
+            try
+            {
+                script.DoString(function.Script);
+            }
+            catch (Exception ex)
+            {
+                scriptLogger.LogError(ex, "Error compiling script " + function.Name);
+                return null;
+            }
             if (function.TriggerType == FunctionTriggerType.RecurringIntervalTimer)
             {
-                var script = SetupNewLuaScript(function.Name, functionId);
-                // try to compile script
-                try
-                {
-                    script.DoString(function.Script);
-                }
-                catch (Exception ex)
-                {
-                    _log.LogError(ex, "Error compiling script " + function.Name);
-                    return null;
-                }
                 var timer = new Timer(state =>
                 {
                     lock (script)
                     {
-                        _log.LogTrace("Running timer triggered function " + function.Name);
+                        scriptLogger.LogTrace("Running timer triggered function " + function.Name);
                         try
                         {
                             script.Call(script.Globals["run"]);
                         }
                         catch (Exception ex)
                         {
-                            _log.LogError(ex, "Error running function " + function.Name);
+                            scriptLogger.LogError(ex, "Error running function " + function.Name);
                         }
                     }
                 }, null, function.Interval, function.Interval);
@@ -123,19 +124,8 @@ namespace IoTHs.Core.Lua
             }
             else if (function.TriggerType == FunctionTriggerType.CronSchedule)
             {
-                var script = SetupNewLuaScript(function.Name, functionId);
                 functionInstance.LastMinute = DateTime.Now;
                 functionInstance.IsRunning = false;
-                // try to compile script
-                try
-                {
-                    script.DoString(function.Script);
-                }
-                catch (Exception ex)
-                {
-                    _log.LogError(ex, "Error compiling script " + function.Name);
-                    return null;
-                }
                 var timer = new Timer(state =>
                 {
                     var func = (FunctionInstance) state;
@@ -146,14 +136,14 @@ namespace IoTHs.Core.Lua
                         if (!func.IsRunning)
                         {
                             func.IsRunning = true;
-                            _log.LogTrace("Running cronschedule triggered function " + function.Name);
+                            scriptLogger.LogTrace("Running cronschedule triggered function " + function.Name);
                             try
                             {
                                 script.Call(script.Globals["run"]);
                             }
                             catch (Exception ex)
                             {
-                                _log.LogError(ex, "Error running function " + function.Name);
+                                scriptLogger.LogError(ex, "Error running function " + function.Name);
                             }
                             finally
                             {
@@ -162,7 +152,7 @@ namespace IoTHs.Core.Lua
                         }
                         else
                         {
-                            _log.LogWarning("Still running ronschedule triggered function " + function.Name+ ". Better check your schedule.");
+                            scriptLogger.LogWarning("Still running ronschedule triggered function " + function.Name+ ". Better check your schedule.");
                         }
                     }
                 }, functionInstance, 30000, 30000);
@@ -173,17 +163,6 @@ namespace IoTHs.Core.Lua
 
             else if (function.TriggerType == FunctionTriggerType.MessageQueue)
             {
-                var script = SetupNewLuaScript(function.Name, functionId);
-                // try to compile script
-                try
-                {
-                    script.DoString(function.Script);
-                }
-                catch (Exception ex)
-                {
-                    _log.LogError(ex, "Error compiling script " + function.Name);
-                    return null;
-                }
                 var task = Task.Factory.StartNew(async () =>
                 {
                     var queue = ServiceLocator.Current.GetService<IMessageQueue>();
@@ -191,7 +170,7 @@ namespace IoTHs.Core.Lua
                     {
                         if (queue.TryDeque(function.QueueName, out QueueMessage message))
                         {
-                            _log.LogTrace("Running message triggered function " + function.Name);
+                            scriptLogger.LogTrace("Running message triggered function " + function.Name);
                             try
                             {
                                 // call function
@@ -199,7 +178,7 @@ namespace IoTHs.Core.Lua
                             }
                             catch (Exception ex)
                             {
-                                _log.LogError(ex, "Error running function " + function.Name);
+                                scriptLogger.LogError(ex, "Error running function " + function.Name);
                             }
                         }
                         await Task.Delay(IoTHsConstants.MessageLoopDelay, functionInstance.CancellationTokenSource.Token);
@@ -236,7 +215,7 @@ namespace IoTHs.Core.Lua
             return function;
         }
 
-        private Script SetupNewLuaScript(string name, string functionId)
+        private Script SetupNewLuaScript(string name, string functionId, out ILogger scriptLogger)
 	    {
 		    var registry = ServiceLocator.Current.GetService<IDeviceRegistry>();
 		    var queue = ServiceLocator.Current.GetService<IMessageQueue>();
@@ -255,6 +234,7 @@ namespace IoTHs.Core.Lua
 		    script.Options.DebugPrint = s => { log.LogDebug(s); };
 
             script.Globals.Set("QueueMessage", UserData.Create(new QueueMessage()));
+            scriptLogger = log;
 			return script;
 	    }
 
