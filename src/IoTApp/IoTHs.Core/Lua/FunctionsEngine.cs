@@ -69,6 +69,11 @@ namespace IoTHs.Core.Lua
             get { return _functions; }
         }
 
+        /// <summary>
+        /// Loads the given function from disk and creates the function object depending on the function type
+        /// </summary>
+        /// <param name="functionId">id of the function to load.</param>
+        /// <returns>a <see cref="FunctionInstance"/> instance</returns>
         private async Task<FunctionInstance> SetupFunction(string functionId)
         {
             var functionInstance =
@@ -90,6 +95,7 @@ namespace IoTHs.Core.Lua
                 return null;
             }
 
+            // Setup script logger and compile script to find any syntax errors upfront
             ILogger scriptLogger;
             var script = SetupNewLuaScript(function.Name, functionId, out scriptLogger);
             // try to compile script
@@ -107,6 +113,8 @@ namespace IoTHs.Core.Lua
                 scriptLogger.LogError(ex, "Error compiling script " + function.Name);
                 return null;
             }
+            functionInstance.LuaScript = script;
+
             if (function.TriggerType == FunctionTriggerType.RecurringIntervalTimer)
             {
                 var timer = new Timer(state =>
@@ -125,12 +133,12 @@ namespace IoTHs.Core.Lua
                     }
                 }, null, function.Interval, function.Interval);
                 functionInstance.Timer = timer;
-                functionInstance.LuaScript = script;
             }
             else if (function.TriggerType == FunctionTriggerType.CronSchedule)
             {
                 functionInstance.LastMinute = DateTime.Now;
                 functionInstance.IsRunning = false;
+                functionInstance.CronSchedule = new CronSchedule(function.CronSchedule);
                 var timer = new Timer(state =>
                 {
                     var func = (FunctionInstance) state;
@@ -162,10 +170,7 @@ namespace IoTHs.Core.Lua
                     }
                 }, functionInstance, 30000, 30000);
                 functionInstance.Timer = timer;
-                functionInstance.CronSchedule = new CronSchedule(function.CronSchedule);
-                functionInstance.LuaScript = script;
             }
-
             else if (function.TriggerType == FunctionTriggerType.MessageQueue)
             {
                 var task = Task.Factory.StartNew(async () =>
@@ -189,7 +194,6 @@ namespace IoTHs.Core.Lua
                         await Task.Delay(IoTHsConstants.MessageLoopDelay, functionInstance.CancellationTokenSource.Token);
                     } while (!functionInstance.CancellationTokenSource.IsCancellationRequested);
                 }, functionInstance.CancellationTokenSource.Token);
-                functionInstance.LuaScript = script;
             }
             return functionInstance;
         }
