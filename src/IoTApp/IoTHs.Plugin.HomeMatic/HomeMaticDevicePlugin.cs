@@ -83,10 +83,10 @@ namespace IoTHs.Plugin.HomeMatic
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(result);
             var value = xmlDocument.DocumentElement.FirstChild.Attributes["value"].Value;
-            double doubleResult;
-            if (Double.TryParse(value, out doubleResult))
+            float floatResult;
+            if (float.TryParse(value, out floatResult))
             {
-                return doubleResult;
+                return floatResult;
             }
             return value;
         }

@@ -195,6 +195,11 @@ namespace IoTHs.Plugin.AzureIoTHub
 			catch (Exception ex)
 			{
                 _log.LogError(ex, "SendMessageToIoTHubAsync");
+			    if (ex.Message.ToLower().StartsWith("transient"))
+			    {
+			        var queue = ServiceLocator.Current.GetService<IMessageQueue>();
+			        queue.Enqueue("management", "restart", null, null); // restart the app
+                }
 				return false;
 			}
 		}
