@@ -4,7 +4,7 @@ Open source home automation and edge gateway framework for Windows 10 IoT Core u
 ## Introduction
 One of the main issues with home automation devices today is that they are mostly isolated solutions which are not interconnected and use incompatible proprietary protocols for communication.
 
-Since I personally use Homematic for home automation in combination with an ETA heating system, Sonoff switches and other self-made sensors based on ESP8266 chipsets I needed a solution to interconnect these different devices and make them talk to each other.
+Since I personally use [Homematic](http://amzn.to/2ArNyiV) for home automation in combination with an [ETA heating system](https://www.eta.co.at/), [cheap Sonoff switches](http://amzn.to/2CB8ARf) and other self-made sensors based on ESP8266 chipsets I needed a solution to interconnect these different devices and make them talk to each other.
 In the meanwhile I had another PoC with ABUS devices (Secvest alert panel and some security cameras), which are now also available as devices in the solution.
 
 Please find the official ABUS PoC documentation here [https://microsoft.github.io/techcasestudies/iot/azure%20app%20service/2017/09/01/ABUS.html](https://microsoft.github.io/techcasestudies/iot/azure%20app%20service/2017/09/01/ABUS.html)
