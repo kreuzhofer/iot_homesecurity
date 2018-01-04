@@ -113,15 +113,18 @@ namespace IoTHs.Plugin.MQTTBroker
                     if (message.Topic.Contains("INFO1") && body.Contains("S20 Socket"))
                     {
                         _log.LogInformation("No function found for topic " + rootTopic + ". Creating function.");
-                        deviceScript = @"
-function run(message)
+                        deviceScript =
+@"function run(message)
+    print('Key: '..message.Key);
     if(string.match(message.Key, 'stat/POWER') != nil) then
-        message.Tag = 'switch';
+        print('Match!');
+        print('Value: '..message.Value);
+        message.Tag = 'onoffswitch';
+        message.Key = string.gsub(message.Key, '/stat/POWER', '');
         queue.enqueue('iothub', message); --simply forward to iot hub message queue
     end;
     return 0;
-    end;
-";
+end;";
                         var tokenTask = _apiAuthenticationService.GetTokenAsync();
                         Task.WaitAll(tokenTask);
                         var token = tokenTask.Result;
