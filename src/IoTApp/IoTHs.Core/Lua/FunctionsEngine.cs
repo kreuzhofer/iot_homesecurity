@@ -97,6 +97,11 @@ namespace IoTHs.Core.Lua
             {
                 script.DoString(function.Script);
             }
+            catch (SyntaxErrorException ex)
+            {
+                scriptLogger.LogError(ex, "Syntax:"+ex.DecoratedMessage);
+                return null;
+            }
             catch (Exception ex)
             {
                 scriptLogger.LogError(ex, "Error compiling script " + function.Name);
