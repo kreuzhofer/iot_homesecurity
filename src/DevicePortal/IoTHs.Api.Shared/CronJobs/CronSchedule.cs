@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace IoTHs.Api.Shared.CronJobs
@@ -62,11 +63,17 @@ namespace IoTHs.Api.Shared.CronJobs
 
         public bool IsTime(DateTime dateTime)
         {
-            return Minutes.Contains(dateTime.Minute) &&
-                   Hours.Contains(dateTime.Hour) &&
-                   DaysOfMonth.Contains(dateTime.Day) &&
-                   Months.Contains(dateTime.Month) &&
-                   DaysOfWeek.Contains((int)dateTime.DayOfWeek);
+            var minuteMatch = Minutes.Contains(dateTime.Minute);
+            var hourMatch = Hours.Contains(dateTime.Hour);
+            var daysOfMonthMatch = DaysOfMonth.Contains(dateTime.Day);
+            var monthsMatch = Months.Contains(dateTime.Month);
+            var daysOfWeekMatch = DaysOfWeek.Contains((int) dateTime.DayOfWeek);
+            var isTime = minuteMatch && hourMatch && daysOfMonthMatch && monthsMatch && daysOfWeekMatch;
+            if (isTime)
+            {
+                Debug.WriteLine("It is time: " + _expression);
+            }
+            return isTime;
         }
 
         private void Generate()
