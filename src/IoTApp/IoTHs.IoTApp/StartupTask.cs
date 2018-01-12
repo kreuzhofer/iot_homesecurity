@@ -199,7 +199,12 @@ namespace W10Home.IoTCoreApp
                             _log.LogInformation("Rebooting");
 							ShutdownManager.BeginShutdown(ShutdownKind.Restart, TimeSpan.Zero);
 						}
-						else if (message.Key == "exit")
+                        else if (message.Key == "shutdown")
+                        {
+                            _log.LogInformation("Shutting down");
+                            ShutdownManager.BeginShutdown(ShutdownKind.Shutdown, TimeSpan.Zero);
+                        }
+                        else if (message.Key == "exit")
 						{
                             _log.LogInformation("Exiting");
 							if (_deferral != null)
@@ -211,7 +216,8 @@ namespace W10Home.IoTCoreApp
 						}
 					    if (message.Key == "restart")
 					    {
-					        try
+					        _log.LogInformation("Restarting");
+                            try
 					        {
 					            await _coreApp.ShutdownAsync();
 					        }
