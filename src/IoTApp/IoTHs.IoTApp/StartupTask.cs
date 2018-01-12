@@ -201,7 +201,7 @@ namespace W10Home.IoTCoreApp
 						}
                         else if (message.Key == "shutdown")
                         {
-                            _log.LogInformation("Rebooting");
+                            _log.LogInformation("Shutting down");
                             ShutdownManager.BeginShutdown(ShutdownKind.Shutdown, TimeSpan.Zero);
                         }
                         else if (message.Key == "exit")
@@ -216,7 +216,8 @@ namespace W10Home.IoTCoreApp
 						}
 					    if (message.Key == "restart")
 					    {
-					        try
+					        _log.LogInformation("Restarting");
+                            try
 					        {
 					            await _coreApp.ShutdownAsync();
 					        }
