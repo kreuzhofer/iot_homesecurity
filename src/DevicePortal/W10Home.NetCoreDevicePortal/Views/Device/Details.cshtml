@@ -1,4 +1,6 @@
-﻿@model W10Home.DevicePortal.IotHub.DeviceData
+﻿@using IoTHs.Api.Shared
+@using Microsoft.CodeAnalysis.CSharp.Syntax
+@model W10Home.DevicePortal.IotHub.DeviceData
 
 @{
     ViewBag.Title = "Details";
@@ -57,8 +59,14 @@
                 if (chart)
                 {
                     chart.data.labels.push(item.localTimestamp);
+                    if (chart.data.labels.length > 50) {
+                        chart.data.labels.shift();
+                    }
                     chart.data.datasets.forEach((dataset) => {
                         dataset.data.push(item.channelValue);
+                        if (dataset.data.length > 50) {
+                            dataset.data.shift();
+                        }
                     });
                     chart.update();
                 }
@@ -227,7 +235,7 @@
                                             labels: ["@item.LocalTimestamp"],
                                             datasets: [
                                                 {
-                                                    label: "Temperature",
+                                                    label: "Temperature (°C)",
                                                     data: [@item.ChannelValue]
                                                 }]
                                         },
@@ -238,6 +246,37 @@
                                                         ticks: {
                                                             min: -20,
                                                             max: 50
+                                                        }
+                                                    }]
+                                            }
+                                        }
+                                    });
+                            </script>
+                        }
+                        else if (item.ChannelType == "windspeed_kph")
+                        {
+                            <canvas id="chart_@item.ChannelKey" width="320" height="240">
+                            </canvas>
+                            <script type="text/javascript">
+                                var ctx = $('#chart_@item.ChannelKey');
+                                chart_@item.ChannelKey = new Chart(ctx,
+                                    {
+                                        type: 'line',
+                                        data: {
+                                            labels: ["@item.LocalTimestamp"],
+                                            datasets: [
+                                                {
+                                                    label: "Windspeed (kph)",
+                                                    data: [@item.ChannelValue]
+                                                }]
+                                        },
+                                        options: {
+                                            scales: {
+                                                yAxes: [
+                                                    {
+                                                        ticks: {
+                                                            min: 0,
+                                                            max: 200
                                                         }
                                                     }]
                                             }
@@ -259,7 +298,7 @@
         <tr>
             <th>Name</th>
             <th>TriggerType</th>
-            <th>Interval</th>
+            <th>Interval/Schedule</th>
             <th>QueueName</th>
             <th>Enabled</th>
         </tr>
@@ -274,7 +313,14 @@
                     @Html.DisplayFor(modelItem => item.TriggerType)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Interval)
+                    @if (item.TriggerType == FunctionTriggerType.RecurringIntervalTimer.ToString())
+                    {
+                        @Html.DisplayFor(modelItem => item.Interval)
+                        @Html.Raw(" ms")
+                    } else if (item.TriggerType == FunctionTriggerType.CronSchedule.ToString())
+                    {
+                        @Html.DisplayFor(modelitem => item.CronSchedule)
+                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.QueueName)
