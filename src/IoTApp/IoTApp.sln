@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTHs.Core", "IoTHs.Core\IoTHs.Core.csproj", "{C3C103FF-8993-420D-8F50-979ECA9C7D73}"
 EndProject
@@ -24,6 +24,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTHs.Plugin.MQTTBroker", "IoTHs.Plugin.MQTTBroker\IoTHs.Plugin.MQTTBroker.csproj", "{53D25709-2E1F-4D11-BF3C-A5CA9AA3B36E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTHs.IoTCoreApp", "IoTHs.IoTApp\IoTHs.IoTCoreApp.csproj", "{88D70CF5-DA46-4568-8055-2DC337144B33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTHs.Plugin.Gpio", "IoTHs.Plugin.Gpio\IoTHs.Plugin.Gpio.csproj", "{BDADE699-32E5-44AA-BB45-AAF574FB1368}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -217,6 +219,22 @@ Global
 		{88D70CF5-DA46-4568-8055-2DC337144B33}.Release|x86.ActiveCfg = Release|x86
 		{88D70CF5-DA46-4568-8055-2DC337144B33}.Release|x86.Build.0 = Release|x86
 		{88D70CF5-DA46-4568-8055-2DC337144B33}.Release|x86.Deploy.0 = Release|x86
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Debug|ARM.ActiveCfg = Debug|ARM
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Debug|ARM.Build.0 = Debug|ARM
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Debug|x64.ActiveCfg = Debug|x64
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Debug|x64.Build.0 = Debug|x64
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Debug|x86.ActiveCfg = Debug|x86
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Debug|x86.Build.0 = Debug|x86
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Release|ARM.ActiveCfg = Release|ARM
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Release|ARM.Build.0 = Release|ARM
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Release|x64.ActiveCfg = Release|x64
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Release|x64.Build.0 = Release|x64
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Release|x86.ActiveCfg = Release|x86
+		{BDADE699-32E5-44AA-BB45-AAF574FB1368}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
