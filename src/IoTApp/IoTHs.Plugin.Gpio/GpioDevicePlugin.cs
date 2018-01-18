@@ -12,28 +12,37 @@ namespace IoTHs.Plugin.Gpio
     {
         private Dictionary<int, GpioPin> _activePins = new Dictionary<int, GpioPin>();
         private List<IDeviceChannel> _channels = new List<IDeviceChannel>();
+        private string _name;
+        private string _type;
 
-        private void SetPin(int pin, GpioPinValue value)
+        public override string Name
         {
-            _activePins[pin].Write(value);
+            get { return _name; }
         }
 
-        public override string Name { get; }
-        public override string Type { get; }
+        public override string Type
+        {
+            get { return _type; }
+        }
 
         public override IEnumerable<IDeviceChannel> GetChannels()
         {
             return _channels;
         }
 
-        public override Task TeardownAsync()
+        public override async Task TeardownAsync()
         {
-            throw new System.NotImplementedException();
         }
 
-        public override Task InitializeAsync(DevicePluginConfigurationModel configuration)
+        public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
         {
-            throw new System.NotImplementedException();
+            _name = configuration.Name;
+            _type = configuration.Type;
+        }
+
+        private void SetPin(int pin, GpioPinValue value)
+        {
+            _activePins[pin].Write(value);
         }
     }
 }
