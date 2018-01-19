@@ -7,14 +7,14 @@ namespace IoTHs.Core.Configuration
 {
     public class DeviceConfigurationProvider
     {
-        private DeviceConfigurationModel _model;
+        private AppConfigurationModel _model;
 
-        public void SetConfiguration(DeviceConfigurationModel model)
+        public void SetConfiguration(AppConfigurationModel model)
         {
             _model = model;
         }
 
-        public DeviceConfigurationModel Configuration
+        public AppConfigurationModel Configuration
         {
             get { return _model; }
         }

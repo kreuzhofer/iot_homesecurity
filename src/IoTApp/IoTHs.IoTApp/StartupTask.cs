@@ -39,7 +39,7 @@ namespace W10Home.IoTCoreApp
         private BackgroundTaskDeferral _deferral;
 	    private CoreApp _coreApp;
         private ILogger _log;
-        private IDeviceRegistry _deviceRegistry;
+        private IPluginRegistry _pluginRegistry;
         private TelemetryClient _telemetryClient;
 
         public async void Run(IBackgroundTaskInstance taskInstance)
@@ -72,7 +72,7 @@ namespace W10Home.IoTCoreApp
                 builder.SetMinimumLevel(LogLevel.Trace);
             });
 
-            container.AddSingleton<IDeviceRegistry, DeviceRegistry>();
+            container.AddSingleton<IPluginRegistry, PluginRegistry>();
 
             container.AddSingleton<IMessageQueue>(new MessageQueue());
             container.AddSingleton<ChannelValueCache>();
@@ -99,18 +99,18 @@ namespace W10Home.IoTCoreApp
             ServiceLocator.SetLocatorProvider(() => locator);
 
             // init device registry and add devices
-            _deviceRegistry = locator.GetService<IDeviceRegistry>();
-            _deviceRegistry.RegisterDeviceType<IAzureIoTHubPlugin>();
+            _pluginRegistry = locator.GetService<IPluginRegistry>();
+            _pluginRegistry.RegisterPluginType<IAzureIoTHubPlugin>();
 #if ABUS
-            _deviceRegistry.RegisterDeviceType<SecVestPlugin>();
+            _pluginRegistry.RegisterPluginType<SecVestPlugin>();
 #endif
-            _deviceRegistry.RegisterDeviceType<EtaTouchPlugin>();
+            _pluginRegistry.RegisterPluginType<EtaTouchPlugin>();
 #if TWILIO
-            _deviceRegistry.RegisterDeviceType<TwilioPlugin>();
+            _pluginRegistry.RegisterPluginType<TwilioPlugin>();
 #endif
-            _deviceRegistry.RegisterDeviceType<HomeMaticPlugin>();
+            _pluginRegistry.RegisterPluginType<HomeMaticPlugin>();
 #if MQTTBROKER
-            _deviceRegistry.RegisterDeviceType<MqttBrokerPlugin>();
+            _pluginRegistry.RegisterPluginType<MqttBrokerPlugin>();
 #endif
 
             _log = locator.GetService<ILoggerFactory>().CreateLogger<StartupTask>();

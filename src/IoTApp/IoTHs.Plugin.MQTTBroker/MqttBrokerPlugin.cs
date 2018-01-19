@@ -27,10 +27,7 @@ namespace IoTHs.Plugin.MQTTBroker
 {
     public class MqttBrokerPlugin : PluginBase
     {
-        private IEnumerable<IDeviceChannel> _channels;
         private IMqttServer _mqttServer;
-        private string _name;
-        private string _type;
         private List<string> _requestedFunctions = new List<string>();
         private readonly object _lockObj = new object();
 
@@ -38,10 +35,6 @@ namespace IoTHs.Plugin.MQTTBroker
         private Task _messageReceiverTask;
         private ILogger<MqttBrokerPlugin> _log;
         private IApiAuthenticationService _apiAuthenticationService;
-
-        public override string Name => _name;
-
-        public override string Type => _type;
 
         public MqttBrokerPlugin(ILoggerFactory loggerFactory, IApiAuthenticationService apiAuthenticationService)
         {
@@ -51,8 +44,8 @@ namespace IoTHs.Plugin.MQTTBroker
 
         public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
         {
-            _name = configuration.Name;
-            _type = configuration.Type;
+            await base.InitializeAsync(configuration);
+
             var channelConfigs = configuration.Properties.Select(c => c.Key.StartsWith("channel:")).ToList();
 
             _mqttServer = new MqttServerFactory().CreateMqttServer(new MqttServerOptions()
@@ -69,13 +62,10 @@ namespace IoTHs.Plugin.MQTTBroker
             _messageReceiverTask = MessageReceiverLoop(_threadCancellation.Token); // launch message loop in the background
         }
 
-        public override IEnumerable<IDeviceChannel> GetChannels()
-        {
-            return _channels.AsEnumerable();
-        }
-
         public override async Task TeardownAsync()
         {
+            await base.TeardownAsync();
+
             if (_threadCancellation != null)
             {
                 _threadCancellation.Cancel();
@@ -138,7 +128,7 @@ end;";
                             OffMessage = "OFF"
                         };
                         string configBody = JsonConvert.SerializeObject(configuration, Formatting.Indented);
-                        var task = httpClient.Client.PostAsync(iotHub.ServiceBaseUrl + "DeviceConfiguration/" + iotHub.DeviceId + "/" + _name + "/channel:" + rootTopic, new StringContent(configBody, Encoding.UTF8, "application/json"));
+                        var task = httpClient.Client.PostAsync(iotHub.ServiceBaseUrl + "DeviceConfiguration/" + iotHub.DeviceId + "/" + Name + "/channel:" + rootTopic, new StringContent(configBody, Encoding.UTF8, "application/json"));
                         Task.WaitAll(task);
                         var result = task.Result;
                         if (!result.IsSuccessStatusCode)
@@ -196,10 +186,10 @@ end;";
             {
                 // check internal message queue for iot hub messages to be forwarded
                 var queue = ServiceLocator.Current.GetService<IMessageQueue>();
-                if (queue.TryPeek(_name, out QueueMessage queuemessage))
+                if (queue.TryPeek(Name, out QueueMessage queuemessage))
                 {
                     _mqttServer.Publish(new MqttApplicationMessage(queuemessage.Key, Encoding.UTF8.GetBytes(queuemessage.Value), MqttQualityOfServiceLevel.AtMostOnce, false));
-                    queue.TryDeque(_name, out QueueMessage pop);
+                    queue.TryDeque(Name, out QueueMessage pop);
                 }
 
                 if (!cancellationToken.IsCancellationRequested)

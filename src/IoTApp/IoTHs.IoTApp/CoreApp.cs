@@ -30,13 +30,13 @@ namespace W10Home.IoTCoreApp
         private Timer _everyMinuteTimer;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private FunctionsEngine _functionsEngine;
-        private IDeviceRegistry _deviceRegistry;
+        private IPluginRegistry _pluginRegistry;
         private DeviceConfigurationProvider _configurationProvider;
         private ILoggerFactory _loggerFactory;
 
-        public CoreApp(IDeviceRegistry deviceRegistry, FunctionsEngine functionsEngine, ILoggerFactory loggerFactory, DeviceConfigurationProvider configurationProvider)
+        public CoreApp(IPluginRegistry pluginRegistry, FunctionsEngine functionsEngine, ILoggerFactory loggerFactory, DeviceConfigurationProvider configurationProvider)
         {
-            _deviceRegistry = deviceRegistry;
+            _pluginRegistry = pluginRegistry;
             _functionsEngine = functionsEngine;
             _log = loggerFactory.CreateLogger<CoreApp>();
             _configurationProvider = configurationProvider;
@@ -48,7 +48,7 @@ namespace W10Home.IoTCoreApp
             _log.LogTrace("Run");
 
             // Build configuration object to configure all devices
-			DeviceConfigurationModel configurationObject = new DeviceConfigurationModel();
+			AppConfigurationModel configurationObject = new AppConfigurationModel();
 
 			// first try to load the configuration file from the LocalFolder
 			var localStorage = ApplicationData.Current.LocalFolder;
@@ -57,7 +57,7 @@ namespace W10Home.IoTCoreApp
 		    {
 			    // local file content
 			    var configFileContent = await FileIO.ReadTextAsync((IStorageFile) file);
-			    configurationObject = JsonConvert.DeserializeObject<DeviceConfigurationModel>(configFileContent);
+			    configurationObject = JsonConvert.DeserializeObject<AppConfigurationModel>(configFileContent);
 		    }
 		    else // there is not yet a configuration file, tell AzureIoTHubDevice to load it from the cloud and then restart
 		    {
@@ -174,7 +174,7 @@ namespace W10Home.IoTCoreApp
 	        _configurationProvider.SetConfiguration(configurationObject);
 
 			// configure devices
-			await _deviceRegistry.InitializeDevicesAsync(configurationObject);
+			await _pluginRegistry.InitializePluginsAsync(configurationObject);
 
 			// start lua engine
 			_functionsEngine.Initialize(configurationObject);
@@ -232,10 +232,10 @@ namespace W10Home.IoTCoreApp
                 _functionsEngine = null;
             }
 
-            if (_deviceRegistry != null)
+            if (_pluginRegistry != null)
             {
-                await _deviceRegistry.TeardownDevicesAsync();
-                _deviceRegistry = null;
+                await _pluginRegistry.TeardownPluginsAsync();
+                _pluginRegistry = null;
             }
         }
 

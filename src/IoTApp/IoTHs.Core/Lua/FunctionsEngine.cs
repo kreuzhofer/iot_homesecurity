@@ -32,7 +32,7 @@ namespace IoTHs.Core.Lua
             _loggerFactory = loggerFactory;
         }
 
-        public async void Initialize(DeviceConfigurationModel configuration)
+        public async void Initialize(AppConfigurationModel configuration)
 		{
 			if (configuration.DeviceFunctionIds == null)
 			{
@@ -226,7 +226,7 @@ namespace IoTHs.Core.Lua
 
         private Script SetupNewLuaScript(string name, string functionId, out ILogger scriptLogger)
 	    {
-		    var registry = ServiceLocator.Current.GetService<IDeviceRegistry>();
+		    var registry = ServiceLocator.Current.GetService<IPluginRegistry>();
 		    var queue = ServiceLocator.Current.GetService<IMessageQueue>();
 
 		    var script = new Script(CoreModules.Preset_Complete);
@@ -324,7 +324,7 @@ namespace IoTHs.Core.Lua
             var baseUrl = iotHub.ServiceBaseUrl;
             var deviceId = iotHub.DeviceId;
 
-            var apiKey = ServiceLocator.Current.GetService<IDeviceRegistry>().GetDevice<IAzureIoTHubPlugin>("iothub").ApiKey;
+            var apiKey = ServiceLocator.Current.GetService<IPluginRegistry>().GetPlugin<IAzureIoTHubPlugin>("iothub").ApiKey;
 
             // create client token
             var tokenClient = new LocalHttpClient();

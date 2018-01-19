@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using IoTHs.Api.Shared;
 using IoTHs.Core;
-using IoTHs.Devices.Interfaces;
 using Newtonsoft.Json;
 using uPLibrary.Networking.M2Mqtt;
 
@@ -16,18 +15,6 @@ namespace IoTHs.Plugin.MqttClient
 	    private uPLibrary.Networking.M2Mqtt.MqttClient _mqttclient;
 	    private string _deviceid;
 	    private Dictionary<string, Func<string, KeyValuePair<int, string>>> _methodRegistrations = new Dictionary<string, Func<string, KeyValuePair<int, string>>>();
-        private string _name;
-        private string _type;
-
-        public override string Name
-        {
-            get { return _name; }
-        }
-
-        public override string Type
-        {
-            get { return _type; }
-        }
 
 #pragma warning disable 1998
         public async Task SendMessageToIoTHubAsync(string deviceId, string location, string key, object value)
@@ -58,12 +45,9 @@ namespace IoTHs.Plugin.MqttClient
             }
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            _name = configuration.Name;
-            _type = configuration.Type;
+            await base.InitializeAsync(configuration);
 			try
 			{
 				_deviceid = configuration.Properties["DeviceId"];
@@ -90,15 +74,10 @@ namespace IoTHs.Plugin.MqttClient
 		    _methodRegistrations.Add(methodName, deviceMethodImpl);
 	    }
 
-		public override IEnumerable<IDeviceChannel> GetChannels()
-		{
-			throw new NotImplementedException();
-		}
-
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public override async Task TeardownAsync()
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
+            await base.TeardownAsync();
+
 			if (_mqttclient != null)
 			{
 				_mqttclient.MqttMsgPublishReceived -= Mqttclient_MqttMsgPublishReceived;

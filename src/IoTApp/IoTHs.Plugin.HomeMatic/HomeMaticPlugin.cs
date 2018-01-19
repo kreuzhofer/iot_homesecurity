@@ -20,9 +20,6 @@ namespace IoTHs.Plugin.HomeMatic
 {
     public class HomeMaticPlugin : PluginBase
     {
-        private string _name;
-        private string _type;
-        private List<IDeviceChannel> _channels = new List<IDeviceChannel>();
         private readonly ILogger _log;
         private string _connectionString;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
@@ -32,14 +29,11 @@ namespace IoTHs.Plugin.HomeMatic
             _log = loggerFactory.CreateLogger<HomeMaticPlugin>();
         }
 
-        public override string Name => _name;
-        public override string Type => _type;
-
         public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
         {
+            await base.InitializeAsync(configuration);
+
             _connectionString = configuration.Properties["ConnectionString"];
-            _name = configuration.Name;
-            _type = this.GetType().Name;
 
             // get all devices
             var httpClient = new LocalHttpClient();
@@ -62,15 +56,10 @@ namespace IoTHs.Plugin.HomeMatic
             MessageReceiverLoop(_cancellationTokenSource.Token);
         }
 
-        public override IEnumerable<IDeviceChannel> GetChannels()
-        {
-            return _channels.AsEnumerable();
-        }
-
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public override async Task TeardownAsync()
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
+            await base.TeardownAsync();
+
             _cancellationTokenSource.Cancel();
         }
 
@@ -98,7 +87,7 @@ namespace IoTHs.Plugin.HomeMatic
                 try
                 {
                     var queue = ServiceLocator.Current.GetService<IMessageQueue>();
-                    if (queue.TryDeque(_name, out QueueMessage queuemessage))
+                    if (queue.TryDeque(Name, out QueueMessage queuemessage))
                     {
                         if (queuemessage.Key == "runprogram")
                         {

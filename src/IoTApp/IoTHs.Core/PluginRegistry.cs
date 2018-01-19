@@ -8,23 +8,23 @@ using Microsoft.Extensions.Logging;
 
 namespace IoTHs.Core
 {
-	public class DeviceRegistry : IDeviceRegistry
+	public class PluginRegistry : IPluginRegistry
 	{
 		private Dictionary<string, Type> _deviceTypes = new Dictionary<string, Type>();
 		private Dictionary<string, IPlugin> _deviceList = new Dictionary<string, IPlugin>();
 	    private readonly ILogger _log;
 
-	    public DeviceRegistry(ILoggerFactory loggerFactory)
+	    public PluginRegistry(ILoggerFactory loggerFactory)
 	    {
-	        _log = loggerFactory.CreateLogger<DeviceRegistry>();
+	        _log = loggerFactory.CreateLogger<PluginRegistry>();
 	    }
 
-        public void RegisterDeviceType<T>() where T : class, IPlugin
+        public void RegisterPluginType<T>() where T : class, IPlugin
 		{
 			_deviceTypes.Add(typeof(T).Name, typeof(T));
 		}
 
-		public async Task InitializeDevicesAsync(DeviceConfigurationModel configurationObject)
+		public async Task InitializePluginsAsync(AppConfigurationModel configurationObject)
 		{
 			foreach (var configuration in configurationObject.DevicePluginConfigurations)
 			{
@@ -41,7 +41,7 @@ namespace IoTHs.Core
 			}
 		}
 
-		public async Task TeardownDevicesAsync()
+		public async Task TeardownPluginsAsync()
 		{
             _log.LogTrace("Shutdown devices");
 			foreach (var device in _deviceList.ToList())
@@ -51,27 +51,27 @@ namespace IoTHs.Core
 			}
 		}
 
-	    public IEnumerable<IPlugin> GetDevices()
+	    public IEnumerable<IPlugin> GetPlugins()
 	    {
 	        return _deviceList.Values.AsEnumerable();
 	    }
 
-		public IEnumerable<T> GetDevices<T>() where T : class, IPlugin
+		public IEnumerable<T> GetPlugins<T>() where T : class, IPlugin
 		{
 			return _deviceList.Select(d => d.Value).Where(d => (d as T) != null).Select(d=>d as T);
 		}
 
-		public T GetDevice<T>() where T : class, IPlugin
+		public T GetPlugin<T>() where T : class, IPlugin
 		{
 			return _deviceList.Select(d => d.Value).Where(d => (d as T) != null).Select(d => d as T).Single();
 		}
 
-		public T GetDevice<T>(string name) where T : class, IPlugin
+		public T GetPlugin<T>(string name) where T : class, IPlugin
 		{
 			return (T)_deviceList[name];
 		}
 
-		public object GetDevice(string name)
+		public object GetPlugin(string name)
 		{
 			return _deviceList[name];
 		}

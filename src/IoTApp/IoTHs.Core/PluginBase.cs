@@ -8,17 +8,29 @@ namespace IoTHs.Core
 {
 	public abstract class PluginBase : IPlugin
 	{
-	    public abstract string Name { get; }
-	    public abstract string Type { get; }
-	    public abstract Task InitializeAsync(DevicePluginConfigurationModel configuration);
-		public abstract IEnumerable<IDeviceChannel> GetChannels();
+	    private string _name;
+	    private string _type;
+	    protected List<IDevice> _devices = new List<IDevice>();
 
-	    public IEnumerable<IDeviceChannel> Channels => GetChannels();
+	    public string Name => _name;
+        public string Type => _type;
 
-	    public IDeviceChannel GetChannel(string name)
-		{
-			return GetChannels().Single(c => c.Name == name);
-		}
-		public abstract Task TeardownAsync();
+	    public virtual async Task InitializeAsync(DevicePluginConfigurationModel configuration)
+	    {
+	        _name = configuration.Name;
+	        _type = configuration.Type;
+	    }
+
+	    public IEnumerable<IDevice> Devices => _devices;
+
+	    public virtual async Task TeardownAsync()
+	    {
+	        foreach (var device in _devices)
+	        {
+	            await device.TearDownAsync();
+	        }
+            _devices.Clear();
+	        _devices = null;
+	    }
 	}
 }

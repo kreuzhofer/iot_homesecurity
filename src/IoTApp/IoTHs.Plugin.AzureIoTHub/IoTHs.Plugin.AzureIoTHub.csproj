@@ -105,8 +105,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AzureIoTHubPlugin.cs" />
-    <Compile Include="IotHubLogChannel.cs" />
-    <Compile Include="IotHubDeviceChannel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\W10Home.Plugin.AzureIoTHub.rd.xml" />
   </ItemGroup>

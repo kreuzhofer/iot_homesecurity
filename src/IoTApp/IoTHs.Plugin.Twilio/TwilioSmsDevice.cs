@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using IoTHs.Core;
 using IoTHs.Core.Channels;
 using IoTHs.Devices.Interfaces;
 using Twilio;
@@ -9,14 +10,14 @@ using Twilio.Types;
 
 namespace IoTHs.Plugin.Twilio
 {
-	public class TwilioSmsChannel : NotificationChannel
+	public class TwilioSmsDevice : DeviceBase
 	{
 		private string _accountSid;
 		private string _authToken;
 		private string _outgoingPhoneNumber;
 		private string _receiverPhoneNumber;
 
-		internal TwilioSmsChannel(string accountSid, string authToken, string outgoingPhoneNumber, string receiverPhoneNumber)
+		internal TwilioSmsDevice(string accountSid, string authToken, string outgoingPhoneNumber, string receiverPhoneNumber)
 		{
 			_accountSid = accountSid;
 			_authToken = authToken;
@@ -24,13 +25,7 @@ namespace IoTHs.Plugin.Twilio
 			_receiverPhoneNumber = receiverPhoneNumber;
 		}
 
-		public override bool IsRead => false;
-
-		public override bool IsWrite => false;
-
-		public override string Name => "SMS";
-
-		public override async Task<bool> NotifyAsync(string messageBody)
+		public async Task<bool> NotifyAsync(string messageBody)
 		{
 			TwilioClient.Init(_accountSid, _authToken);
 
@@ -41,17 +36,5 @@ namespace IoTHs.Plugin.Twilio
 
 			return true;
 		}
-
-		public override object Read()
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void Write(object value)
-		{
-			throw new NotImplementedException();
-		}
-
-	    public override IEnumerable<IChannelDatapoint> Datapoints { get; }
 	}
 }

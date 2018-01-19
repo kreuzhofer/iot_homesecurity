@@ -9,9 +9,7 @@ namespace IoTHs.Devices.Interfaces
         string Name { get; }
         string Type { get; }
 		Task InitializeAsync(DevicePluginConfigurationModel configuration);
-		IEnumerable<IDeviceChannel> GetChannels();
-	    IEnumerable<IDeviceChannel> Channels { get; }
-		IDeviceChannel GetChannel(string name);
-		Task TeardownAsync();
+	    IEnumerable<IDevice> Devices { get; }
+        Task TeardownAsync();
 	}
 }

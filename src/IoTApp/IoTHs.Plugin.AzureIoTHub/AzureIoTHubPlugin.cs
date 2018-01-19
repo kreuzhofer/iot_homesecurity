@@ -44,25 +44,12 @@ namespace IoTHs.Plugin.AzureIoTHub
 	    private string _connectionString;
 	    private const int CLIENT_TIMEOUT = 59; // timeout in minutes before the iot hub client gets renewed (max 60 minutes)
 	    private readonly ILogger _log;
-	    private List<IDeviceChannel> _channels = new List<IDeviceChannel>();
-	    private IDeviceRegistry _deviceRegistry;
-	    private string _name;
-	    private string _type;
+	    private readonly IPluginRegistry _pluginRegistry;
 	    private AutoResetEvent _messageLoopTerminationEvent;
 	    private Task _messageReceiverTask;
 	    private string _serviceBaseUrl;
 	    private string _apiKey;
 	    private int _configVersion;
-
-	    public override string Name
-	    {
-	        get { return _name; }
-	    }
-
-	    public override string Type
-	    {
-	        get { return _type; }
-	    }
 
 	    public string ServiceBaseUrl
 	    {
@@ -76,11 +63,9 @@ namespace IoTHs.Plugin.AzureIoTHub
 
         public string DeviceId { get => _deviceId; }
 
-        public AzureIoTHubPlugin(IMessageQueue messageQueue, IDeviceRegistry deviceRegistry, ILoggerFactory loggerFactory)
+        public AzureIoTHubPlugin(IMessageQueue messageQueue, IPluginRegistry pluginRegistry, ILoggerFactory loggerFactory)
 	    {
-	        _channels.Add(new IotHubDeviceChannel(messageQueue));
-            _channels.Add(new IotHubLogChannel(messageQueue));
-	        _deviceRegistry = deviceRegistry;
+	        _pluginRegistry = pluginRegistry;
 	        _log = loggerFactory.CreateLogger<AzureIoTHubPlugin>();
 	    }
 
@@ -189,7 +174,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 				msg.Properties.Add("MessageType", messageType);
 
 				await _deviceClient.SendEventAsync(msg);
-				_log.LogTrace(_name + ":"+payload);
+				_log.LogTrace(Name + ":"+payload);
 				return true;
 			}
 			catch (Exception ex)
@@ -204,11 +189,9 @@ namespace IoTHs.Plugin.AzureIoTHub
 			}
 		}
 
-
 	    public override async Task InitializeAsync(DevicePluginConfigurationModel configuration)
 	    {
-	        _name = configuration.Name;
-	        _type = configuration.Type;
+	        await base.InitializeAsync(configuration);
 
 			try
 			{
@@ -475,7 +458,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 			await FileIO.WriteTextAsync(file, configFileContent);
 
             // deserialize configuration object and download functions to seperate files
-		    var configuration = JsonConvert.DeserializeObject<DeviceConfigurationModel>(configFileContent);
+		    var configuration = JsonConvert.DeserializeObject<AppConfigurationModel>(configFileContent);
 		    foreach (var functionId in configuration.DeviceFunctionIds)
 		    {
 		        var functionUri = serviceBaseUrl + "DeviceFunction/" + _deviceId + "/" + functionId;
@@ -547,17 +530,11 @@ namespace IoTHs.Plugin.AzureIoTHub
         private async Task<MethodResponse> HandleGetDevicesMethod(MethodRequest methodrequest, object usercontext)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            var json = JsonConvert.SerializeObject(_deviceRegistry.GetDevices().ToList(), Formatting.Indented);
+            var json = JsonConvert.SerializeObject(_pluginRegistry.GetPlugins().ToList(), Formatting.Indented);
 	        var bytes = Encoding.UTF8.GetBytes(json);
 	        return new MethodResponse(bytes, 0);
 	    }
 #endregion
-
-
-        public override IEnumerable<IDeviceChannel> GetChannels()
-		{
-		    return _channels.AsEnumerable();
-		}
 
 		public override async Task TeardownAsync()
 		{

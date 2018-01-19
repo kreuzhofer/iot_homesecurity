@@ -105,6 +105,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="EtaChannel.cs" />
+    <Compile Include="EtaDevice.cs" />
     <Compile Include="EtaTouchPlugin.cs" />
     <Compile Include="EtaValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
