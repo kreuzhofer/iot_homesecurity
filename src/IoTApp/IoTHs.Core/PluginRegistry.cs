@@ -26,10 +26,12 @@ namespace IoTHs.Core
 
 		public async Task InitializePluginsAsync(AppConfigurationModel configurationObject)
 		{
+            _log.LogDebug("Initializing plugins");
 			foreach (var configuration in configurationObject.DevicePluginConfigurations)
 			{
 				try
 				{
+                    _log.LogTrace("Initializing plugin "+ configuration.Type + " with name "+configuration.Name);
 					var deviceInstance = (IPlugin)ServiceLocator.Current.GetService(_deviceTypes[configuration.Type.ToLower()]);
 					_deviceList.Add(configuration.Name.ToLower(), deviceInstance);
 					await deviceInstance.InitializeAsync(configuration);
@@ -39,7 +41,8 @@ namespace IoTHs.Core
 					_log.LogError(ex, "Error while initializing plugin " + configuration.Name);
 				}
 			}
-		}
+		    _log.LogDebug("Initializing plugins done");
+        }
 
 		public async Task TeardownPluginsAsync()
 		{
