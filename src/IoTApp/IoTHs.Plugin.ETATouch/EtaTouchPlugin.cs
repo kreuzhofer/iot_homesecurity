@@ -11,7 +11,7 @@ using IoTHs.Devices.Interfaces;
 
 namespace IoTHs.Plugin.ETATouch
 {
-	public class EtaTouchDevicePlugin : DevicePluginBase
+	public class EtaTouchPlugin : PluginBase
     {
         private string _etatouchUrl;
 		private List<TreeItem> _menustructure;

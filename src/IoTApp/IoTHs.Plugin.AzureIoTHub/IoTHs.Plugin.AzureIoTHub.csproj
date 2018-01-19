@@ -104,7 +104,7 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AzureIoTHubDevicePlugin.cs" />
+    <Compile Include="AzureIoTHubPlugin.cs" />
     <Compile Include="IotHubLogChannel.cs" />
     <Compile Include="IotHubDeviceChannel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

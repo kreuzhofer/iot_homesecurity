@@ -10,10 +10,10 @@ namespace IoTHs.Core.Authentication
 {
     public class ApiAuthenticationService : IApiAuthenticationService
     {
-        private IAzureIoTHubDevicePlugin _iotHub;
+        private IAzureIoTHubPlugin _iotHub;
         private ILogger<ApiAuthenticationService> _log;
 
-        public ApiAuthenticationService(IAzureIoTHubDevicePlugin ioTHub, ILoggerFactory loggerFactory)
+        public ApiAuthenticationService(IAzureIoTHubPlugin ioTHub, ILoggerFactory loggerFactory)
         {
             _iotHub = ioTHub;
             _log = loggerFactory.CreateLogger<ApiAuthenticationService>();

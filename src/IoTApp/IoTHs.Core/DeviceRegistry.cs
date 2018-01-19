@@ -11,7 +11,7 @@ namespace IoTHs.Core
 	public class DeviceRegistry : IDeviceRegistry
 	{
 		private Dictionary<string, Type> _deviceTypes = new Dictionary<string, Type>();
-		private Dictionary<string, IDevicePlugin> _deviceList = new Dictionary<string, IDevicePlugin>();
+		private Dictionary<string, IPlugin> _deviceList = new Dictionary<string, IPlugin>();
 	    private readonly ILogger _log;
 
 	    public DeviceRegistry(ILoggerFactory loggerFactory)
@@ -19,7 +19,7 @@ namespace IoTHs.Core
 	        _log = loggerFactory.CreateLogger<DeviceRegistry>();
 	    }
 
-        public void RegisterDeviceType<T>() where T : class, IDevicePlugin
+        public void RegisterDeviceType<T>() where T : class, IPlugin
 		{
 			_deviceTypes.Add(typeof(T).Name, typeof(T));
 		}
@@ -30,7 +30,7 @@ namespace IoTHs.Core
 			{
 				try
 				{
-					var deviceInstance = (IDevicePlugin)ServiceLocator.Current.GetService(_deviceTypes[configuration.Type]);
+					var deviceInstance = (IPlugin)ServiceLocator.Current.GetService(_deviceTypes[configuration.Type]);
 					_deviceList.Add(configuration.Name, deviceInstance);
 					await deviceInstance.InitializeAsync(configuration);
 				}
@@ -51,22 +51,22 @@ namespace IoTHs.Core
 			}
 		}
 
-	    public IEnumerable<IDevicePlugin> GetDevices()
+	    public IEnumerable<IPlugin> GetDevices()
 	    {
 	        return _deviceList.Values.AsEnumerable();
 	    }
 
-		public IEnumerable<T> GetDevices<T>() where T : class, IDevicePlugin
+		public IEnumerable<T> GetDevices<T>() where T : class, IPlugin
 		{
 			return _deviceList.Select(d => d.Value).Where(d => (d as T) != null).Select(d=>d as T);
 		}
 
-		public T GetDevice<T>() where T : class, IDevicePlugin
+		public T GetDevice<T>() where T : class, IPlugin
 		{
 			return _deviceList.Select(d => d.Value).Where(d => (d as T) != null).Select(d => d as T).Single();
 		}
 
-		public T GetDevice<T>(string name) where T : class, IDevicePlugin
+		public T GetDevice<T>(string name) where T : class, IPlugin
 		{
 			return (T)_deviceList[name];
 		}

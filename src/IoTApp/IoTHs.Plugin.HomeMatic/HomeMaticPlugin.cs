@@ -18,7 +18,7 @@ using Microsoft.Extensions.Logging;
 
 namespace IoTHs.Plugin.HomeMatic
 {
-    public class HomeMaticDevicePlugin : DevicePluginBase
+    public class HomeMaticPlugin : PluginBase
     {
         private string _name;
         private string _type;
@@ -27,9 +27,9 @@ namespace IoTHs.Plugin.HomeMatic
         private string _connectionString;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        public HomeMaticDevicePlugin(ILoggerFactory loggerFactory)
+        public HomeMaticPlugin(ILoggerFactory loggerFactory)
         {
-            _log = loggerFactory.CreateLogger<HomeMaticDevicePlugin>();
+            _log = loggerFactory.CreateLogger<HomeMaticPlugin>();
         }
 
         public override string Name => _name;

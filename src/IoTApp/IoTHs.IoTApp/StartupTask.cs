@@ -81,17 +81,17 @@ namespace W10Home.IoTCoreApp
             container.AddSingleton<FunctionsEngine>();
             container.AddSingleton<IApiAuthenticationService, ApiAuthenticationService>();
 
-            container.AddSingleton<IAzureIoTHubDevicePlugin, AzureIoTHubDevicePlugin>();
+            container.AddSingleton<IAzureIoTHubPlugin, AzureIoTHubPlugin>();
 #if ABUS
-            container.AddTransient<SecVestDevicePlugin>();
+            container.AddTransient<SecVestPlugin>();
 #endif
-            container.AddTransient<EtaTouchDevicePlugin>();
+            container.AddTransient<EtaTouchPlugin>();
 #if TWILIO
-            container.AddTransient<TwilioDevicePlugin>();
+            container.AddTransient<TwilioPlugin>();
 #endif
-            container.AddTransient<HomeMaticDevicePlugin>();
+            container.AddTransient<HomeMaticPlugin>();
 #if MQTTBROKER
-            container.AddTransient<MQTTBrokerDevicePlugin>();
+            container.AddTransient<MqttBrokerPlugin>();
 #endif
 
             // container available globally
@@ -100,17 +100,17 @@ namespace W10Home.IoTCoreApp
 
             // init device registry and add devices
             _deviceRegistry = locator.GetService<IDeviceRegistry>();
-            _deviceRegistry.RegisterDeviceType<IAzureIoTHubDevicePlugin>();
+            _deviceRegistry.RegisterDeviceType<IAzureIoTHubPlugin>();
 #if ABUS
-            _deviceRegistry.RegisterDeviceType<SecVestDevicePlugin>();
+            _deviceRegistry.RegisterDeviceType<SecVestPlugin>();
 #endif
-            _deviceRegistry.RegisterDeviceType<EtaTouchDevicePlugin>();
+            _deviceRegistry.RegisterDeviceType<EtaTouchPlugin>();
 #if TWILIO
-            _deviceRegistry.RegisterDeviceType<TwilioDevicePlugin>();
+            _deviceRegistry.RegisterDeviceType<TwilioPlugin>();
 #endif
-            _deviceRegistry.RegisterDeviceType<HomeMaticDevicePlugin>();
+            _deviceRegistry.RegisterDeviceType<HomeMaticPlugin>();
 #if MQTTBROKER
-            _deviceRegistry.RegisterDeviceType<MQTTBrokerDevicePlugin>();
+            _deviceRegistry.RegisterDeviceType<MqttBrokerPlugin>();
 #endif
 
             _log = locator.GetService<ILoggerFactory>().CreateLogger<StartupTask>();

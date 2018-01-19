@@ -25,7 +25,7 @@ using Newtonsoft.Json;
 
 namespace IoTHs.Plugin.MQTTBroker
 {
-    public class MQTTBrokerDevicePlugin : DevicePluginBase
+    public class MqttBrokerPlugin : PluginBase
     {
         private IEnumerable<IDeviceChannel> _channels;
         private IMqttServer _mqttServer;
@@ -36,16 +36,16 @@ namespace IoTHs.Plugin.MQTTBroker
 
         private CancellationTokenSource _threadCancellation;
         private Task _messageReceiverTask;
-        private ILogger<MQTTBrokerDevicePlugin> _log;
+        private ILogger<MqttBrokerPlugin> _log;
         private IApiAuthenticationService _apiAuthenticationService;
 
         public override string Name => _name;
 
         public override string Type => _type;
 
-        public MQTTBrokerDevicePlugin(ILoggerFactory loggerFactory, IApiAuthenticationService apiAuthenticationService)
+        public MqttBrokerPlugin(ILoggerFactory loggerFactory, IApiAuthenticationService apiAuthenticationService)
         {
-            _log = loggerFactory.CreateLogger<MQTTBrokerDevicePlugin>();
+            _log = loggerFactory.CreateLogger<MqttBrokerPlugin>();
             _apiAuthenticationService = apiAuthenticationService;
         }
 
@@ -101,7 +101,7 @@ namespace IoTHs.Plugin.MQTTBroker
             {
                 if (functionsEngine.Functions.All(f => f.Name != rootTopic) && _requestedFunctions.All(f => f != rootTopic))
                 {
-                    var iotHub = ServiceLocator.Current.GetService<IAzureIoTHubDevicePlugin>();
+                    var iotHub = ServiceLocator.Current.GetService<IAzureIoTHubPlugin>();
                     if (String.IsNullOrEmpty(iotHub.ServiceBaseUrl))
                     {
                         return;

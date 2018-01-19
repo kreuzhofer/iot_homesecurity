@@ -34,7 +34,7 @@ using Microsoft.Devices.Tpm;
 
 namespace IoTHs.Plugin.AzureIoTHub
 {
-	public class AzureIoTHubDevicePlugin : DevicePluginBase, IAzureIoTHubDevicePlugin
+	public class AzureIoTHubPlugin : PluginBase, IAzureIoTHubPlugin
 	{
 		private DeviceClient _deviceClient;
 		private string _deviceId;
@@ -76,12 +76,12 @@ namespace IoTHs.Plugin.AzureIoTHub
 
         public string DeviceId { get => _deviceId; }
 
-        public AzureIoTHubDevicePlugin(IMessageQueue messageQueue, IDeviceRegistry deviceRegistry, ILoggerFactory loggerFactory)
+        public AzureIoTHubPlugin(IMessageQueue messageQueue, IDeviceRegistry deviceRegistry, ILoggerFactory loggerFactory)
 	    {
 	        _channels.Add(new IotHubDeviceChannel(messageQueue));
             _channels.Add(new IotHubLogChannel(messageQueue));
 	        _deviceRegistry = deviceRegistry;
-	        _log = loggerFactory.CreateLogger<AzureIoTHubDevicePlugin>();
+	        _log = loggerFactory.CreateLogger<AzureIoTHubPlugin>();
 	    }
 
 #if USE_TPM

@@ -8,7 +8,7 @@ using IoTHs.Devices.Interfaces;
 
 namespace IoTHs.Plugin.Gpio
 {
-    public class GpioDevicePlugin : DevicePluginBase
+    public class GpioPlugin : PluginBase
     {
         private Dictionary<int, GpioPin> _activePins = new Dictionary<int, GpioPin>();
         private List<IDeviceChannel> _channels = new List<IDeviceChannel>();

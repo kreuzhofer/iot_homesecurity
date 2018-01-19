@@ -4,7 +4,7 @@ using IoTHs.Api.Shared;
 
 namespace IoTHs.Devices.Interfaces
 {
-    public interface IAzureIoTHubDevicePlugin : IDevicePlugin
+    public interface IAzureIoTHubPlugin : IPlugin
     {
         string Name { get; }
         string Type { get; }

@@ -104,7 +104,7 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="HomeMaticDevicePlugin.cs" />
+    <Compile Include="HomeMaticPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\W10Home.Plugin.HomeMatic.rd.xml" />
   </ItemGroup>
