@@ -41,11 +41,11 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
 
         // GET: api/DeviceConfiguration/{deviceId}
         [HttpGet("{deviceId}")]
-        public async Task<DeviceConfigurationModel> Get(string deviceId)
+        public async Task<AppConfigurationModel> Get(string deviceId)
         {
             var deviceFunctions = await _deviceFunctionService.GetFunctionsAsync(deviceId);
 
-            var result = new DeviceConfigurationModel
+            var result = new AppConfigurationModel
             {
                 DeviceId = deviceId,
                 ServiceBaseUrl = _configuration["ExternalBaseUrl"],
@@ -54,7 +54,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
                     new DevicePluginConfigurationModel // default iot hub configuration for tpm
                     {
                         Name = "iothub",
-                        Type = "IAzureIoTHubDevicePlugin",
+                        Type = "IAzureIoTHubPlugin",
                         Properties = new Dictionary<string, string>()
                     }
                 },

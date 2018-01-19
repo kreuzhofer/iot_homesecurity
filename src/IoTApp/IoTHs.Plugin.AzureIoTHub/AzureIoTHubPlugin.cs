@@ -18,6 +18,7 @@ using Windows.Web.Http.Filters;
 using IoTHs.Api.Shared;
 using IoTHs.Core;
 using IoTHs.Core.Channels;
+using IoTHs.Core.Http;
 using IoTHs.Core.Queing;
 using IoTHs.Devices.Interfaces;
 using Microsoft.Azure.Devices.Client;
@@ -416,19 +417,13 @@ namespace IoTHs.Plugin.AzureIoTHub
 
 		private async Task DownloadConfigAndRestartAsync(string serviceBaseUrl, string apiKey, string deviceId, long configVersion)
 		{
-            // create http base protocol filter to be able to download from untrusted https address in internal network
-		    var aHBPF = new HttpBaseProtocolFilter();
-		    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Expired);
-		    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.Untrusted);
-		    aHBPF.IgnorableServerCertificateErrors.Add(ChainValidationResult.InvalidName);
-
             // create client token
 		    var tokenRequestUrl = serviceBaseUrl + "ApiAuthentication/";
             _log.LogDebug("Get api token");
-		    var httpClient = new HttpClient(aHBPF);
-		    httpClient.DefaultRequestHeaders.Add("apikey", apiKey);
-		    httpClient.DefaultRequestHeaders.Add("deviceid", deviceId);
-		    var tokenResponse = await httpClient.PostAsync(new Uri(tokenRequestUrl), null);
+		    var httpClient = new LocalHttpClient();
+		    httpClient.Client.DefaultRequestHeaders.Add("apikey", apiKey);
+		    httpClient.Client.DefaultRequestHeaders.Add("deviceid", deviceId);
+		    var tokenResponse = await httpClient.Client.PostAsync(new Uri(tokenRequestUrl), null);
 		    if (!tokenResponse.IsSuccessStatusCode)
 		    {
 		        throw new HttpRequestException(tokenResponse.ReasonPhrase);
@@ -442,29 +437,31 @@ namespace IoTHs.Plugin.AzureIoTHub
             var configUri = serviceBaseUrl + "DeviceConfiguration/" + _deviceId;
 		    _log.LogDebug("Downloading new configuration from " + configUri);
 
-		    httpClient = new HttpClient(aHBPF);
-		    httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer "+token);
+		    httpClient = new LocalHttpClient();
+		    httpClient.Client.DefaultRequestHeaders.Add("Authorization", "Bearer "+token);
 
-            var response = await httpClient.GetAsync(new Uri(configUri));
+            var response = await httpClient.Client.GetAsync(new Uri(configUri));
 		    if (!response.IsSuccessStatusCode)
 		    {
 		        throw new HttpRequestException(response.ReasonPhrase);
 		    }
 		    var configFileContent = await response.Content.ReadAsStringAsync();
-
-			// save config file to disk
-			var localStorage = ApplicationData.Current.LocalFolder;
-			var file = await localStorage.CreateFileAsync("configuration.json", CreationCollisionOption.ReplaceExisting);
-			await FileIO.WriteTextAsync(file, configFileContent);
-
-            // deserialize configuration object and download functions to seperate files
 		    var configuration = JsonConvert.DeserializeObject<AppConfigurationModel>(configFileContent);
+		    var formattedContent = JsonConvert.SerializeObject(configuration, Formatting.Indented);
+
+            // save config file to disk
+            var localStorage = ApplicationData.Current.LocalFolder;
+			var file = await localStorage.CreateFileAsync("configuration.json", CreationCollisionOption.ReplaceExisting);
+			await FileIO.WriteTextAsync(file, formattedContent);
+
+            // download functions to seperate files
+
 		    foreach (var functionId in configuration.DeviceFunctionIds)
 		    {
 		        var functionUri = serviceBaseUrl + "DeviceFunction/" + _deviceId + "/" + functionId;
-                httpClient = new HttpClient(aHBPF);
-		        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-                var functionContent = await httpClient.GetStringAsync(new Uri(functionUri));
+                httpClient = new LocalHttpClient();
+		        httpClient.Client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+                var functionContent = await httpClient.Client.GetStringAsync(new Uri(functionUri));
                 // store function file to disk
 		        file = await localStorage.CreateFileAsync("function_"+functionId+".json", CreationCollisionOption.ReplaceExisting);
 		        await FileIO.WriteTextAsync(file, functionContent);

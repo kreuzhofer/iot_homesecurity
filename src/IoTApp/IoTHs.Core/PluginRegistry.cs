@@ -21,7 +21,7 @@ namespace IoTHs.Core
 
         public void RegisterPluginType<T>() where T : class, IPlugin
 		{
-			_deviceTypes.Add(typeof(T).Name, typeof(T));
+			_deviceTypes.Add(typeof(T).Name.ToLower(), typeof(T));
 		}
 
 		public async Task InitializePluginsAsync(AppConfigurationModel configurationObject)
@@ -30,8 +30,8 @@ namespace IoTHs.Core
 			{
 				try
 				{
-					var deviceInstance = (IPlugin)ServiceLocator.Current.GetService(_deviceTypes[configuration.Type]);
-					_deviceList.Add(configuration.Name, deviceInstance);
+					var deviceInstance = (IPlugin)ServiceLocator.Current.GetService(_deviceTypes[configuration.Type.ToLower()]);
+					_deviceList.Add(configuration.Name.ToLower(), deviceInstance);
 					await deviceInstance.InitializeAsync(configuration);
 				}
 				catch (Exception ex)
@@ -68,12 +68,12 @@ namespace IoTHs.Core
 
 		public T GetPlugin<T>(string name) where T : class, IPlugin
 		{
-			return (T)_deviceList[name];
+			return (T)_deviceList[name.ToLower()];
 		}
 
 		public object GetPlugin(string name)
 		{
-			return _deviceList[name];
+			return _deviceList[name.ToLower()];
 		}
 	}
 }

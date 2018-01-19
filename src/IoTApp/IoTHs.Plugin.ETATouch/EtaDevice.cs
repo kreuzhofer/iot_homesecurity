@@ -20,6 +20,7 @@ namespace IoTHs.Plugin.ETATouch
         {
             await base.InitializeAsync(configuration);
 
+            _etatouchUrl = configuration.Properties["ConnectionString"];
             _menustructure = await GetMenuStructureFromEtaAsync();
             await ParseChannelListAsync(_menustructure, _channels);
         }
