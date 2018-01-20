@@ -188,8 +188,12 @@ end;";
                 var queue = ServiceLocator.Current.GetService<IMessageQueue>();
                 if (queue.TryPeek(Name, out QueueMessage queuemessage))
                 {
-                    _mqttServer.Publish(new MqttApplicationMessage(queuemessage.Key, Encoding.UTF8.GetBytes(queuemessage.Value), MqttQualityOfServiceLevel.AtMostOnce, false));
-                    queue.TryDeque(Name, out QueueMessage pop);
+                    if (_mqttServer.GetConnectedClients().Any()) // if no client is connected, do not try to send a message
+                    {
+                        _mqttServer.Publish(new MqttApplicationMessage(queuemessage.Key,
+                            Encoding.UTF8.GetBytes(queuemessage.Value), MqttQualityOfServiceLevel.AtMostOnce, false));
+                        queue.TryDeque(Name, out QueueMessage pop);
+                    }
                 }
 
                 if (!cancellationToken.IsCancellationRequested)
