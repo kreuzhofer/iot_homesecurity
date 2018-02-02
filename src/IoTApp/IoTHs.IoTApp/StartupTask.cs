@@ -29,6 +29,7 @@ using IoTHs.Plugin.Twilio;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using W10Home.IoTCoreApp.Logging;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
@@ -54,7 +55,7 @@ namespace W10Home.IoTCoreApp
             //TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
             // Init Application Insights
-            _telemetryClient = new TelemetryClient {InstrumentationKey = "4e4ea96b-6b69-4aba-919b-558b4a4583ae"};
+            _telemetryClient = new TelemetryClient {InstrumentationKey = "8adaa081-82b7-447f-a6e6-a3eecd499876" };
 
             // configure logging first
 
@@ -69,6 +70,7 @@ namespace W10Home.IoTCoreApp
             {
                 builder.AddDebug();
                 builder.AddRest();
+                builder.AddApplicationInsights(_telemetryClient);
                 builder.SetMinimumLevel(LogLevel.Trace);
             });
 
