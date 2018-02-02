@@ -121,9 +121,6 @@
     <Compile Include="Auth\FixedCredentialsValidator.cs" />
     <Compile Include="Controllers\QueueController.cs" />
     <Compile Include="CoreApp.cs" />
-    <Compile Include="Logging\ApplicationInsightsLogger.cs" />
-    <Compile Include="Logging\ApplicationInsightsLoggerFactoryExtension.cs" />
-    <Compile Include="Logging\ApplicationInsightsLoggerProvider.cs" />
     <Compile Include="Logging\CustomDebuggerTarget.cs" />
     <Compile Include="Logging\CustomFileTarget.cs" />
     <Compile Include="PacketForwardingWorker.cs" />
@@ -254,9 +251,6 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights">
-      <Version>2.4.0</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
       <Version>2.0.0</Version>
     </PackageReference>
