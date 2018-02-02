@@ -20,6 +20,9 @@ using IoTHs.Plugin.ABUS.SecVest;
 using IoTHs.Plugin.AzureIoTHub;
 using IoTHs.Plugin.ETATouch;
 using IoTHs.Plugin.HomeMatic;
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 #if MQTTBROKER
 using IoTHs.Plugin.MQTTBroker;
 #endif
@@ -28,6 +31,7 @@ using IoTHs.Plugin.Twilio;
 #endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
@@ -52,6 +56,9 @@ namespace W10Home.IoTCoreApp
             //TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
             // configure logging first
+
+            // add appcenter analytics
+            AppCenter.Start("48e2ee49-bbfc-4fdb-8e48-f47b12b92678", typeof(Analytics), typeof(Crashes));
 
             // init IoC
             // see: http://intellitect.com/net-core-dependency-injection/#ActivatorUtilities
