@@ -238,13 +238,19 @@ namespace IoTHs.Plugin.AzureIoTHub
 	    private async Task StartupAsync()
 	    {
             _log.LogTrace("StartupAsync");
-	        await Observable.Defer(async () =>
+	        var result = await Observable.Defer(async () =>
 	        {
 	            await CreateDeviceClientAsync();
-	            return Observable.Return("ok");
-	        }).Retry(10);
+	            return Observable.Return(true);
+	        }).BackOffAndRetry((attempt)=> { return TimeSpan.FromSeconds(attempt); }, (attempt,e)=> { return attempt<100; });
+            if(!result)
+            {
+                // connection could not be established
+                var queue = ServiceLocator.Current.GetService<IMessageQueue>();
+                queue.Enqueue("management", "restart", null, null); // restart the app, StartupTask takes care of this.
+            }
 
-	        _threadCancellation = new CancellationTokenSource();
+            _threadCancellation = new CancellationTokenSource();
 	        _messageReceiverTask = MessageReceiverLoop(_threadCancellation.Token); // launch message loop in the background
         }
 
@@ -472,7 +478,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 		    await _deviceClient.UpdateReportedPropertiesAsync(reportedProperties);
 
             var queue = ServiceLocator.Current.GetService<IMessageQueue>();
-			queue.Enqueue("management", "restart", null, null); // restart the app, StartupTask takes care of this. External check to restart the app must be in place.
+			queue.Enqueue("management", "restart", null, null); // restart the app, StartupTask takes care of this.
 		}
 
 

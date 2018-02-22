@@ -225,8 +225,14 @@ namespace W10Home.IoTCoreApp
 					        }
 					        catch (Exception ex)
 					        {
-                                _log.LogError(ex, "CoreApp Shutdown unsuccessful");
-					            throw;
+                                _log.LogError(ex, "CoreApp Shutdown unsuccessful. Restarting...");
+                                if (_deferral != null)
+                                {
+                                    _deferral.Complete();
+                                    _deferral = null;
+                                    return;
+                                }
+                                throw;
 					        }
 					        try
 					        {
