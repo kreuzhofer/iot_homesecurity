@@ -42,7 +42,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
 
             try
             {
-                // queue first then add to device specific log table
+                // queue to device specific log table
                 var queue = _queueClient.GetQueueReference("log-" + deviceId);
                 await queue.CreateIfNotExistsAsync();
                 await queue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(logMessage, Formatting.Indented)), TimeSpan.FromMinutes(15), null, null, null);
@@ -52,7 +52,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
                 // ignore for the device specific queue, not so important
             }
 
-            // queue first then add to device specific log table
+            // queue to global device log table to process further with log analytics (forwarding will be done by azure function)
             var devicelogqueue = _queueClient.GetQueueReference("devicelog");
             await devicelogqueue.CreateIfNotExistsAsync();
             await devicelogqueue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(logMessage, Formatting.Indented)), null, null, null, null);
