@@ -45,7 +45,7 @@ namespace W10Home.NetCoreDevicePortal.Controllers.api
                 // queue to device specific log table
                 var queue = _queueClient.GetQueueReference("log-" + deviceId);
                 await queue.CreateIfNotExistsAsync();
-                await queue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(logMessage, Formatting.Indented)), TimeSpan.FromMinutes(15), null, null, null);
+                await queue.AddMessageAsync(new CloudQueueMessage(JsonConvert.SerializeObject(logMessage, Formatting.Indented)), TimeSpan.FromMinutes(1), null, null, null);
             }
             catch
             {

@@ -62,7 +62,7 @@ namespace W10Home.NetCoreDevicePortal.Hubs
                         }
                         else
                         {
-                            await Task.Delay(1000);
+                            await Task.Delay(50);
                         }
                     }
                 }
