@@ -32,6 +32,7 @@ using IoTHs.Plugin.Twilio;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+using Microsoft.Extensions.Logging.Debug;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
 
@@ -71,7 +72,8 @@ namespace W10Home.IoTCoreApp
             {
                 builder.AddDebug();
                 builder.AddRest();
-                builder.SetMinimumLevel(LogLevel.Trace);
+                builder.SetMinimumLevel(LogLevel.Information);
+                builder.AddFilter<DebugLoggerProvider>("Default", LogLevel.Trace);
                 builder.AddFilter("IoTHs.Plugin.AzureIoTHub", LogLevel.Debug);
             });
 
