@@ -72,6 +72,7 @@ namespace W10Home.IoTCoreApp
                 builder.AddDebug();
                 builder.AddRest();
                 builder.SetMinimumLevel(LogLevel.Trace);
+                builder.AddFilter("IoTHs.Plugin.AzureIoTHub", LogLevel.Debug);
             });
 
             container.AddSingleton<IPluginRegistry, PluginRegistry>();
