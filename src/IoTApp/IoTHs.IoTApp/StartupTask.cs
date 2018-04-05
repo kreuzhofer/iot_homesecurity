@@ -51,7 +51,7 @@ namespace W10Home.IoTCoreApp
             taskInstance.Canceled += TaskInstance_Canceled;
 
             // this is one way to handle unobserved task exceptions but not the best
-            //TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
             // configure logging first
 
@@ -66,9 +66,9 @@ namespace W10Home.IoTCoreApp
             {
                 builder.AddDebug();
                 builder.AddRest();
-                builder.SetMinimumLevel(LogLevel.Information);
-                builder.AddFilter<DebugLoggerProvider>("Default", LogLevel.Trace);
-                builder.AddFilter("IoTHs.Plugin.AzureIoTHub", LogLevel.Debug);
+                builder.SetMinimumLevel(LogLevel.Trace);
+                //builder.AddFilter<DebugLoggerProvider>("Default", LogLevel.Trace);
+                //builder.AddFilter("IoTHs.Plugin.AzureIoTHub", LogLevel.Debug);
             });
 
             container.AddSingleton<IPluginRegistry, PluginRegistry>();
@@ -143,15 +143,17 @@ namespace W10Home.IoTCoreApp
 	        // Dont release deferral, otherwise app will stop
         }
 
-        //private void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
-        //{
-        //    Debug.WriteLine("Unobserved exception handled: "+e.Exception.Flatten().ToString());
-        //    e.SetObserved();
-        //}
+        private async void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            _log.LogError("Unobserved exception handled: " + e.Exception.Flatten().ToString());
+            await Task.Delay(5000);
+            e.SetObserved();
+        }
 
-        private void TaskInstance_Canceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
+        private async void TaskInstance_Canceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
         {
             _log.LogInformation("StartupTask terminated for reason "+reason.ToString());
+            await Task.Delay(5000);
             //a few reasons that you may be interested in.
             switch (reason)
             {
@@ -196,17 +198,20 @@ namespace W10Home.IoTCoreApp
 						if (message.Key == "reboot")
 						{
                             _log.LogInformation("Rebooting");
+                            await Task.Delay(5000);
 							ShutdownManager.BeginShutdown(ShutdownKind.Restart, TimeSpan.Zero);
 						}
                         else if (message.Key == "shutdown")
                         {
                             _log.LogInformation("Shutting down");
+                            await Task.Delay(5000);
                             ShutdownManager.BeginShutdown(ShutdownKind.Shutdown, TimeSpan.Zero);
                         }
                         else if (message.Key == "exit")
 						{
                             _log.LogInformation("Exiting");
-							if (_deferral != null)
+                            await Task.Delay(5000);
+                            if (_deferral != null)
 							{
 								_deferral.Complete();
 								_deferral = null;
