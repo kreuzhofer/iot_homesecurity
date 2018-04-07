@@ -217,7 +217,7 @@ namespace IoTHs.Plugin.AzureIoTHub
 			    {
 			        _configVersion = twin.Properties.Reported["ConfigVersion"];
 			    }
-                if(twin.Properties.Desired.Version>_configVersion)
+                if(!await ExistsConfig() || twin.Properties.Desired.Version>_configVersion)
                 {                
 					await DownloadConfigAndRestartAsync(_serviceBaseUrl, _apiKey, _deviceId, twin.Properties.Desired.Version);
                 }
@@ -480,6 +480,20 @@ namespace IoTHs.Plugin.AzureIoTHub
             var queue = ServiceLocator.Current.GetService<IMessageQueue>();
 			queue.Enqueue("management", "restart", null, null); // restart the app, StartupTask takes care of this.
 		}
+
+	    private async Task<bool> ExistsConfig()
+	    {
+	        var localStorage = ApplicationData.Current.LocalFolder;
+	        try
+	        {
+	            await localStorage.GetFileAsync("configuration.json");
+	            return true;
+	        }
+	        catch
+	        {
+                return false;
+	        }
+	    }
 
 
 #if USE_LIMPET
