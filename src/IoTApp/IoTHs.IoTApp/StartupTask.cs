@@ -167,6 +167,8 @@ namespace W10Home.IoTCoreApp
                     break;
                 case BackgroundTaskCancellationReason.SystemPolicy:
                     break;
+                case BackgroundTaskCancellationReason.LoggingOff:
+                    break;
             }
             _deferral.Complete();
         }
